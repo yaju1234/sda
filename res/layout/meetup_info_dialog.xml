@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/black"
+    android:gravity="center|top"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp" >
+
+        <EditText
+            android:id="@+id/ed_name"
+            android:layout_width="fill_parent"
+            android:layout_height="25dp"
+            android:layout_weight="1"
+            android:background="@xml/white_rounded"
+            android:hint="Name"
+            android:paddingLeft="8dp" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/ed_location"
+            android:layout_width="fill_parent"
+            android:layout_height="25dp"
+            android:layout_below="@+id/ed_name"
+            android:layout_marginTop="10dp"
+            android:background="@xml/white_rounded"
+            android:hint="Location"
+            android:paddingLeft="8dp" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/ed_desc"
+            android:layout_width="fill_parent"
+            android:layout_height="70dp"
+            android:layout_below="@+id/ed_location"
+            android:layout_marginTop="10dp"
+            android:background="@xml/white_rounded"
+            android:gravity="top|left"
+            android:hint="Description"
+            android:padding="5dp"
+            android:paddingLeft="8dp" >
+        </EditText>
+
+        <LinearLayout
+            android:id="@+id/ll_timepicker"
+            android:layout_width="fill_parent"
+            android:layout_height="30dp"
+            android:layout_below="@+id/ed_desc"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:orientation="vertical" >
+
+                <ImageView
+                    android:id="@+id/image_clock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/clock" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight=".30"
+                android:background="@xml/white_rounded"
+                android:gravity="center"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="10:20 AM" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ll_timepicker"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btn_submit"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:background="@xml/white_rounded"
+                android:layout_alignParentLeft="true"
+                android:text="SUBMIT" />
+
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:background="@xml/white_rounded"
+                  android:layout_alignParentRight="true"
+                android:gravity="center"
+                android:text="CANCEL" />
+            
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>
