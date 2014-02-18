@@ -5,7 +5,7 @@ public class FacebookFriendBean {
 	private String mName;
 	private String mId;
 	
-	public FacebookFriendBean(String mName,String mId){
+	public FacebookFriendBean(String mId,String mName){
 		this.mName = mName;
 		this.mId = mId;
 	}

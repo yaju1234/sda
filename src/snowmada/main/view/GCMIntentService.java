@@ -102,7 +102,6 @@ public class GCMIntentService extends GCMBaseIntentService {
 		Log.e("Push notification", message);
 		//Toast.makeText(context, "Your Emergency Becon has been Activated Ski Patrol Has Been Notified", Toast.LENGTH_LONG).show();
 		try {
-
 			JSONObject json = new JSONObject(message);
 			Global.isZoomAtUSerLocationFirstTime = false;
 			if (json.getString("status").equalsIgnoreCase("1")) {
@@ -112,26 +111,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 
 				locationManager = (LocationManager) context
 						.getSystemService(Context.LOCATION_SERVICE);
-				//if (!isGPSenabled()) {
-				
-				/*	Intent intent1 = new Intent(
-							"android.location.GPS_ENABLED_CHANGE");
-					intent1.putExtra("enabled", true);
-					context.sendBroadcast(intent1);*/
-
-					/*String provider = Settings.Secure.getString(
-							context.getContentResolver(),
-							Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-					if (!provider.contains("gps")) { // if gps is disabled
-						final Intent poke = new Intent();
-						poke.setClassName("com.android.settings",
-								"com.android.settings.widget.SettingsAppWidgetProvider");
-						poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-						poke.setData(Uri.parse("3"));
-						context.sendBroadcast(poke);
-					}*/
-
-					handler.removeCallbacks(runnable);
+						handler.removeCallbacks(runnable);
 
 					lastUsed = System.currentTimeMillis();
 					idle = 0;
@@ -227,6 +207,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 									HomeView.class);
 							notificationIntent.putExtra("sender_fb_id", sender_fb_id);
 							notificationIntent.putExtra("sender_name", name);
+							notificationIntent.putExtra("event", "chat");
 							// set intent so it does not start a new activity
 							notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 									| Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -304,6 +285,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 								HomeView.class);
 						notificationIntent.putExtra("sender_fb_id", sender_fb_id);
 						notificationIntent.putExtra("sender_name", name);
+						notificationIntent.putExtra("event", "chat");
 						// set intent so it does not start a new activity
 						notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 								| Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -390,6 +372,41 @@ public class GCMIntentService extends GCMBaseIntentService {
 					PendingIntent intent = PendingIntent.getActivity(context,
 							0, new Intent() /*notificationIntent*/ , 0);
 					notification.setLatestEventInfo(context, title, friend_name+":"+msg,
+							intent);
+					notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+					// Play default notification sound
+					notification.defaults |= Notification.DEFAULT_SOUND;
+
+					// notification.sound = Uri.parse("android.resource://" +
+					// context.getPackageName() + "your_sound_file_name.mp3");
+
+					// Vibrate if vibrate is enabled
+					notification.defaults |= Notification.DEFAULT_VIBRATE;
+					notificationManager.notify(0, notification);
+			 }else if(json.getString("status").equalsIgnoreCase("7")){//Request acknowledgment
+				
+				 String msg = json.getString("meetup_noti_msg");
+				 String name = json.getString("name");
+				 
+				 int icon = R.drawable.app_logo;
+					long when = System.currentTimeMillis();
+					NotificationManager notificationManager = (NotificationManager) context
+							.getSystemService(Context.NOTIFICATION_SERVICE);
+					Notification notification = new Notification(icon,
+							name+" "+msg, when);
+
+					String title = context.getString(R.string.app_name);
+
+					Intent notificationIntent = new Intent(context,
+							HomeView.class);
+					notificationIntent.putExtra("event", "meetup");
+					// set intent so it does not start a new activity
+					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+							| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+					PendingIntent intent = PendingIntent.getActivity(context,
+							0, /*new Intent()*/ notificationIntent , 0);
+					notification.setLatestEventInfo(context, title, name+":"+msg,
 							intent);
 					notification.flags |= Notification.FLAG_AUTO_CANCEL;
 

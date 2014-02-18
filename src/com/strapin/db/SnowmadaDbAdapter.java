@@ -599,16 +599,16 @@ public long insertfacebookFriends(final String fbid, final String name) {
 	}
 }
 
-public ArrayList<AddFriendBean> getFacebookFriends() {
+public ArrayList<FacebookFriendBean> getFacebookFriends() {
 	
-	ArrayList<AddFriendBean> arr = new ArrayList<AddFriendBean>();
+	ArrayList<FacebookFriendBean> arr = new ArrayList<FacebookFriendBean>();
 	Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_FB_FRIENDS, null);		
 	if(mCursor.getCount()>0){
 		mCursor.moveToFirst();
 		while(!mCursor.isAfterLast()){			
 			String facebookid = mCursor.getString(1);
 			String name = mCursor.getString(2);
-			arr.add(new AddFriendBean(facebookid,name));
+			arr.add(new FacebookFriendBean(facebookid,name));
 			mCursor.moveToNext();
 		}
 	}

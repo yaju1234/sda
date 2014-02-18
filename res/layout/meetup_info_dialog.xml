@@ -7,49 +7,95 @@
     android:orientation="vertical" >
 
     <RelativeLayout
-        android:layout_width="220dp"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_margin="20dp" >
 
-        <EditText
+        <TextView
             android:id="@+id/ed_name"
             android:layout_width="fill_parent"
-            android:layout_height="25dp"
+            android:layout_height="30dp"
             android:layout_weight="1"
             android:background="@xml/white_rounded"
-            android:hint="Name"
+            android:textColor="@color/white"
+            android:text="Yajneshwar Mnadal"
+            android:gravity="center|left"
             android:paddingLeft="8dp" >
-        </EditText>
+        </TextView>
 
         <EditText
             android:id="@+id/ed_location"
             android:layout_width="fill_parent"
-            android:layout_height="25dp"
+            android:layout_height="30dp"
             android:layout_below="@+id/ed_name"
             android:layout_marginTop="10dp"
             android:background="@xml/white_rounded"
             android:hint="Location"
+             android:textColor="@color/white"
             android:paddingLeft="8dp" >
         </EditText>
 
         <EditText
             android:id="@+id/ed_desc"
             android:layout_width="fill_parent"
-            android:layout_height="70dp"
+            android:layout_height="80dp"
             android:layout_below="@+id/ed_location"
             android:layout_marginTop="10dp"
             android:background="@xml/white_rounded"
             android:gravity="top|left"
             android:hint="Description"
             android:padding="5dp"
+            android:singleLine="false"
+             android:textColor="@color/white"
             android:paddingLeft="8dp" >
         </EditText>
+        
+        <LinearLayout
+            android:id="@+id/ll_datepicker"
+            android:layout_width="fill_parent"
+            android:layout_height="30dp"
+            android:layout_below="@+id/ed_desc"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:orientation="vertical" >
+
+                <ImageView
+                    android:id="@+id/image_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/clock" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_weight=".30"
+                android:background="@xml/white_rounded"
+                android:gravity="center"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/tvDisplayDate1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                     android:textColor="@color/white"
+                    android:gravity="center"
+                    />
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_timepicker"
             android:layout_width="fill_parent"
             android:layout_height="30dp"
-            android:layout_below="@+id/ed_desc"
+            android:layout_below="@+id/ll_datepicker"
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:orientation="horizontal" >
@@ -77,11 +123,12 @@
                 android:orientation="vertical" >
 
                 <TextView
-                    android:id="@+id/textView1"
+                    android:id="@+id/tvDisplayTime1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                     android:textColor="@color/white"
                     android:gravity="center"
-                    android:text="10:20 AM" />
+                    />
             </LinearLayout>
         </LinearLayout>
 

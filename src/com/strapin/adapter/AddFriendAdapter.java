@@ -13,6 +13,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -105,7 +106,9 @@ public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
 					ImageView image = (ImageView)dialog.findViewById(R.id.image_user_friend_dialog);
 					final CheckBox isTrack = (CheckBox)dialog.findViewById(R.id.check_track);
 					Button yes = (Button)dialog.findViewById(R.id.btn_yes);
+					yes.setText(Html.fromHtml("<font color=\"#ffffff\">YE</font><font color=\"#28b6ff\">S</font>"));
 					Button no = (Button)dialog.findViewById(R.id.btn_no);
+					no.setText(Html.fromHtml("<font color=\"#ffffff\">N</font><font color=\"#28b6ff\">O</font>"));
 					
 					name.setText(mItems.get(position).getName());
 					isTrack.setChecked(true);

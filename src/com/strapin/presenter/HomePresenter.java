@@ -21,6 +21,8 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -138,7 +140,7 @@ public class HomePresenter implements IHome.Presenter{
 					if(Utility.isNetworkConnected(mHomeView.getContext())){
 						new PushNotificationWeb().execute(mDbAdapter.getUserFbID(),Global.sFriendId);
 						//new getFriendLocation().execute(Global.sFriendId);
-						Global.isTrackFriendLocation = true;
+						mHomeView.app.doTrackFriendLocation = true;
 						mHomeView.getProgressBarLayout().setVisibility(View.VISIBLE);
 						COUNT = 0;
 					}
@@ -187,7 +189,7 @@ public class HomePresenter implements IHome.Presenter{
 				Log.i("idle", "" + idle);
 
 				if (idle >= /*30000*/5*60*1000) {
-					Global.isTrackFriendLocation = false;
+					mHomeView.app.doTrackFriendLocation = false;
 					mHomeView.getMap().clear();	
 					handler.removeCallbacks(runnable);
 					
@@ -217,7 +219,7 @@ public class HomePresenter implements IHome.Presenter{
 	
 	private void updateItemAtPosition(int position, String status) {
 		mFriendArr.get(position).setOnlineStatus(status);
-		mAdapter = new FriendAdapter(HomePresenter.this,mHomeView.getActivity(),mHomeView.getContext(), R.layout.friend_row1, mFriendArr);
+		mAdapter = new FriendAdapter(HomePresenter.this,mHomeView, R.layout.friend_row1, mFriendArr);
 		mHomeView.getList().setAdapter(mAdapter);
 		//mHomeView.getList().setOnTouchListener(mTouchListener);
 		}
@@ -332,7 +334,7 @@ public class GetFriendListWeb extends AsyncTask<String, Void, Boolean>{
 		mDialog.dismiss();
 		Log.e("GetFriendListWeb onPostExecute", "GetFriendListWeb onPostExecute");
 		if(status){
-			mAdapter = new FriendAdapter(HomePresenter.this,mHomeView.getActivity(),mHomeView.getContext(), R.layout.friend_row1, mFriendArr);
+			mAdapter = new FriendAdapter(HomePresenter.this,mHomeView, R.layout.friend_row1, mFriendArr);
 			
 			mHomeView.getList().setAdapter(mAdapter);
 			
@@ -340,42 +342,7 @@ public class GetFriendListWeb extends AsyncTask<String, Void, Boolean>{
 	}	
 }
 
-public class getFriendLocation extends AsyncTask<String, Void, Boolean>{		
-	protected void onPreExecute() {
-		
-	}
-	@Override
-	protected Boolean doInBackground(String... params) {			
-	  	try {
-	  		JSONObject jsonObject = new JSONObject();
-	  		jsonObject.put("fbid", params[0]);
-	  		Log.e("JSON", jsonObject.toString());
-	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/getlocation.php", jsonObject);
-	  		Log.e("Received friend location JSOn", json.toString());
-	  		Double lat = Double.valueOf(json.getString("lat"));
-	  		//mLat = lat;
-	  		Double lng =  Double.valueOf(json.getString("lng"));
-	  		//mLng = lng;
-	  		
-	  		//logLat = ""+lat;
-	  		//logLng = ""+lng;
-			
-		} catch (Exception e) {
-			//mDialog.dismiss();
-			e.printStackTrace();
-		}
-		return null;
-	}
-	@Override
-	protected void onPostExecute(Boolean status) {
-		
-		Global.isTrackFriendLocation = true;
-		TrackDurationControllFlag = true;
-		//Global.counter++;
-		
-		
-	}	
-}
+
 
 public class getFriendLocation1 extends AsyncTask<String, Void, Boolean>{		
 	protected void onPreExecute() {
@@ -402,6 +369,7 @@ public class getFriendLocation1 extends AsyncTask<String, Void, Boolean>{
 	}
 	@Override
 	protected void onPostExecute(Boolean status) {
+		//Toast.makeText(mHomeView, ""+COUNT, Toast.LENGTH_LONG).show();
 		
 		COUNT++;
 		if(COUNT>3){

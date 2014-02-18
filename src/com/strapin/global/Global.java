@@ -25,8 +25,8 @@ public static String mDob = "";
    // public static boolean isRefresh = false;
     
     
-    public static boolean isTrackFriendLocation = false;
-    public static boolean isMeetUploaction = false;
+   // public static boolean isTrackFriendLocation = false;
+   // public static boolean isMeetUploaction = false;
     
     public static boolean isInfoWindow = false;
     

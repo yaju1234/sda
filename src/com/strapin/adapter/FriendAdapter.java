@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import snowmada.main.view.HomeView;
 import snowmada.main.view.R;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
@@ -29,12 +29,11 @@ import com.strapin.presenter.HomePresenter;
 
 public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 	
-	private Context mCtx;
 	private ArrayList<FriendListBean> mItems = new ArrayList<FriendListBean>();
 	private ViewHolder mHolder;
 	int size = 0;
 	public ImageLoader imageLoader;
-	private Activity activity;
+	private HomeView activity;
 	private ProgressDialog mDialog;
 	private HomePresenter mPresenter;
 	private SnowmadaDbAdapter mDbAdapter;
@@ -42,9 +41,8 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 	private int pos;
 	
 	
-	public FriendAdapter(HomePresenter mPresenter,Activity activity,Context context, int textViewResourceId,	ArrayList<FriendListBean> items) {
-		super(context, textViewResourceId, items);
-		this.mCtx = context;
+	public FriendAdapter(HomePresenter mPresenter,HomeView activity, int textViewResourceId,	ArrayList<FriendListBean> items) {
+		super(activity, textViewResourceId, items);
 		this.mItems = items;
 		size = mItems.size();
 		this.activity =activity;
@@ -75,7 +73,7 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 		  
 		if (v == null) {
 			
-			LayoutInflater vi = (LayoutInflater) mCtx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater vi = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			v = vi.inflate(R.layout.friend_row1, null);
 			mHolder = new ViewHolder();
 			v.setTag(mHolder);	

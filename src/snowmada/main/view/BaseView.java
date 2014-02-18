@@ -12,20 +12,20 @@ import com.strapin.application.AppInfo;
 import com.strapin.application.SnomadaApp;
 
 import android.support.v4.app.FragmentActivity;
-import android.text.Editable;
 import android.text.Html;
-import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-public class BaseView extends FragmentActivity implements IBase,OnClickListener,TextWatcher,OnMarkerClickListener,OnMapLongClickListener,OnMarkerDragListener,OnInfoWindowClickListener{
+public class BaseView extends FragmentActivity implements IBase,OnClickListener,OnMarkerClickListener,OnMapLongClickListener,OnMarkerDragListener,OnInfoWindowClickListener{
 	public SnomadaApp app;
 	public boolean inIt  = false;
 
 	@Override
 	protected void onStart() {
 		super.onStart();
+		Log.e("Base activity Sratrt", "Base activity Sratrt");
 		app = (SnomadaApp) getApplication();
 		if(!app.inIt){
 			app.inIt = true;
@@ -55,16 +55,7 @@ public class BaseView extends FragmentActivity implements IBase,OnClickListener,
 		return false;
 	}
 
-	@Override
-	public void afterTextChanged(Editable s) {	}
-
-	@Override
-	public void beforeTextChanged(CharSequence s, int start, int count,
-			int after) {	}
-
-	@Override
-	public void onTextChanged(CharSequence s, int start, int before, int count) {	}
-
+	
 	@Override
 	public void onClick(View v) {	}
 	
