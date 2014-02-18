@@ -30,20 +30,27 @@ public class SplashView extends BaseView implements ISplash{
 		    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		    StrictMode.setThreadPolicy(policy);
 		}
-		mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(getApplicationContext());
-		Global.isApplicationForeground = true;
+		/*mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(getApplicationContext());
+		Global.isApplicationForeground app.getAppInfo().isappforeground= true;
 		Global.mChatSenderID = "";
 		mImg = (ImageView) findViewById(R.id.imageView1);
 		if(!mDbAdapter.isSessionvalid()){
 			mPresenter = new SplashPresenter(this);
 			mPresenter.handleSplash();
-		}
+		}*/
 		
 	}
-	/*@Override
+	@Override
 	public void init(){
-		
-	}*/
+		mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(getApplicationContext());
+		/*Global.isApplicationForeground*/ app.getAppInfo().isappforeground= true;
+		Global.mChatSenderID = "";
+		mImg = (ImageView) findViewById(R.id.imageView1);
+		if(/*!mDbAdapter.isSessionvalid()*/!app.getAppInfo().session){
+			mPresenter = new SplashPresenter(this);
+			mPresenter.handleSplash();
+		}
+	}
 
 	@Override
 	public Activity getActivity() {
@@ -59,7 +66,7 @@ public class SplashView extends BaseView implements ISplash{
 	protected void onResume() {
 		super.onResume();
 		
-		if(mDbAdapter.isSessionvalid()){
+		if(/*mDbAdapter.isSessionvalid()*/app.getAppInfo().session){
 			Intent i = new Intent(SplashView.this,HomeView.class);
 			startActivity(i);
 			finish();

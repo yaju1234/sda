@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -153,7 +154,8 @@ public class HomePresenter implements IHome.Presenter{
 					dialog1.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 					dialog1.setContentView(R.layout.track_fail_dialog);
 					dialog1.setCancelable(false);
-					ImageView ok = (ImageView)dialog1.findViewById(R.id.iv_ok);
+					Button ok = (Button)dialog1.findViewById(R.id.iv_ok);
+					ok.setText(Html.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
 					TextView tv_alert_txt = (TextView)dialog1.findViewById(R.id.tv_alert_text);
 					tv_alert_txt.setText(Html.fromHtml("<font color=\"#ffffff\">ALERT</font><font color=\"#28b6ff\">DIALOG</font>"));
 					ok.setOnClickListener(new OnClickListener() {
@@ -264,7 +266,8 @@ public class SKIEmergencyButtonPressWeb extends AsyncTask<String, Void, Boolean>
 				dialog1.setContentView(R.layout.skipetrol_btn_press_dialog);
 				dialog1.setCancelable(false);
 				
-				ImageView ok = (ImageView)dialog1.findViewById(R.id.iv_dlg_ok);
+				Button ok = (Button)dialog1.findViewById(R.id.iv_dlg_ok);
+				ok.setText(Html.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
 				TextView tv_dialog = (TextView)dialog1.findViewById(R.id.tv_alert_dialog_text);
 				tv_dialog.setText(Html.fromHtml("<font color=\"#ffffff\">ALERT</font><font color=\"#28b6ff\">DIALOG</font>"));
 				

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+ 
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+     android:orientation="vertical" >
+    
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@xml/meet_up_info_window_background"
+    android:padding="5dp"
+    android:orientation="vertical" >
+        <TextView
+            android:id="@+id/tv_marker_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textColor="#ff000000"
+            android:text="Name: Yajneshwar Mandal"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            />
+ 
+        <TextView
+            android:id="@+id/tv_marker_loc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ff7f7f7f"
+            android:text="Location: Kolkata"
+            android:textSize="12dp" />
+        <TextView
+            android:id="@+id/tv_marker_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ff7f7f7f"
+            android:singleLine="false"
+            android:text="Description: lorem ipsum"
+            android:textSize="12dp" />
+        
+        <TextView
+            android:id="@+id/tv_marker_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ff7f7f7f"
+            android:text="Date: 2014-02-18"
+            android:textSize="12dp" />
+        <TextView
+            android:id="@+id/tv_marker_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ff7f7f7f"
+            android:text="Time: 23:22:00"
+            android:textSize="12dp" />
+
+        <LinearLayout
+            android:id="@+id/ll_marker_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/btn_marker_edit"
+                android:layout_width="90dp"
+                android:layout_height="35dp"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:text="Edit" />
+
+        </LinearLayout>
+        
+    </LinearLayout>
+      <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center|top"
+            android:layout_marginTop="-1dp"
+            android:orientation="vertical" >
+
+          <ImageView
+              android:id="@+id/imageView1"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:src="@drawable/arrow_11" />
+
+        </LinearLayout>
+    </LinearLayout>
+ 

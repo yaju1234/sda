@@ -635,7 +635,7 @@ public void emptyFriendTable(){
 }
 ////////////////////////////////////For Facebook Friend List END//////////////////////////////////
 ////////////////////////////////////SESSION START//////////////////////////////////
-public long insertSessionvalue(int n) {
+/*public long insertSessionvalue(int n) {
 	final ContentValues values = new ContentValues();
 
 	values.put(TableConstantName.IS_SESSION_VALID, ""+n);
@@ -650,9 +650,9 @@ public long insertSessionvalue(int n) {
 	} finally {
 		sDb.endTransaction();
 	}
-}
+}*/
 
-public int getSessionValueRowCount() {
+/*public int getSessionValueRowCount() {
 	int count = -1;
 
 	final Cursor mCursor = sDb.query(TableConstantName.TABLE_SESSION,new String[] { "count(*) " + TableConstantName.IS_SESSION_VALID },
@@ -664,9 +664,9 @@ public int getSessionValueRowCount() {
 		mCursor.close();
 	}
 	return count;
-}
+}*/
 
-public boolean isSessionvalid() {
+/*public boolean isSessionvalid() {
 	boolean flag = false;
 	String value = "0";
 	Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_SESSION, null);		
@@ -682,9 +682,9 @@ public boolean isSessionvalid() {
 		flag = true;
 	}
 	return flag;
-}
+}*/
 
-public boolean updateSession(int n){
+/*public boolean updateSession(int n){
 	int id = 1;
 	final ContentValues values = new ContentValues();
 
@@ -699,7 +699,7 @@ public boolean updateSession(int n){
 	} finally {
 		sDb.endTransaction();
 	}
-}
+}*/
 ////////////////////////////////////SESSION  END//////////////////////////////////
 
 /* -------------------------------------------Coupon table start------------------------------------------------------

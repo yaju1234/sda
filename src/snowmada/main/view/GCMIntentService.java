@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.os.Handler;
 import android.util.Log;
 import com.google.android.gcm.GCMBaseIntentService;
+import com.strapin.application.SnomadaApp;
 import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.global.Global;
 
@@ -26,6 +27,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	private static long lastUsed;
 	private static long idle=0;
 	private SnowmadaDbAdapter mDbAdapter;
+	public static SnomadaApp app = null;
 
     public GCMIntentService() {
         super(SENDER_ID);
@@ -37,6 +39,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     @Override
     protected void onRegistered(Context context, String registrationId) {
     	mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(context);
+    	app = (SnomadaApp) getApplication();
         Log.i(TAG, "Device registered: regId = " + registrationId);
         displayMessage(context, "Your device registred with GCM");
         ServerUtilities.register(context, registrationId,mDbAdapter.getUserFbID());
@@ -99,6 +102,7 @@ public class GCMIntentService extends GCMBaseIntentService {
      * Issues a notification to inform the user that server has sent a message.
      */
 	private static void generateNotification(final Context context,String message) {
+		
 		Log.e("Push notification", message);
 		//Toast.makeText(context, "Your Emergency Becon has been Activated Ski Patrol Has Been Notified", Toast.LENGTH_LONG).show();
 		try {
@@ -189,7 +193,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 				 String name = json.getString("name");
 				 String sender_fb_id = json.getString("sender_fb_id");
 				 
-				if(Global.isApplicationForeground){
+				if(/*Global.isApplicationForeground*/app.getAppInfo().isappforeground){
 					
 					if(Global.isChatActive){
 						if(!name.equalsIgnoreCase(Global.mChatUserName)){// Third person ping

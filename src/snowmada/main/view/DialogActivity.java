@@ -14,14 +14,14 @@ import android.util.Log;
 import android.view.View.OnClickListener;
 import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
 
-public class DialogActivity extends Activity{
+public class DialogActivity extends BaseView{
 	private SnowmadaDbAdapter mDb;
 @SuppressWarnings("deprecation")
 	@Override
@@ -43,7 +43,8 @@ public class DialogActivity extends Activity{
 		dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 		dialog.setContentView(R.layout.emergency_dialog);
 		
-		ImageView ok = (ImageView)dialog.findViewById(R.id.iv_ok);
+		Button ok = (Button)dialog.findViewById(R.id.iv_ok);
+		ok.setText(Html.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
 		TextView tv_alert = (TextView)dialog.findViewById(R.id.tv_alert_text);
 		tv_alert.setText(Html.fromHtml("<font color=\"#ffffff\">ALERT</font><font color=\"#28b6ff\">DIALOG</font>"));
 		
@@ -58,7 +59,7 @@ public class DialogActivity extends Activity{
 	        	new GetSkiAcknowledgement().execute(st[0],st[1]);
 	        	
 	        	//Global.isSkiPatrolPressed = true;
-	        	if(Global.isApplicationForeground){
+	        	if(app.getAppInfo().isappforeground/*Global.isApplicationForeground*/){
 	        		
 	        		Intent i = new Intent(getApplicationContext(),HomeView.class);
 	        		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

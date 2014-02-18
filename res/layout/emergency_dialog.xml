@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="260dp"
-    android:layout_height="180dp"
-   android:background="@drawable/dialog_bg1"
-   >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@xml/dlg_black_bg"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingBottom="20dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingTop="20dp" >
 
     <LinearLayout
         android:id="@+id/top"
@@ -13,89 +18,67 @@
         android:layout_marginRight="5dp"
         android:orientation="horizontal" >
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/imageView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center" >
+            android:src="@drawable/emergency_logo" />
 
-            <ImageView
-                android:id="@+id/imageView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/emergency_logo" />
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/tv_alert_text"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" >
-
-            <TextView
-                android:id="@+id/tv_alert_text"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginLeft="8dp"
-                android:gravity="center|left"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
-        </LinearLayout>
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="15dp"
+            android:gravity="center|left"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="EMERGENCY! EMERGENCY!"
+        android:textStyle="bold"
+        android:textColor="@color/red"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="Injury Reported"
+        android:textColor="@color/white"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Press OK to View Location"
+        android:textColor="@color/white"
+        android:textSize="12sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@+id/footer"
-        android:layout_below="@+id/top"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="2dp"
+        android:layout_marginTop="10dp"
         android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="EMERGENCY! EMERGENCY!"
-                android:textColor="@color/red"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Injury Reported"
-                android:textColor="@color/white"
-                android:textSize="11sp" />
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Press OK to View Location"
-                android:textColor="@color/white"
-                android:textSize="11sp" />
-       
+        <Button
+                android:id="@+id/iv_ok"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:background="@xml/white_rounded"
+               android:text="SUBMIT" />
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/footer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center"
-        android:layout_marginBottom="5dp"
-        android:orientation="vertical" >
-            
-         <ImageView
-                    android:id="@+id/iv_ok"
-                    android:layout_width="85dp"
-                    android:layout_height="30dp"
-                    android:src="@drawable/ok" />
+</LinearLayout>
 
-        <!-- <Button
-            android:id="@+id/ski_ok_bttn"
-            android:layout_width="120dp"
-            android:layout_height="30dp"
-            android:background="@drawable/emergency_ok_bttn" /> -->
-    </RelativeLayout>
-
-</RelativeLayout>
+  <!--  -->

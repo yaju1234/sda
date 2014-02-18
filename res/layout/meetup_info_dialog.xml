@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="250dp"
     android:layout_height="wrap_content"
     android:background="@color/black"
     android:gravity="center|top"
+    android:paddingTop="20dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="20dp"
     android:orientation="vertical" >
-
-    <RelativeLayout
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp" >
 
         <TextView
             android:id="@+id/ed_name"
             android:layout_width="fill_parent"
             android:layout_height="30dp"
             android:layout_weight="1"
-            android:background="@xml/white_rounded"
+            android:background="@xml/black_rounded_corner"
             android:textColor="@color/white"
             android:text="Yajneshwar Mnadal"
             android:gravity="center|left"
@@ -29,7 +28,7 @@
             android:layout_height="30dp"
             android:layout_below="@+id/ed_name"
             android:layout_marginTop="10dp"
-            android:background="@xml/white_rounded"
+            android:background="@xml/black_rounded_corner"
             android:hint="Location"
              android:textColor="@color/white"
             android:paddingLeft="8dp" >
@@ -41,7 +40,7 @@
             android:layout_height="80dp"
             android:layout_below="@+id/ed_location"
             android:layout_marginTop="10dp"
-            android:background="@xml/white_rounded"
+            android:background="@xml/black_rounded_corner"
             android:gravity="top|left"
             android:hint="Description"
             android:padding="5dp"
@@ -49,6 +48,25 @@
              android:textColor="@color/white"
             android:paddingLeft="8dp" >
         </EditText>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+             android:layout_marginTop="5dp"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#cccccc"
+                android:textSize="14sp"
+                android:text="Click Calender to enter Date" />
+
+        </LinearLayout>
         
         <LinearLayout
             android:id="@+id/ll_datepicker"
@@ -70,14 +88,14 @@
                     android:id="@+id/image_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/clock" />
+                    android:src="@drawable/calender" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
                 android:layout_weight=".30"
-                android:background="@xml/white_rounded"
+                android:background="@xml/black_rounded_corner"
                 android:gravity="center"
                 android:orientation="vertical" >
 
@@ -90,7 +108,24 @@
                     />
             </LinearLayout>
         </LinearLayout>
+<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical" >
 
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                  android:textColor="#cccccc"
+                android:textSize="14sp"
+                android:text="Click Stop Wantch to enter Time" />
+
+        </LinearLayout>
         <LinearLayout
             android:id="@+id/ll_timepicker"
             android:layout_width="fill_parent"
@@ -118,7 +153,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
                 android:layout_weight=".30"
-                android:background="@xml/white_rounded"
+                android:background="@xml/black_rounded_corner"
                 android:gravity="center"
                 android:orientation="vertical" >
 
@@ -159,6 +194,7 @@
             
         </RelativeLayout>
 
-    </RelativeLayout>
+       
 
+  
 </LinearLayout>

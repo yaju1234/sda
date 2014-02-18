@@ -87,7 +87,7 @@ import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
 import com.strapin.presenter.HomePresenter;
-
+//http://androidfreakers.blogspot.in/2013/08/display-custom-info-window-with.html
 
 public class HomeView extends BaseView implements IHome {	
 	
@@ -213,7 +213,7 @@ public class HomeView extends BaseView implements IHome {
 	public long current_selected_marker_id = 0;
 	private int hour;
 	private int minute;
-	private String am_pm;
+	private String set;
 	
 	private int year;
 	private int month;
@@ -222,6 +222,8 @@ public class HomeView extends BaseView implements IHome {
 	
 	
 	public SnomadaApp app;
+	private   Marker m;
+	int pos = -1;
 		
 
 	  	
@@ -284,7 +286,8 @@ public class HomeView extends BaseView implements IHome {
 		
 		map =  ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
 		map.setMyLocationEnabled(true);
-		map.getUiSettings().setCompassEnabled(true);	
+		map.getUiSettings().setCompassEnabled(true);
+		map.setInfoWindowAdapter(null);
 		Global.setMap(map);
 		
 		mPresenter = new HomePresenter(this);
@@ -373,14 +376,14 @@ public class HomeView extends BaseView implements IHome {
 				
 			}
 		});
-		init();
+		//init();
 		createRunnableThread();
 		callService();		
 		getDeviceId();		
 		isSkyPetrolShow();
 	    TrackLocation.databaseHelperInstance(getApplicationContext());
 	    createMenuDialog();
-	    defaultChatWindoOpenFromNotificationList();		
+	    //defaultChatWindoOpenFromNotificationList();		
 		
 		DealsBean bean1 = new DealsBean("a");
 		DealsBean bean2 = new DealsBean("a");
@@ -413,12 +416,12 @@ public class HomeView extends BaseView implements IHome {
 	}
 
 
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_logout:
-			mDb.updateSession(0);
+			//mDb.updateSession(0);
+			app.getAppInfo().setSession(false);
 			//Intent intent = new Intent(HomeView.this, SigninView.class);startActivity(intent);
 			finish();
 			break;
@@ -574,6 +577,7 @@ public class HomeView extends BaseView implements IHome {
 					@Override
 					public void onClick(View v) {
 						setLayoutVisibility(TRACK_FRIENDS);
+						map.setInfoWindowAdapter(null);
 					}
 				});
 				
@@ -642,7 +646,7 @@ public class HomeView extends BaseView implements IHome {
 			mDealsLayout.setVisibility(View.GONE);
 			mAddFriendLayout.setVisibility(View.GONE);
 			mProfileLayout.setVisibility(View.GONE);
-			mBtnSlider.setVisibility(View.GONE);
+			mBtnSlider.setVisibility(View.VISIBLE);
 			mViewSlider.setVisibility(View.GONE);
 			setVisibility(MEET_UP_LOCATION);
 			app.doTrackFriendLocation = false;
@@ -650,6 +654,7 @@ public class HomeView extends BaseView implements IHome {
 			mHighlightPos = 3;			
 			Global.isChatActive = false;
 			map.clear();
+			map.setInfoWindowAdapter(new CustomInfoWindowAdapter());
 			new GetMeetUplocation().execute();
 			//setMeetUplocationMarker();
 			
@@ -842,6 +847,7 @@ public class HomeView extends BaseView implements IHome {
 			mGreenBarTrack.setVisibility(View.INVISIBLE);
 			mGreenBarAdd.setVisibility(View.INVISIBLE);
 			mGreenBarViewProfile.setVisibility(View.INVISIBLE);
+			
 			/*new GetMeetUplocation().execute();*/
 			
 			break;
@@ -917,7 +923,7 @@ public class HomeView extends BaseView implements IHome {
 	    switch(keyCode){
 	    case KeyEvent.KEYCODE_BACK:
 	    	 app.doTrackFriendLocation = false;
-	         Global.isApplicationForeground = false;
+	         /*Global.isApplicationForeground*/ app.getAppInfo().isappforeground= false;
 	         handler.removeCallbacks(runnable);
 	         HomeView.this.finish();
 	        return true;
@@ -1107,7 +1113,7 @@ public void getMassageNotification(){
 }
 
 public void getChatWindowActive(String friendName,String fbid){
-	Global.isApplicationForeground = true;
+	/*Global.isApplicationForeground*/ app.getAppInfo().isappforeground= true;
 	//mBottonMenu.setBackgroundResource(R.drawable.menu_deactive);
 	setVisibility(4);
 	mHighlightPos = 4;
@@ -1151,6 +1157,7 @@ public void init() {
 	Global.isAddSnowmadaFriend = false;
 	Global.isZoomAtUSerLocationFirstTime = true;	
 	
+	defaultChatWindoOpenFromNotificationList();
 }
 
 @Override
@@ -1158,7 +1165,7 @@ public void defaultChatWindoOpenFromNotificationList() {
 	Bundle bundle = getIntent().getExtras();
 	if(bundle!=null){
 		if(bundle.getString("event").equalsIgnoreCase("chat")){
-			Global.isApplicationForeground = true;
+			/*Global.isApplicationForeground*/app.getAppInfo().isappforeground = true;
 			//mBottonMenu.setBackgroundResource(R.drawable.menu_deactive);
 			setVisibility(CHAT_LIVE);
 			mHighlightPos = CHAT_LIVE;
@@ -1174,11 +1181,10 @@ public void defaultChatWindoOpenFromNotificationList() {
 			String[] splitStr = sender_name.split("\\s+");
 			Global.mChatUserName = splitStr[0];
 			Global.mChatSenderID = getIntent().getExtras().getString("sender_fb_id");
-			
 			mPresenter.functionChat(sender_fb_id, sender_name);
 			mTvActiveChatFriend.setText(sender_name);
 		}else{
-			Global.isApplicationForeground = true;
+			/*Global.isApplicationForeground*/ app.getAppInfo().isappforeground= true;
 			app.isMeetuplocationWindoEnable = true;
 			setVisibility(MEET_UP_LOCATION);
 			mHighlightPos = MEET_UP_LOCATION;
@@ -1343,6 +1349,8 @@ public boolean onMarkerClick(Marker marker) {
 
 @Override
 public void onInfoWindowClick(Marker marker) {
+	
+	int p = -1;
 	if(app.isMeetuplocationWindoEnable){
 
 		current_selected_marker_id = hasmapinfo.get(marker);
@@ -1350,9 +1358,6 @@ public void onInfoWindowClick(Marker marker) {
 			if(current_selected_marker_id == meetupinfoarr.get(i).getId()){
 				if(meetupinfoarr.get(i).getOwner().equalsIgnoreCase("ME")){
 					app.isMeetuplocationEditTextEditable = true;
-					setMeetuplocationDialog(marker, current_selected_marker_id,meetupinfoarr.get(i).getName(),meetupinfoarr.get(i).getLocation(),meetupinfoarr.get(i).getDescription(),meetupinfoarr.get(i).getDate1(),meetupinfoarr.get(i).getTime(),meetupinfoarr.get(i).getOwner());
-				}else{
-					app.isMeetuplocationEditTextEditable = false;
 					setMeetuplocationDialog(marker, current_selected_marker_id,meetupinfoarr.get(i).getName(),meetupinfoarr.get(i).getLocation(),meetupinfoarr.get(i).getDescription(),meetupinfoarr.get(i).getDate1(),meetupinfoarr.get(i).getTime(),meetupinfoarr.get(i).getOwner());
 				}
 				break;
@@ -1379,7 +1384,7 @@ public void onMapLongClick(final LatLng point) {
                              int which) {
                          dialog.dismiss();
                          
-                        Marker m =  map.addMarker(new MarkerOptions()
+                         m =  map.addMarker(new MarkerOptions()
                    	    .position(point) 
                    	    .title(""+mDb.getUserFirstName()+" "+mDb.getUserLastName())
                         .snippet("Update your information")
@@ -1449,7 +1454,7 @@ public class CustominFoWindo implements InfoWindowAdapter{
           // AlertDialog.Builder b = new AlertDialog.Builder(cw);
           LayoutInflater inflater = (LayoutInflater) cw
                   .getSystemService(LAYOUT_INFLATER_SERVICE);
-          View layout = inflater.inflate(R.layout.custom_infowindow,
+          View layout = inflater.inflate(R.layout.custom_info_window,
                   null);
           return layout;
 	}
@@ -1570,7 +1575,6 @@ private static String pad(int c) {
 
 public void setMeetuplocationDialog(final Marker marker,final long current_selected_marker_id,final String meetupusername,final String meetuplocation, final String meetupdesc, final String meetupdate,final String meetuptime, final String owner){
 	
-	if(owner.equalsIgnoreCase("ME")){
 		meetupUserDlg = new Dialog(HomeView.this);				
 		meetupUserDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		meetupUserDlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -1694,22 +1698,7 @@ public void setMeetuplocationDialog(final Marker marker,final long current_selec
 		});
 		
 		meetupUserDlg.show();
-	}else{
-		infowindoDlg = new Dialog(HomeView.this);				
-		infowindoDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		infowindoDlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-		infowindoDlg.setContentView(R.layout.metup_marker_info_window);
-		infowindoDlg.setCanceledOnTouchOutside(true);
-		TextView _name = (TextView)infowindoDlg.findViewById(R.id.tv_meet_up_setter_name) ;
-		_name.setText("Name: "+meetupusername);
-		TextView _locname= (TextView)infowindoDlg.findViewById(R.id.tv_meet_up_loc_name) ;
-		_locname.setText("Location: "+meetuplocation);
-		TextView _desc = (TextView)infowindoDlg.findViewById(R.id.tv_meet_up_desc) ;
-		_desc.setText("Description: "+meetupdesc);
-		TextView _time = (TextView)infowindoDlg.findViewById(R.id.tv_meet_up_time) ;
-		_time.setText("Date: "+meetupdate +"  Time: "+meetuptime);
-		infowindoDlg.show();
-	}	
+	
 
 }
 
@@ -1921,6 +1910,7 @@ public class GetMeetUplocation extends AsyncTask<String, String, ArrayList<MeetU
 	protected void onPostExecute(ArrayList<MeetUpBean> result) {
 		super.onPostExecute(result);
 		mDialog.cancel();
+		map.clear();
 		//Log.e("Meet up Size", ""+result.size());
 		if(result != null){
 			Log.e("Meet up Size", ""+result.size());
@@ -1930,7 +1920,7 @@ public class GetMeetUplocation extends AsyncTask<String, String, ArrayList<MeetU
 				//if(result.get(i).getName().equalsIgnoreCase("asanti namrata")){
 					Log.i("Meet Loc", ""+result.get(i).getLocation());
 					if(result.get(i).getOwner().equalsIgnoreCase("ME")){
-						 Marker m =  map.addMarker(new MarkerOptions()
+						 /*Marker*/ m =  map.addMarker(new MarkerOptions()
 				    	    .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
 				    	    .title("Name:"+result.get(i).getName())
 				         .snippet("Location:"+result.get(i).getLocation())
@@ -1939,7 +1929,7 @@ public class GetMeetUplocation extends AsyncTask<String, String, ArrayList<MeetU
 				         
 				         hasmapinfo.put(m, result.get(i).getId());
 					}else{
-						 Marker m =  map.addMarker(new MarkerOptions()
+						 /*Marker*/ m =  map.addMarker(new MarkerOptions()
 				    	    .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
 				    	    .title("Name:"+result.get(i).getName())
 				         .snippet("Location:"+result.get(i).getLocation())
@@ -2033,5 +2023,75 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		};
 		t.start();
 	}
+	
+	private class CustomInfoWindowAdapter implements InfoWindowAdapter {
+		 
+        private View view;
+ 
+        public CustomInfoWindowAdapter() {
+            view = getLayoutInflater().inflate(R.layout.custom_info_window,
+                    null);
+        }
+ 
+        @Override
+        public View getInfoContents(Marker marker) {
+ 
+            if (HomeView.this.m != null
+                    && HomeView.this.m.isInfoWindowShown()) {
+            	HomeView.this.m.hideInfoWindow();
+            	HomeView.this.m.showInfoWindow();
+            }
+            return null;
+        }
+ 
+        @Override
+        public View getInfoWindow(final Marker marker) {
+        	HomeView.this.m = marker;
+        	
+            double lat = marker.getPosition().latitude;
+            double lng = marker.getPosition().longitude;
+            for(int i = 0; i<meetupinfoarr.size(); i++){
+            	if(meetupinfoarr.get(i).getLat()==lat){
+            		if(meetupinfoarr.get(i).getLng()==lng){
+                		pos = i;
+                		break;
+                	}
+            	}
+            }
+ 
+           
+            final TextView tv_name = ((TextView) view.findViewById(R.id.tv_marker_name));
+            tv_name.setText("Name: "+meetupinfoarr.get(pos).getName());
+            final TextView tv_loc = ((TextView) view.findViewById(R.id.tv_marker_loc));
+            tv_loc.setText("LOcation: "+meetupinfoarr.get(pos).getLocation());
+            final TextView tv_desc = ((TextView) view.findViewById(R.id.tv_marker_desc));
+            tv_desc.setText("Description: "+meetupinfoarr.get(pos).getDescription());
+            final TextView tv_date = ((TextView) view.findViewById(R.id.tv_marker_date));
+            tv_date.setText("Date: "+meetupinfoarr.get(pos).getDate1());
+            final TextView tv_time = ((TextView) view.findViewById(R.id.tv_marker_time));
+            tv_time.setText("Time: "+meetupinfoarr.get(pos).getTime());
+            final LinearLayout ll_btn_edit = (LinearLayout)view.findViewById(R.id.ll_marker_edit);
+            final Button btn_edit = (Button)view.findViewById(R.id.btn_marker_edit);
+            if(meetupinfoarr.get(pos).getOwner().equalsIgnoreCase("ME")){
+            	ll_btn_edit.setVisibility(View.VISIBLE);
+            }else{
+            	ll_btn_edit.setVisibility(View.GONE);
+            }
+            
+            btn_edit.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Log.e("Reach here", "Reach here");
+					/*setMeetuplocationDialog(marker, current_selected_marker_id,meetupinfoarr.get(pos).getName(),meetupinfoarr.get(pos).getLocation(),meetupinfoarr.get(pos).getDescription(),meetupinfoarr.get(pos).getDate1(),meetupinfoarr.get(pos).getTime(),meetupinfoarr.get(pos).getOwner());*/
+					
+				}
+			});
+           
+            
+ 
+            return view;
+        }
+    }
 }
 

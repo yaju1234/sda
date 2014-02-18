@@ -25,7 +25,7 @@ public class BaseView extends FragmentActivity implements IBase,OnClickListener,
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.e("Base activity Sratrt", "Base activity Sratrt");
+		Log.e("Base activity Strart", "Base activity Strart");
 		app = (SnomadaApp) getApplication();
 		if(!app.inIt){
 			app.inIt = true;

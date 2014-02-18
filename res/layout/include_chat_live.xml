@@ -6,7 +6,7 @@
              android:layout_above="@+id/bottom1"
             android:layout_below="@+id/top1"
             android:background="@drawable/black_transparent_bg"
-            android:visibility="gone" >
+            android:visibility="visible" >
 
            <LinearLayout
                 android:id="@+id/chat_main_layout"

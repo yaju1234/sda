@@ -58,7 +58,7 @@ public static String mDob = "";
 	public static boolean isZoomAtUSerLocationFirstTime = true;
 	
 	
-	public static boolean isApplicationForeground = false;
+	/*public static boolean isApplicationForeground = false;*/
 	
 	public static boolean isChatActive  = false;
 	public static ArrayList<ChatBean> mChatArr = new ArrayList<ChatBean>();

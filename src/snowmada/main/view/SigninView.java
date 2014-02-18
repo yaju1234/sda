@@ -14,6 +14,7 @@ import com.facebook.model.GraphObject;
 import com.facebook.model.GraphPlace;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.*;
+import com.strapin.application.SnomadaApp;
 import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
@@ -32,7 +33,7 @@ public class SigninView extends FragmentActivity {
             setLongitude(-122.3331);
         }
     };
-
+    private SnomadaApp app = null;
     private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     private boolean isFetching = false;
     private LoginButton loginButton;
@@ -76,7 +77,7 @@ public class SigninView extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-    
+        app = (SnomadaApp) getApplication();
         
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);
@@ -189,11 +190,12 @@ public class SigninView extends FragmentActivity {
     				}else{
     					mDbAdapter.insertUserInfo(user.getId(),user.getFirstName(),user.getLastName());
     				}
-    	        	if(mDbAdapter.getSessionValueRowCount()>0){
+    	        	app.getAppInfo().setSession(true);
+    	        	/*if(mDbAdapter.getSessionValueRowCount()>0){
     	        		mDbAdapter.updateSession(1);
     	        	}else{
     	        		mDbAdapter.insertSessionvalue(1);
-    	        	}
+    	        	}*/
     				Global.mDob = user.getBirthday();
     				Global.isSessionValid = true;
     				getFriendList();
