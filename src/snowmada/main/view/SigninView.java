@@ -1,52 +1,32 @@
 package snowmada.main.view;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.ViewGroup;
 import com.facebook.*;
 import com.facebook.model.GraphObject;
-import com.facebook.model.GraphPlace;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.*;
-import com.strapin.application.SnomadaApp;
+import com.strapin.Enum.URL;
 import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
-import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SigninView extends FragmentActivity {
+public class SigninView extends BaseView {
 
-    private static final String PERMISSION = "publish_actions";
-    private static final Location SEATTLE_LOCATION = new Location("") {
-        {
-            setLatitude(47.6097);
-            setLongitude(-122.3331);
-        }
-    };
-    private SnomadaApp app = null;
-    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
-    private boolean isFetching = false;
+   private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     private LoginButton loginButton;
-     private PendingAction pendingAction = PendingAction.NONE;
-    private ViewGroup controlsContainer;
+    private PendingAction pendingAction = PendingAction.NONE;
     private GraphUser user;
-    private GraphPlace place;
-    private List<GraphUser> tags;
-    private boolean canPresentShareDialog;
     private SnowmadaDbAdapter mDbAdapter;
     private boolean isUiUpdateCall = false; 
-    private ProgressDialog mDialog;
-  
+   
     private enum PendingAction {
         NONE,
         POST_PHOTO,
@@ -77,7 +57,7 @@ public class SigninView extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        app = (SnomadaApp) getApplication();
+       
         
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);
@@ -113,8 +93,7 @@ public class SigninView extends FragmentActivity {
         });
        
 
-        canPresentShareDialog = FacebookDialog.canPresentShareDialog(this,
-                FacebookDialog.ShareDialogFeature.SHARE_DIALOG);
+       
     }
 
     @Override
@@ -179,27 +158,17 @@ public class SigninView extends FragmentActivity {
 
     	     
     	        if (enableButtons && user != null) {
-    	        	mDialog = new ProgressDialog(SigninView.this);
-    				mDialog.setMessage("Please wait...");
-    				mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-    				mDialog.setIndeterminate(true);
-    				mDialog.setCancelable(false);
-    				mDialog.show();
+    	        	showProgressDailog();
     	        	if(mDbAdapter.getRowCount()>0){
     					mDbAdapter.updateUserInfo(user.getId(),user.getFirstName(),user.getLastName());
     				}else{
     					mDbAdapter.insertUserInfo(user.getId(),user.getFirstName(),user.getLastName());
     				}
     	        	app.getAppInfo().setSession(true);
-    	        	/*if(mDbAdapter.getSessionValueRowCount()>0){
-    	        		mDbAdapter.updateSession(1);
-    	        	}else{
-    	        		mDbAdapter.insertSessionvalue(1);
-    	        	}*/
-    				Global.mDob = user.getBirthday();
-    				Global.isSessionValid = true;
+    	        	Global.mDob = user.getBirthday();
+    				app.getAppInfo().setSession(true);
     				getFriendList();
-    				new SavefacebookCredentials().execute();
+    				new SignInWeb().execute();
     	        	
     	        } else {
     	         
@@ -208,110 +177,20 @@ public class SigninView extends FragmentActivity {
        
     }
 
-    @SuppressWarnings("incomplete-switch")
     private void handlePendingAction() {
         PendingAction previouslyPendingAction = pendingAction;
-        // These actions may re-set pendingAction if they are still pending, but we assume they
-        // will succeed.
         pendingAction = PendingAction.NONE;
 
         switch (previouslyPendingAction) {
             case POST_PHOTO:
-             //   postPhoto();
-                break;
+                 break;
             case POST_STATUS_UPDATE:
-                //postStatusUpdate();
                 break;
         }
     }
 
-    private interface GraphObjectWithId extends GraphObject {
-        String getId();
-    }
 
-    private void showPublishResult(String message, GraphObject result, FacebookRequestError error) {
-        String title = null;
-        String alertMessage = null;
-        if (error == null) {
-            title = getString(R.string.success);
-            String id = result.cast(GraphObjectWithId.class).getId();
-            alertMessage = getString(R.string.successfully_posted_post, message, id);
-        } else {
-            title = getString(R.string.error);
-            alertMessage = error.getErrorMessage();
-        }
-
-        new AlertDialog.Builder(this)
-                .setTitle(title)
-                .setMessage(alertMessage)
-                .setPositiveButton(R.string.ok, null)
-                .show();
-    }
-
-    private void onClickPostStatusUpdate() {
-        performPublish(PendingAction.POST_STATUS_UPDATE, canPresentShareDialog);
-    }
-
-    private FacebookDialog.ShareDialogBuilder createShareDialogBuilder() {
-        return new FacebookDialog.ShareDialogBuilder(this)
-                .setName("Hello Facebook")
-                .setDescription("The 'Hello Facebook' sample application showcases simple Facebook integration")
-                .setLink("http://developers.facebook.com/android");
-    }
-
-    private void postStatusUpdate() {
-        if (canPresentShareDialog) {
-            FacebookDialog shareDialog = createShareDialogBuilder().build();
-            uiHelper.trackPendingDialogCall(shareDialog.present());
-        } else if (user != null && hasPublishPermission()) {
-            final String message = getString(R.string.status_update, user.getFirstName(), (new Date().toString()));
-            Request request = Request
-                    .newStatusUpdateRequest(Session.getActiveSession(), message, place, tags, new Request.Callback() {
-                        @Override
-                        public void onCompleted(Response response) {
-                            showPublishResult(message, response.getGraphObject(), response.getError());
-                        }
-                    });
-            request.executeAsync();
-        } else {
-            pendingAction = PendingAction.POST_STATUS_UPDATE;
-        }
-    }
-
-
-
-
-    private boolean hasPublishPermission() {
-        Session session = Session.getActiveSession();
-        return session != null && session.getPermissions().contains("publish_actions");
-    }
-
-    private void performPublish(PendingAction action, boolean allowNoSession) {
-        Session session = Session.getActiveSession();
-        if (session != null) {
-            pendingAction = action;
-            if (hasPublishPermission()) {
-                // We can do the action right away.
-                handlePendingAction();
-                return;
-            } else if (session.isOpened()) {
-                // We need to get new permissions, then complete the action when we get called back.
-                session.requestNewPublishPermissions(new Session.NewPermissionsRequest(this, PERMISSION));
-                return;
-            }
-        }
-
-        if (allowNoSession) {
-            pendingAction = action;
-            handlePendingAction();
-        }
-    }
-    
-    public class SavefacebookCredentials extends AsyncTask<String, Void, Boolean>{		
-		protected void onPreExecute() {
-			
-			
-		}
+     public class SignInWeb extends AsyncTask<String, Void, Boolean>{		
 		@Override
 		protected Boolean doInBackground(String... params) {			
 		  	try {
@@ -319,12 +198,10 @@ public class SigninView extends FragmentActivity {
 		  		jsonObject.put("fbid", mDbAdapter.getUserFbID());
 		  		jsonObject.put("fname", mDbAdapter.getUserFirstName());
 		  		jsonObject.put("lname", mDbAdapter.getUserLastName());
-		  		Log.e("JSON", jsonObject.toString());
-		  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/login.php", jsonObject);
+		  		JSONObject json = KlHttpClient.SendHttpPost(URL.LOGIN.getURL(), jsonObject);
 		    return json.getBoolean("status");
 				
 			} catch (Exception e) {
-				//mDialog.dismiss();
 				e.printStackTrace();
 			}
 			return null;
@@ -332,13 +209,9 @@ public class SigninView extends FragmentActivity {
 		@Override
 		protected void onPostExecute(Boolean status) {
 			if(status){
-				if(mDialog.isShowing()){
-					mDialog.dismiss();
-				}
-				Intent i = new Intent(SigninView.this, HomeView.class);
-				Global.isSessionValid = true;
-				startActivity(i);
-				SigninView.this.finish();
+			dismissProgressDialog();
+			startActivity(new Intent(SigninView.this, HomeView.class));
+			SigninView.this.finish();
 			}
 			
 		}	
@@ -354,9 +227,7 @@ public class SigninView extends FragmentActivity {
     	params.putString("q", fqlQuery);
     	Session session = Session.getActiveSession();
 
-    	Request request = new Request(session,
-    	        "/fql",                         
-    	        params,                         
+    	Request request = new Request(session, "/fql", params,                   
     	        HttpMethod.GET,                 
     	        new Request.Callback(){       
     	    public void onCompleted(Response response) {
@@ -368,8 +239,6 @@ public class SigninView extends FragmentActivity {
 
                     JSONObject jsonObject = graphObject.getInnerJSONObject();
                     JSONArray array = jsonObject.getJSONArray("data");
-                    /*Log.e("Friend Array", array.toString());
-    	        		Global.setFriendJSOn(array);*/
                     if(mDbAdapter.getFbFriendCount()>0){
                     	mDbAdapter.emptyFriendTable();
                     }
@@ -379,7 +248,7 @@ public class SigninView extends FragmentActivity {
 						String id = c.getString("uid");							
 						String name = c.getString("name");
 						mDbAdapter.insertfacebookFriends(id, name);
-						//mAddFriendArr.add(new AddFriendBean(id, name));
+						
 						
 					}
 					

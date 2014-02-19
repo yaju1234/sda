@@ -193,7 +193,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 				 String name = json.getString("name");
 				 String sender_fb_id = json.getString("sender_fb_id");
 				 
-				if(/*Global.isApplicationForeground*/app.getAppInfo().isappforeground){
+				if(/*Global.isApplicationForeground*/app.getAppInfo().isAppForeground){
 					
 					if(Global.isChatActive){
 						if(!name.equalsIgnoreCase(Global.mChatUserName)){// Third person ping

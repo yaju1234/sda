@@ -96,7 +96,7 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 			public void onClick(View v) {					
 					String fname = mItems.get(position).getName();
 					if(Global.isChatActive){
-							Global.mChatSenderID  = mItems.get(position).getFbId();
+						activity.app.getAppInfo().setSenderIDChat( mItems.get(position).getFbId());
 							String[] splitStr = fname.split("\\s+");
 							Global.mChatUserName = splitStr[0];
 							Global.mChatArr.clear();
@@ -169,8 +169,8 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 			
 			if(bean.getStatus().equalsIgnoreCase("1")){
 				mHolder.mTrackStatus.setChecked(true);
+				activity.app.getAppInfo().setSenderIDChat(bean.getFbId());
 				
-				Global.mChatSenderID = bean.getFbId();
 			}else{
 				mHolder.mTrackStatus.setChecked(false);
 			}

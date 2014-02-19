@@ -54,12 +54,13 @@ public class DialogActivity extends BaseView{
 			public void onClick(View v) {
 				vibrator.cancel();
 				dialog.cancel();
-	        	mDb.updateSKI("1");
+	        	//mDb.updateSKI("1");
+				app.getAppInfo().setIsAlertForSKIPatrol(true);
 	        	String st[] = mDb.getSkiPetrolInfo();
 	        	new GetSkiAcknowledgement().execute(st[0],st[1]);
 	        	
 	        	//Global.isSkiPatrolPressed = true;
-	        	if(app.getAppInfo().isappforeground/*Global.isApplicationForeground*/){
+	        	if(app.getAppInfo().isAppForeground/*Global.isApplicationForeground*/){
 	        		
 	        		Intent i = new Intent(getApplicationContext(),HomeView.class);
 	        		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

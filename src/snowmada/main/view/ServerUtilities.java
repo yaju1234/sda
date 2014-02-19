@@ -35,7 +35,7 @@ public final class ServerUtilities {
         String serverUrl = SERVER_URL;
         Map<String, String> params = new HashMap<String, String>();
         Log.e("regId", ""+regId);
-        Log.e("userid", ""+userid);
+        Log.e("userId", ""+userid);
         params.put("regId", regId);
         params.put("fid", userid);
        

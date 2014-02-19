@@ -9,7 +9,7 @@ import com.strapin.bean.ChatBean;
 public class Global {
 	
 public static String mDob = "";
-    public static boolean isSessionValid = false;
+   // public static boolean isSessionValid = false;
     public static boolean isLoginFirstTime = false;
     public static boolean isMyLocationCurrentUploadIntoServer = true;
     public static JSONArray mFriendJSOn = new JSONArray();
@@ -62,7 +62,7 @@ public static String mDob = "";
 	
 	public static boolean isChatActive  = false;
 	public static ArrayList<ChatBean> mChatArr = new ArrayList<ChatBean>();
-	public static String mChatSenderID="";
+	//public static String mChatSenderID="";
 	
 	
 

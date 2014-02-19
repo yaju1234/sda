@@ -2,7 +2,6 @@ package com.strapin.db;
 
 import java.util.ArrayList;
 
-import com.strapin.bean.AddFriendBean;
 import com.strapin.bean.FacebookFriendBean;
 import com.strapin.bean.MeetUpInfoBean;
 import com.strapin.bean.MessageBean;
@@ -158,7 +157,7 @@ public class SnowmadaDbAdapter {
 	
 	////////////////////////////////////////////// For SKY table START////////////////////////////
 	
-	public int getSKIRowCount() {
+/*	public int getSKIRowCount() {
 		int count = -1;
 
 		final Cursor mCursor = sDb.query(TableConstantName.TABLE_SKI,new String[] { "count(*) " + TableConstantName.STATUS },
@@ -170,11 +169,11 @@ public class SnowmadaDbAdapter {
 			mCursor.close();
 		}
 		return count;
-	}
+	}*/
 	
 	
 
-	public String getSKIStatus(){
+	/*public String getSKIStatus(){
 		int i = 1;
 		String status = "";
 		Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_SKI+ " where " +TableConstantName.ID+ " = '"+i+"'", null);
@@ -182,18 +181,18 @@ public class SnowmadaDbAdapter {
 		if(mCursor.getCount()>0){
 			mCursor.moveToFirst();
 			status = mCursor.getString(1);
-			/*while(!mCursor.isAfterLast()){
+			while(!mCursor.isAfterLast()){
 				 fbid = mCursor.getString(1);
 				 mCursor.moveToNext();
 				//int CouponStatus = mCursor.getInt(3);			
 				
-			}*/	
+			}	
 		}
 		mCursor.close();
 		return status;
-	}
+	}*/
 	
-	public boolean updateSKI(String status){
+	/*public boolean updateSKI(String status){
 		//Log.e("Status", ""+status);
 		int i = 1;
 		final ContentValues values = new ContentValues();
@@ -209,9 +208,9 @@ public class SnowmadaDbAdapter {
 		} finally {
 			sDb.endTransaction();
 		}
-	}
+	}*/
 	
-	public long insertSKI(final String status) {
+	/*public long insertSKI(final String status) {
 		final ContentValues values = new ContentValues();
 		values.put(TableConstantName.STATUS, status);
 		
@@ -225,7 +224,7 @@ public class SnowmadaDbAdapter {
 		} finally {
 			sDb.endTransaction();
 		}
-	}
+	}*/
 	
 	
 //////////////////////////////////////////////For SKY table END////////////////////////////

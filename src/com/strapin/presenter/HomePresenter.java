@@ -433,7 +433,8 @@ public void functionChat(String facebookid, String name) {
 	mHomeView.hideSlide().setVisibility(View.GONE);
 	String fname = name;
 	String[] splitStr = fname.split("\\s+");
-	Global.mChatSenderID = facebookid;
+	//Global.mChatSenderID = facebookid;
+	mHomeView.app.getAppInfo().setSenderIDChat(facebookid);
 	Global.mChatUserName = splitStr[0];
 	new getChatHistory().execute(facebookid,splitStr[0]);
 }
@@ -561,4 +562,7 @@ public void CallChatWindow(String friendName, String fbid) {
 	mHomeView.getChatWindowActive(friendName,fbid);
 	
 }
+
+
+
 }

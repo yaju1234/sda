@@ -1,15 +1,10 @@
 package com.strapin.Interface;
 
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.drawable.AnimationDrawable;
-
 public interface ISplash {
 	interface Presenter{
-		public void handleSplash();
+		//public void handleSplash();
+		//public void callNextScreen();
+		public void callNextScreen();
 	}
-	public Activity getActivity();
-	public Context getContext();
-	//public AnimationDrawable getAnimationDrawable();
 
 }

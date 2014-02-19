@@ -1,14 +1,15 @@
 package com.strapin.Enum;
 
 public enum URL {
-	SET_USER_LOCATION("http://clickfordevelopers.com/demo/snowmada/setlocation.php");
+	SET_USER_LOCATION("http://clickfordevelopers.com/demo/snowmada/setlocation.php"),
+	LOGIN("http://clickfordevelopers.com/demo/snowmada/login.php");	
 	
-	public String mURL;
+	public String url;
 	
-	URL(String mURL) {
-		this.mURL = mURL;
+	URL(String ob) {
+		this.url = ob;
 	}
 	public String getURL() {
-		return mURL;
+		return url;
 	}
 }
