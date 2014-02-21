@@ -10,6 +10,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.strapin.Interface.IBase;
 import com.strapin.application.AppInfo;
 import com.strapin.application.SnomadaApp;
+import com.strapin.db.SnowmadaDbAdapter;
 
 import android.app.ProgressDialog;
 import android.os.StrictMode;
@@ -21,9 +22,12 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 public class BaseView extends FragmentActivity implements IBase,OnClickListener,OnMarkerClickListener,OnMapLongClickListener,OnMarkerDragListener,OnInfoWindowClickListener{
-	public SnomadaApp app;
+	public SnomadaApp myApp;
 	public boolean inIt  = false;
-	private ProgressDialog mDialog;
+	public ProgressDialog prsDlg;
+	public SnowmadaDbAdapter db;;
+	//public ImageLoader imageLoader;
+//	public DisplayImageOptions options;
 
 	@Override
 	protected void onStart() {
@@ -34,10 +38,20 @@ public class BaseView extends FragmentActivity implements IBase,OnClickListener,
 		    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		    StrictMode.setThreadPolicy(policy);
 		}
-		app = (SnomadaApp) getApplication();
-		if(!app.inIt){
-			app.inIt = true;
-			app.setAppInfo(new AppInfo(this));
+		myApp = (SnomadaApp) getApplication();
+		db = SnowmadaDbAdapter.databaseHelperInstance(this);
+		if(!myApp.inIt){
+			myApp.inIt = true;
+			myApp.setAppInfo(new AppInfo(this));
+			
+			/*imageLoader = ImageLoader.getInstance();
+			options = new DisplayImageOptions.Builder()
+			.showStubImage(R.drawable.app_logo)
+			.showImageForEmptyUri(R.drawable.app_logo)
+			.cacheInMemory()
+			.cacheOnDisc()
+			.displayer(new RoundedBitmapDisplayer(20))
+			.build();*/
 			
 		}
 		init();
@@ -79,19 +93,19 @@ public class BaseView extends FragmentActivity implements IBase,OnClickListener,
 
 	@Override
 	public void showProgressDailog() {
-		mDialog = new ProgressDialog(this);
-		mDialog.setMessage("Please wait...");
-		mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		mDialog.setIndeterminate(true);
-		mDialog.setCancelable(false);
-		mDialog.show();
+		prsDlg = new ProgressDialog(this);
+		prsDlg.setMessage("Please wait...");
+		prsDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		prsDlg.setIndeterminate(true);
+		prsDlg.setCancelable(false);
+		prsDlg.show();
 		
 	}
 
 	@Override
 	public void dismissProgressDialog() {
-		if (mDialog.isShowing()) {
-			mDialog.dismiss();
+		if (prsDlg.isShowing()) {
+			prsDlg.dismiss();
 		}
 		
 	}

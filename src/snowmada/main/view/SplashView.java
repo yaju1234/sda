@@ -15,8 +15,8 @@ public class SplashView extends BaseView implements ISplash{
 	
 	@Override
 	public void init(){
-		app.getAppInfo().setSenderIDChat("");
-		if(!app.getAppInfo().session){
+		myApp.getAppInfo().setSenderIDChat("");
+		if(!myApp.getAppInfo().session){
 			new SplashPresenter(this);			
 		}
 	}
@@ -24,7 +24,7 @@ public class SplashView extends BaseView implements ISplash{
 	@Override
 	protected void onResume() {
 		super.onResume();		
-		if(app.getAppInfo().session){
+		if(myApp.getAppInfo().session){
 			startActivity(new Intent(SplashView.this,HomeView.class));
 			SplashView.this.finish();
 		}

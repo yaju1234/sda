@@ -31,7 +31,6 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 	
 	private ArrayList<FriendListBean> mItems = new ArrayList<FriendListBean>();
 	private ViewHolder mHolder;
-	int size = 0;
 	public ImageLoader imageLoader;
 	private HomeView activity;
 	private ProgressDialog mDialog;
@@ -44,7 +43,6 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 	public FriendAdapter(HomePresenter mPresenter,HomeView activity, int textViewResourceId,	ArrayList<FriendListBean> items) {
 		super(activity, textViewResourceId, items);
 		this.mItems = items;
-		size = mItems.size();
 		this.activity =activity;
 		this.mPresenter = mPresenter;
 		mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(activity);
@@ -96,7 +94,7 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 			public void onClick(View v) {					
 					String fname = mItems.get(position).getName();
 					if(Global.isChatActive){
-						activity.app.getAppInfo().setSenderIDChat( mItems.get(position).getFbId());
+						activity.myApp.getAppInfo().setSenderIDChat( mItems.get(position).getFbId());
 							String[] splitStr = fname.split("\\s+");
 							Global.mChatUserName = splitStr[0];
 							Global.mChatArr.clear();
@@ -124,25 +122,7 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 			}
 			
 		});
-		
-		//mHolder.mMain.setOn
-		/*mHolder.mMain.setOnTouchListener(new OnSwipeTouchListener() {
-
-		    public void onSwipeTop() {
-		        Toast.makeText(mCtx, "top", Toast.LENGTH_SHORT).show();
-		    }
-		    public void onSwipeRight() {
-		        Toast.makeText(mCtx, "right", Toast.LENGTH_SHORT).show();
-		    }
-		    public void onSwipeLeft() {
-		        Toast.makeText(mCtx, "left", Toast.LENGTH_SHORT).show();
-		    }
-		    public void onSwipeBottom() {
-		        Toast.makeText(mCtx, "bottom", Toast.LENGTH_SHORT).show();
-		    }
-
-		});
-		*/
+	
 			
 		final FriendListBean bean = mItems.get(position);
 		if(bean != null){
@@ -157,19 +137,18 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 			}
 			imageLoader.DisplayImage("https://graph.facebook.com/"+bean.getFbId()+"/picture",mHolder.mImage);
 			mHolder.mName.setText(bean.getName());
-			//mHolder.mGnar.setText("GNR Factor:"+"000000");
 			if(bean.getOnlineStatus().equalsIgnoreCase("1")){
 				mHolder.mOnlineStatus.setText("Online");
 				mHolder.mOnlineStatus.setTextColor(Color.parseColor("#0be423"));
 			}else{
 				mHolder.mOnlineStatus.setText("Offline");
 				mHolder.mOnlineStatus.setTextColor(Color.parseColor("#ff0000"));
-				//mHolder.mOnlineStatus.setBackgroundResource(R.drawable.status);
+				
 			}
 			
 			if(bean.getStatus().equalsIgnoreCase("1")){
 				mHolder.mTrackStatus.setChecked(true);
-				activity.app.getAppInfo().setSenderIDChat(bean.getFbId());
+				activity.myApp.getAppInfo().setSenderIDChat(bean.getFbId());
 				
 			}else{
 				mHolder.mTrackStatus.setChecked(false);

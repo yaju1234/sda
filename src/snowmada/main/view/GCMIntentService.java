@@ -233,7 +233,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 						}
 						
 					}else{
-						// When chat is not active but app is foreground
+						// When chat is not active but myApp is foreground
 						 
 						//if(!SnowmadaDbAdapter.databaseHelperInstance(context).isUserMessageExist(sender_fb_id)){
 							SnowmadaDbAdapter.databaseHelperInstance(context).insertChatMessage(sender_fb_id, name,"1", msg);
@@ -273,7 +273,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 							notification.defaults |= Notification.DEFAULT_VIBRATE;
 							notificationManager.notify(0, notification);
 					}
-				}else{//  app is background
+				}else{//  myApp is background
 
 					
 					 int icon = R.drawable.app_logo;

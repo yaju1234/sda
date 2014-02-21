@@ -24,7 +24,6 @@ public class SigninView extends BaseView {
     private LoginButton loginButton;
     private PendingAction pendingAction = PendingAction.NONE;
     private GraphUser user;
-    private SnowmadaDbAdapter mDbAdapter;
     private boolean isUiUpdateCall = false; 
    
     private enum PendingAction {
@@ -61,7 +60,7 @@ public class SigninView extends BaseView {
         
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);
-        mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(getApplicationContext());
+      
 
         if (savedInstanceState != null) {
             String name = savedInstanceState.getString(PENDING_ACTION_BUNDLE_KEY);
@@ -101,8 +100,8 @@ public class SigninView extends BaseView {
         super.onResume();
         uiHelper.onResume();
 
-        // Call the 'activateApp' method to log an app event for use in analytics and advertising reporting.  Do so in
-        // the onResume methods of the primary Activities that an app may be launched into.
+        // Call the 'activateApp' method to log an myApp event for use in analytics and advertising reporting.  Do so in
+        // the onResume methods of the primary Activities that an myApp may be launched into.
         AppEventsLogger.activateApp(this);
 
        // updateUI();
@@ -159,14 +158,14 @@ public class SigninView extends BaseView {
     	     
     	        if (enableButtons && user != null) {
     	        	showProgressDailog();
-    	        	if(mDbAdapter.getRowCount()>0){
-    					mDbAdapter.updateUserInfo(user.getId(),user.getFirstName(),user.getLastName());
+    	        	if(db.getRowCount()>0){
+    					db.updateUserInfo(user.getId(),user.getFirstName(),user.getLastName());
     				}else{
-    					mDbAdapter.insertUserInfo(user.getId(),user.getFirstName(),user.getLastName());
+    					db.insertUserInfo(user.getId(),user.getFirstName(),user.getLastName());
     				}
-    	        	app.getAppInfo().setSession(true);
+    	        	myApp.getAppInfo().setSession(true);
     	        	Global.mDob = user.getBirthday();
-    				app.getAppInfo().setSession(true);
+    				myApp.getAppInfo().setSession(true);
     				getFriendList();
     				new SignInWeb().execute();
     	        	
@@ -195,9 +194,9 @@ public class SigninView extends BaseView {
 		protected Boolean doInBackground(String... params) {			
 		  	try {
 		  		JSONObject jsonObject = new JSONObject();
-		  		jsonObject.put("fbid", mDbAdapter.getUserFbID());
-		  		jsonObject.put("fname", mDbAdapter.getUserFirstName());
-		  		jsonObject.put("lname", mDbAdapter.getUserLastName());
+		  		jsonObject.put("fbid", db.getUserFbID());
+		  		jsonObject.put("fname", db.getUserFirstName());
+		  		jsonObject.put("lname", db.getUserLastName());
 		  		JSONObject json = KlHttpClient.SendHttpPost(URL.LOGIN.getURL(), jsonObject);
 		    return json.getBoolean("status");
 				
@@ -239,15 +238,15 @@ public class SigninView extends BaseView {
 
                     JSONObject jsonObject = graphObject.getInnerJSONObject();
                     JSONArray array = jsonObject.getJSONArray("data");
-                    if(mDbAdapter.getFbFriendCount()>0){
-                    	mDbAdapter.emptyFriendTable();
+                    if(db.getFbFriendCount()>0){
+                    	db.emptyFriendTable();
                     }
                     
                     for(int i1=0; i1<array.length(); i1++){
 						JSONObject c = array.getJSONObject(i1);
 						String id = c.getString("uid");							
 						String name = c.getString("name");
-						mDbAdapter.insertfacebookFriends(id, name);
+						db.insertfacebookFriends(id, name);
 						
 						
 					}

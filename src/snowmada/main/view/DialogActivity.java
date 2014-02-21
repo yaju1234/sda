@@ -2,7 +2,6 @@ package snowmada.main.view;
 
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -18,7 +17,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.strapin.db.SnowmadaDbAdapter;
-import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
 
 public class DialogActivity extends BaseView{
@@ -46,7 +44,7 @@ public class DialogActivity extends BaseView{
 		Button ok = (Button)dialog.findViewById(R.id.iv_ok);
 		ok.setText(Html.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
 		TextView tv_alert = (TextView)dialog.findViewById(R.id.tv_alert_text);
-		tv_alert.setText(Html.fromHtml("<font color=\"#ffffff\">ALERT</font><font color=\"#28b6ff\">DIALOG</font>"));
+		tv_alert.setText(Html.fromHtml("<font color=\"#ffffff\">ALERT</font>&nbsp;&nbsp;<font color=\"#28b6ff\">DIALOG</font>"));
 		
 		ok.setOnClickListener(new OnClickListener() {
 			
@@ -55,12 +53,12 @@ public class DialogActivity extends BaseView{
 				vibrator.cancel();
 				dialog.cancel();
 	        	//mDb.updateSKI("1");
-				app.getAppInfo().setIsAlertForSKIPatrol(true);
+				myApp.getAppInfo().setIsAlertForSKIPatrol(true);
 	        	String st[] = mDb.getSkiPetrolInfo();
 	        	new GetSkiAcknowledgement().execute(st[0],st[1]);
 	        	
 	        	//Global.isSkiPatrolPressed = true;
-	        	if(app.getAppInfo().isAppForeground/*Global.isApplicationForeground*/){
+	        	if(myApp.getAppInfo().isAppForeground/*Global.isApplicationForeground*/){
 	        		
 	        		Intent i = new Intent(getApplicationContext(),HomeView.class);
 	        		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

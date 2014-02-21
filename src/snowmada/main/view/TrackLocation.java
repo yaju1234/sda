@@ -6,7 +6,6 @@ import android.content.Context;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
@@ -99,13 +98,10 @@ public class TrackLocation implements LocationListener, GooglePlayServicesClient
 
 	@Override
 	public void onLocationChanged(Location location) {
-		Log.i("Latitude", ""+location.getLatitude());
-		Log.i("Longitude", ""+location.getLongitude());
 		mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(sContext);
 			if(Global.isZoomAtUSerLocationFirstTime){
 			
 			Global.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
-			//mLocationClient.removeLocationUpdates(this);
 			Global.isZoomAtUSerLocationFirstTime = false;
 		}
 		if(isUpload){
@@ -128,7 +124,6 @@ public class TrackLocation implements LocationListener, GooglePlayServicesClient
 			  		jsonObject.put("fbid", mDbAdapter.getUserFbID());
 			  		jsonObject.put("lat", params[0]);
 			  		jsonObject.put("lng", params[1]);
-			  		Log.e("User Current location :", jsonObject.toString());
 			  		JSONObject json = KlHttpClient.SendHttpPost(URL.SET_USER_LOCATION.getURL(), jsonObject);
 			   if(json != null){
 				   return json.getBoolean("status");

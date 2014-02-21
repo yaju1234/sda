@@ -1,212 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" 
-        android:background="@null">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@xml/dlg_black_bg"
+    android:orientation="vertical"
+    android:paddingBottom="20dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="20dp" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center" >
+
+            <ImageView
+                android:id="@+id/iv_friend_profile_img"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/image" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="150dp"
-            android:layout_marginLeft="7dp"
-            android:layout_marginRight="7dp"
-            android:layout_marginTop="30dp"
-            android:orientation="vertical" 
-            android:background="@drawable/dialog_bg">
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent"             
-                android:orientation="horizontal"
-                android:layout_weight="1">
+            <TextView
+                android:id="@+id/tv_friend_full_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="Username"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="top|left"
-                    android:layout_marginTop="3dp"
-                    android:layout_weight="1" >
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="top|right"
-                    android:layout_weight="1" >
-
-                    <ImageView
-                        android:id="@+id/cross"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:src="@drawable/minus_red_icon" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-              <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent"
-                android:orientation="horizontal" 
-                android:layout_weight=".70">
-
-                  <LinearLayout
-                      android:layout_width="fill_parent"
-                      android:layout_height="match_parent"
-                      android:gravity="right|center"
-                      
-                      android:layout_weight="1" >
-                    <LinearLayout
-                      android:layout_width="60dp"
-                      android:layout_height="60dp"
-                      android:gravity="center"
-                      android:layout_margin="1dp"
-                      android:background="@color/white"
-                      >
-
-                      <ImageView
-                          android:id="@+id/img_friend"
-                          android:layout_width="fill_parent"
-                          android:layout_height="fill_parent"
-                          android:scaleType="centerCrop"
-                           android:src="@drawable/image" />
-                      </LinearLayout>
-
-                  </LinearLayout>
-                  <LinearLayout
-                      android:layout_width="fill_parent"
-                      android:layout_height="match_parent"
-                      android:orientation="vertical"
-                      android:layout_weight=".35" >
-
-                      <LinearLayout
-                          android:layout_width="match_parent"
-                          android:layout_height="fill_parent"
-                          android:orientation="vertical" 
-                          android:gravity="bottom|left"
-                          android:layout_weight=".80">
-
-                          <TextView
-                              android:id="@+id/user_name"
-                              android:layout_width="wrap_content"
-                              android:layout_height="wrap_content"
-                              android:layout_marginLeft="10dp"
-                              android:textSize="15sp"
-                              android:textColor="@color/white"
-                              android:text="Username"
-                               />
-
-                      </LinearLayout>
-                      <LinearLayout
-                          android:layout_width="match_parent"
-                          android:layout_height="fill_parent"
-                          android:orientation="horizontal" 
-                          android:gravity="center|left"
-                          android:layout_weight="1">
-                          <!--  <TextView
-                              android:id="@+id/textView1"
-                              android:layout_width="wrap_content"
-                              android:layout_height="wrap_content"
-                              android:layout_marginLeft="10dp"
-                              android:textSize="20sp"
-                              android:text="Username"
-                               /> -->
-
-                          
-                          <LinearLayout
-                              android:layout_width="fill_parent"
-                              android:layout_height="match_parent"
-                              android:gravity="left|center|top"
-                              android:layout_weight=".25" >
-
-                              
-                              <TextView
-            android:id="@+id/on_line_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="online"
-            android:textColor="#0be423"
-             android:layout_marginLeft="10dp"
-            android:textSize="12sp" />
-                              
-
-                          </LinearLayout>
-
-                      </LinearLayout>
-
-                  </LinearLayout>
-
-            </LinearLayout>
-              <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical" 
-                android:layout_weight=".75">
-
-                  <LinearLayout
-                      android:layout_width="match_parent"
-                      android:layout_height="fill_parent"
-                      android:orientation="horizontal" 
-                      android:layout_marginRight="10dp"
-                       android:layout_weight=".40">
-                       <LinearLayout
-                           android:id="@+id/chat_layout"
-                          android:layout_width="fill_parent"
-                          android:layout_height="match_parent"
-                          android:gravity="center"
-                          android:layout_weight="1" >
-
-                          <ImageView
-                              android:id="@+id/chat_dialog"
-                              android:layout_width="85dp"
-                              android:layout_height="30dp"
-                             android:src="@drawable/chat_text"
-                              
-                              />
-
-                      </LinearLayout>
-
-                      <LinearLayout
-                           android:id="@+id/profile"
-                          android:layout_width="fill_parent"
-                          android:layout_height="match_parent"
-                          android:gravity="center"
-                          android:layout_weight="1" >
-
-                          <ImageView
-                             
-                              android:layout_width="85dp"
-                              android:layout_height="30dp"
-                             android:src="@drawable/profile_text"
-                             
-                              />
-
-                      </LinearLayout>
-                      <LinearLayout
-                           android:id="@+id/track"
-                          android:layout_width="fill_parent"
-                          android:layout_height="match_parent"
-                          android:gravity="center"
-                          android:layout_weight="1" >
-
-                          <ImageView
-                             
-                              android:layout_width="85dp"
-                              android:layout_height="30dp"
-                              android:layout_marginLeft="5dp"
-                              android:src="@drawable/track_text"
-                            />
-
-                      </LinearLayout>
-
-                  </LinearLayout>
-                   <LinearLayout
-                      android:layout_width="match_parent"
-                      android:layout_height="fill_parent"
-                      android:orientation="vertical" 
-                       android:layout_weight="1">
-                  </LinearLayout>
-
-            </LinearLayout>
-
+            <TextView
+                android:id="@+id/tv_friend_online_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="online"
+                android:textColor="#0be423"
+                android:textSize="12sp" />
         </LinearLayout>
-
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_chat_with_friend"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:background="@xml/white_rounded"
+            android:layout_marginRight="5dp"
+            android:text="CHAT" />
+
+        <Button
+            android:id="@+id/btn_view_friend_frofile"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:background="@xml/white_rounded"
+             android:layout_marginRight="5dp"
+            android:text="PROFILE" />
+
+        <Button
+            android:id="@+id/btn_track_friend_location"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:background="@xml/white_rounded"
+             android:layout_marginRight="5dp"
+            android:text="SUBMIT" />
+        
+        <Button
+            android:id="@+id/btn_delete_friend"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:background="@xml/white_rounded"
+            android:text="DELETE" />
+    </LinearLayout>
+
+</LinearLayout>

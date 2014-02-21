@@ -81,7 +81,6 @@ import com.strapin.bean.FacebookFriendBean;
 import com.strapin.bean.InviteFriendBean;
 import com.strapin.bean.MeetUpBean;
 import com.strapin.bean.MessageBean;
-import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
 import com.strapin.presenter.HomePresenter;
@@ -158,7 +157,7 @@ public class HomeView extends BaseView implements IHome {
 	private ImageView mIvSkyPatrol;
 	private ImageView mTabSElectImage;	
 	
-	private  Dialog dialog,meetupUserDlg,infowindoDlg;	
+	private  Dialog dialog,meetupUserDlg;	
 	
 	private ArrayList<DealsBean> mDealsArr = new ArrayList<DealsBean>();
 	private ArrayList<AddFriendBean> mAddFriendArr = new ArrayList<AddFriendBean>();
@@ -169,7 +168,6 @@ public class HomeView extends BaseView implements IHome {
 	private ArrayList<FacebookFriendBean> facebookfriend = new ArrayList<FacebookFriendBean>();
 	private ArrayList<String> mAppUserFriend = new ArrayList<String>();
 	
-	private SnowmadaDbAdapter mDb;
 	private DealsAdapter mAdapter;
 	private AddFriendAdapter mAddFriendAdapter;
 	private InviteFriendAdapter mInviteFriendAdapter;
@@ -223,7 +221,6 @@ public class HomeView extends BaseView implements IHome {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home);
 		
-		mDb = SnowmadaDbAdapter.databaseHelperInstance(getApplicationContext());
 		
 		mViewSlider = (Sliding) findViewById(R.id.slide_view);
 		
@@ -311,7 +308,6 @@ public class HomeView extends BaseView implements IHome {
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				String searchString = mSearchAddFriend.getText().toString();							
 				int textLength = searchString.length();
-				//if(textLength>0){
 					mAddFriendSearchArr.clear();
 					for (int i = 0; i < mAddFriendArr.size(); i++) {
 						String retailerName = mAddFriendArr.get(i).getName();
@@ -321,11 +317,9 @@ public class HomeView extends BaseView implements IHome {
 							}
 						}
 					}						
-					mAddFriendAdapter = new AddFriendAdapter(mDb,HomeView.this, R.layout.add_friend_row, mAddFriendSearchArr);
+					mAddFriendAdapter = new AddFriendAdapter(db,HomeView.this, R.layout.add_friend_row, mAddFriendSearchArr);
 					mAddFriendList.setAdapter(mAddFriendAdapter);
-				//}
 				
-
 			}
 		});
 		et_search_invite_friend.addTextChangedListener(new TextWatcher() {
@@ -335,7 +329,6 @@ public class HomeView extends BaseView implements IHome {
 
 				String searchString = et_search_invite_friend.getText().toString();							
 				int textLength = searchString.length();
-				//if(textLength>0){
 					mInviteFriendSearchArr.clear();
 					for (int i = 0; i < mInviteFriendArr.size(); i++) {
 						String retailerName = mInviteFriendArr.get(i).getName();
@@ -345,13 +338,9 @@ public class HomeView extends BaseView implements IHome {
 							}
 						}
 					}						
-					mInviteFriendAdapter = new InviteFriendAdapter(mDb,HomeView.this, R.layout.add_friend_row, mInviteFriendSearchArr);
+					mInviteFriendAdapter = new InviteFriendAdapter(db,HomeView.this, R.layout.add_friend_row, mInviteFriendSearchArr);
 					mLvInviteFriendList.setAdapter(mInviteFriendAdapter);
-			//	}
-				
-
-			
-				
+		
 			}
 			
 			@Override
@@ -383,8 +372,7 @@ public class HomeView extends BaseView implements IHome {
 		mAdapter = new DealsAdapter(getApplicationContext(), R.layout.deals_row, mDealsArr);
 		mDealsList.setAdapter(mAdapter);
 		imageLoader=new ImageLoader(this);		
-		imageLoader.DisplayImage("https://graph.facebook.com/"+mDb.getUserFbID()+"/picture",mUserImage);
-		mUserName.setText(mDb.getUserFirstName());		
+				
 		
 	}
 	
@@ -396,14 +384,17 @@ public class HomeView extends BaseView implements IHome {
 		mMassageBoxWithIcon.setVisibility(View.GONE);		
 		mPendingReqCounter.setVisibility(View.GONE);
 		mRequestList.setVisibility(View.GONE);
-		mAddFriendList.setVisibility(View.VISIBLE);
 		mAddFriendSearchLayout.setVisibility(View.VISIBLE);	
+		
+		mAddFriendList.setVisibility(View.VISIBLE);
+		
 		mProfileLayout.setVisibility(View.GONE);
 		mChatLayout.setVisibility(View.GONE);
 		mDealsLayout.setVisibility(View.GONE);
 		mAddFriendLayout.setVisibility(View.GONE);		
 		mBtnSlider.setVisibility(View.VISIBLE);
 		mViewSlider.setVisibility(View.GONE);
+		
 		mRlProgressBarLayout.setVisibility(View.GONE);
 		
 		Global.isChatActive = false;		
@@ -418,6 +409,8 @@ public class HomeView extends BaseView implements IHome {
 	    TrackLocation.databaseHelperInstance(getApplicationContext());
 	    createMenuDialog();
 		defaultChatWindoOpenFromNotificationList();
+		imageLoader.DisplayImage("https://graph.facebook.com/"+db.getUserFbID()+"/picture",mUserImage);
+		mUserName.setText(db.getUserFirstName());
 	}
 	
 	@Override
@@ -433,8 +426,8 @@ public class HomeView extends BaseView implements IHome {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_logout:
-			//mDb.updateSession(0);
-			app.getAppInfo().setSession(false);
+			//db.updateSession(0);
+			myApp.getAppInfo().setSession(false);
 			//Intent intent = new Intent(HomeView.this, SigninView.class);startActivity(intent);
 			finish();
 			break;
@@ -469,7 +462,7 @@ public class HomeView extends BaseView implements IHome {
 			mHighlightPos = 8;
 			mProfileLayout.setVisibility(View.VISIBLE);
 			mDealsLayout.setVisibility(View.GONE);
-			imageLoader.DisplayImage("https://graph.facebook.com/"+mDb.getUserFbID()+"/picture",mProfileImage);
+			imageLoader.DisplayImage("https://graph.facebook.com/"+db.getUserFbID()+"/picture",mProfileImage);
 			mBtnSlider.setVisibility(View.GONE);
 		    mViewSlider.setVisibility(View.GONE);
 		    //mBottonMenu.setBackgroundResource(R.drawable.menu_deactive);
@@ -483,12 +476,12 @@ public class HomeView extends BaseView implements IHome {
 			if(mLayoutMessageNotificationList.getVisibility() == View.VISIBLE){
 				mLayoutMessageNotificationList.setVisibility(View.GONE);
 			}else{
-				int count = mDb.getTotalMessageCount();
+				int count = db.getTotalMessageCount();
 				if(count>0){
 					
 					mLayoutMessageNotificationList.setVisibility(View.VISIBLE);
 					ArrayList<MessageBean> mList = new ArrayList<MessageBean>();
-					mList = mDb.getAllChatMessageInfo();
+					mList = db.getAllChatMessageInfo();
 					mMassageAdapter = new OfflineMessageAdapter(mLayoutMessageNotificationList,mPresenter,HomeView.this, getApplicationContext(), R.layout.message_notification_row, mList);
 					mLvMessageList.setAdapter(mMassageAdapter);
 				}
@@ -517,12 +510,12 @@ public class HomeView extends BaseView implements IHome {
 
 				String msg = mEtInputChatMsg.getText().toString().trim();
 				if(msg.length()>0){
-					 Global.mChatArr.add(new ChatBean(mDb.getUserFirstName(), msg));
+					 Global.mChatArr.add(new ChatBean(db.getUserFirstName(), msg));
 					 mChatAdapter = new ChatAdapter(HomeView.this, R.layout.chat_row, Global.mChatArr);
 					 mChatList.setAdapter(mChatAdapter);
 					 mChatList.setSelection(Global.mChatArr.size()-1);
 					 mEtInputChatMsg.setText("");
-					 new ChatWeb().execute(mDb.getUserFbID(),app.getAppInfo().senderIdChat,msg);
+					 new ChatWeb().execute(db.getUserFbID(),myApp.getAppInfo().senderIdChat,msg);
 				}
 			}else{
 				Toast.makeText(getApplicationContext(), "Please select a friend", Toast.LENGTH_LONG).show();
@@ -539,9 +532,10 @@ public class HomeView extends BaseView implements IHome {
 					@Override
 					public void onClick(View v) {
 						dialog.dismiss();
+						myApp.doTrackFriendLocation = false;
 						setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,false,true,false,MEET_UP_LOCATION);
 						map.clear();
-						map.setInfoWindowAdapter(new CustomInfoWindowAdapter());
+						/*map.setInfoWindowAdapter(new CustomInfoWindowAdapter());*/
 						new GetMeetUplocation().execute();
 						
 					}
@@ -598,7 +592,7 @@ public class HomeView extends BaseView implements IHome {
 					public void onClick(View v) {
 						dialog.dismiss();
 						setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.VISIBLE, View.VISIBLE, View.GONE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.VISIBLE,false,false,false,VIEW_PROFILE);
-						imageLoader.DisplayImage("https://graph.facebook.com/"+mDb.getUserFbID()+"/picture",mProfileImage);
+						imageLoader.DisplayImage("https://graph.facebook.com/"+db.getUserFbID()+"/picture",mProfileImage);
 						
 					}
 				});
@@ -718,8 +712,8 @@ public class HomeView extends BaseView implements IHome {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 	    switch(keyCode){
 	    case KeyEvent.KEYCODE_BACK:
-	    	 app.doTrackFriendLocation = false;
-	         /*Global.isApplicationForeground*/ app.getAppInfo().isAppForeground= false;
+	    	 myApp.doTrackFriendLocation = false;
+	         /*Global.isApplicationForeground*/ myApp.getAppInfo().isAppForeground= false;
 	         handler.removeCallbacks(runnable);
 	         HomeView.this.finish();
 	        return true;
@@ -806,84 +800,11 @@ public class HomeView extends BaseView implements IHome {
 
 
 
-public class ChatWeb extends AsyncTask<String, Void, Boolean>{
-	protected void onPreExecute() {
-		
-	}
-
-	@Override
-	protected Boolean doInBackground(String... params) {
-		
-	  	try {
-			JSONObject mJsonObject = new JSONObject();
-			mJsonObject.put("sender_fb_id", params[0]);
-			mJsonObject.put("receiver_fb_id", params[1]);
-			mJsonObject.put("message", params[2]);
-			mJsonObject.put("sender_name", mDb.getUserFirstName());
-			
-			JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/chat.php", mJsonObject);
-			if(json!=null){
-				return json.getBoolean("status");	
-			}else{
-				return false;
-			}
-			
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
-	@Override
-	protected void onPostExecute(Boolean result) {
-		
-		if(result){
-			
-		}
-	}
-}
 
 
 
-public class FriendRequestNotificationCount extends AsyncTask<String, Void, Integer>{
 
-	
-	protected void onPreExecute() {
-		
-	}
 
-	@Override
-	protected Integer doInBackground(String... params) {
-		int count = 0;
-		
-	  	try {
-			JSONObject mJsonObject = new JSONObject();
-			mJsonObject.put("fbid", params[0]);
-			JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/count_pending_friend.php", mJsonObject);
-			if(json!=null){
-				count = Integer.parseInt(json.getString("totalpendingfriend"));
-				return count;	
-			}else{
-				return count;
-			}
-			
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return count;
-	}
-	
-	@Override
-	protected void onPostExecute(Integer result) {
-		
-		if(result>0){
-			mPendingReqCounter.setVisibility(View.VISIBLE);
-			mPendingReqCounter.setText(""+result);
-		}else{
-			mPendingReqCounter.setVisibility(View.GONE);
-		}
-	}
-}
 
 @Override
 public TextView getChatFriend() {
@@ -896,7 +817,7 @@ public ListView getChatListView() {
 }
 
 public void getMassageNotification(){
-	int count = mDb.getMassageNotificationCount();
+	int count = db.getMassageNotificationCount();
 	if(count>0){
 		mMassageBoxWithIcon.setVisibility(View.VISIBLE);
 		mMassageBox.setVisibility(View.GONE);
@@ -909,7 +830,7 @@ public void getMassageNotification(){
 }
 
 public void getChatWindowActive(String friendName,String fbid){
-	app.getAppInfo().isAppForeground= true;
+	myApp.getAppInfo().isAppForeground= true;
 	setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.INVISIBLE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,false,false,true,CHAT_LIVE);	
 	mPresenter.functionChat(fbid,friendName);
 	mTvActiveChatFriend.setText(friendName);
@@ -929,18 +850,18 @@ public void defaultChatWindoOpenFromNotificationList() {
 	Bundle bundle = getIntent().getExtras();
 	if(bundle!=null){
 		if(bundle.getString("event").equalsIgnoreCase("chat")){
-			app.getAppInfo().isAppForeground = true;
+			myApp.getAppInfo().isAppForeground = true;
 			setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.INVISIBLE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,false,false,true,CHAT_LIVE);
 				
 			String sender_name = getIntent().getExtras().getString("sender_name");
 			String sender_fb_id = getIntent().getExtras().getString("sender_fb_id");
 			String[] splitStr = sender_name.split("\\s+");
 			Global.mChatUserName = splitStr[0];
-			app.getAppInfo().setSenderIDChat(getIntent().getExtras().getString("sender_fb_id"));
+			myApp.getAppInfo().setSenderIDChat(getIntent().getExtras().getString("sender_fb_id"));
 			mPresenter.functionChat(sender_fb_id, sender_name);
 			mTvActiveChatFriend.setText(sender_name);
 		}else{
-			app.getAppInfo().isAppForeground= true;
+			myApp.getAppInfo().isAppForeground= true;
 			setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,false,true,false,MEET_UP_LOCATION);
 			new GetMeetUplocation().execute();
 		}
@@ -979,11 +900,11 @@ public void createMenuDialog() {
 
 @Override
 public void isSkyPetrolShow() {
-	if(app.getAppInfo().isAlertForSKIPatrol){
+	if(myApp.getAppInfo().isAlertForSKIPatrol){
 		Global.isZoomAtUSerLocationFirstTime = false;
-		//mDb.updateSKI("0");
-		app.getAppInfo().setIsAlertForSKIPatrol(false);
-		String st[] = mDb.getSkiPetrolInfo();
+		//db.updateSKI("0");
+		myApp.getAppInfo().setIsAlertForSKIPatrol(false);
+		String st[] = db.getSkiPetrolInfo();
 		map.addMarker(new MarkerOptions().position(new LatLng(Double.valueOf(st[2]), Double.valueOf(st[3]))).title("Name:"+st[0]+" "+st[1]).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds())  .icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
 		map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.valueOf(st[2]), Double.valueOf(st[3])), 16));
 	}
@@ -1018,7 +939,7 @@ public void getDeviceId() {
 			mRegisterTask = new AsyncTask<Void, Void, Void>() {
 				@Override
 				protected Void doInBackground(Void... params) {
-					 ServerUtilities.register(context, regId,""+mDb.getUserFbID());
+					 ServerUtilities.register(context, regId,""+db.getUserFbID());
 					return null;
 				}
 
@@ -1043,11 +964,11 @@ public void createRunnableThread() {
 		   public void run() {
 			    handler.postDelayed(runnable, 3000);
 			    getMassageNotification();
-			    if(app.isNetworkConnected(getApplicationContext())){
-			    	 new FriendRequestNotificationCount().execute(mDb.getUserFbID());
+			    if(myApp.isNetworkConnected(getApplicationContext())){
+			    	 new FriendRequestNotificationCount().execute(db.getUserFbID());
 			    }
 			   
-			   if(app.doTrackFriendLocation){
+			   if(myApp.doTrackFriendLocation){
 				   mPresenter.getFriendCurrentLocation();
 			   }
 			
@@ -1073,25 +994,9 @@ public RelativeLayout getProgressBarLayout() {
 @Override
 public boolean onMarkerClick(Marker marker) {	
 	
-	if(app.isMeetuplocationWindoEnable){/*
-		current_selected_marker_id = hasmapinfo.get(marker);
-		for(int i=0; i<meetupinfoarr.size(); i++){
-			if(current_selected_marker_id == meetupinfoarr.get(i).getId()){
-				if(meetupinfoarr.get(i).getOwner().equalsIgnoreCase("ME")){
-					app.isMeetuplocationEditTextEditable = true;
-					setMeetuplocationDialog(marker, current_selected_marker_id,meetupinfoarr.get(i).getName(),meetupinfoarr.get(i).getLocation(),meetupinfoarr.get(i).getDescription(),meetupinfoarr.get(i).getTime(),meetupinfoarr.get(i).getOwner());
-				}else{
-					app.isMeetuplocationEditTextEditable = false;
-					setMeetuplocationDialog(marker, current_selected_marker_id,meetupinfoarr.get(i).getName(),meetupinfoarr.get(i).getLocation(),meetupinfoarr.get(i).getDescription(),meetupinfoarr.get(i).getTime(),meetupinfoarr.get(i).getOwner());
-				}
-				break;
-			}
-		}
-		
-	*/}else{
+	if(myApp.isMeetuplocationWindoEnable){}else{
 		Global.isInfoWindow = !Global.isInfoWindow;	
-	}
-	
+	}	
 	
 	return false;
 }
@@ -1100,13 +1005,13 @@ public boolean onMarkerClick(Marker marker) {
 public void onInfoWindowClick(Marker marker) {
 	
 	int p = -1;
-	if(app.isMeetuplocationWindoEnable){
+	if(myApp.isMeetuplocationWindoEnable){
 
 		current_selected_marker_id = hasmapinfo.get(marker);
 		for(int i=0; i<meetupinfoarr.size(); i++){
 			if(current_selected_marker_id == meetupinfoarr.get(i).getId()){
 				if(meetupinfoarr.get(i).getOwner().equalsIgnoreCase("ME")){
-					app.isMeetuplocationEditTextEditable = true;
+					myApp.isMeetuplocationEditTextEditable = true;
 					setMeetuplocationDialog(marker, current_selected_marker_id,meetupinfoarr.get(i).getName(),meetupinfoarr.get(i).getLocation(),meetupinfoarr.get(i).getDescription(),meetupinfoarr.get(i).getDate1(),meetupinfoarr.get(i).getTime(),meetupinfoarr.get(i).getOwner());
 				}
 				break;
@@ -1120,7 +1025,7 @@ public void onInfoWindowClick(Marker marker) {
 @Override
 public void onMapLongClick(final LatLng point) {
 	Log.e("Reach here", "Reach here");
-	if(app.isMeetuplocationWindoEnable){
+	if(myApp.isMeetuplocationWindoEnable){
 		
 		 AlertDialog.Builder builder = new AlertDialog.Builder(HomeView.this);
          builder.setCancelable(true);
@@ -1135,7 +1040,7 @@ public void onMapLongClick(final LatLng point) {
                          
                          m =  map.addMarker(new MarkerOptions()
                    	    .position(point) 
-                   	    .title(""+mDb.getUserFirstName()+" "+mDb.getUserLastName())
+                   	    .title(""+db.getUserFirstName()+" "+db.getUserLastName())
                         .snippet("Update your information")
 
                    	    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));   
@@ -1215,70 +1120,7 @@ public class CustominFoWindo implements InfoWindowAdapter{
 	
 }
 
-public class getAppUsers extends AsyncTask<String, Void, ArrayList<String>>{		
-	protected void onPreExecute() {
-	showProgressDailog();
-	}
-	@Override
-	protected ArrayList<String> doInBackground(String... params) {			
-	  	try {
-	  		JSONObject jsonObject = new JSONObject();
-	  		jsonObject.put("fbid", mDb.getUserFbID());
-	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/app_user.php", jsonObject);
-	        if(json.getBoolean("status")){
-	        	JSONArray  jsonArray = json.getJSONArray("app_users");
-	        	for(int i=0; i<jsonArray.length(); i++){
-	        		JSONObject c = jsonArray.getJSONObject(i);
-	        		String ids = c.getString("id");
-	        		mAppUserFriend.add(ids);
-	        	}
-	        }
-	        return mAppUserFriend;
-			
-		} catch (Exception e) {
-			//mDialog.dismiss();
-			e.printStackTrace();
-		}
-		return null;
-	}
-	@Override
-	protected void onPostExecute(ArrayList<String> appusersArr) {
-		dismissProgressDialog();
-		boolean flag = false;
-		if(appusersArr != null){
-			facebookfriend = mDb.getFacebookFriends();
-			try {
-				
-					for(int i=0; i<facebookfriend.size(); i++){
-						flag = false;
-					for(int j=0; j<appusersArr.size();j++){
-						if(facebookfriend.get(i).getId().equalsIgnoreCase(appusersArr.get(j))){
-							
-							mAddFriendArr.add(new AddFriendBean(facebookfriend.get(i).getId(),facebookfriend.get(i).getName()));
-							flag = true;
-							break;
-						}
-						
-					}
-					if(!flag){
-						mInviteFriendArr.add(new InviteFriendBean(facebookfriend.get(i).getId(),facebookfriend.get(i).getName()));
-					}
-					
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			} 
-			
-			mAddFriendAdapter = new AddFriendAdapter(mDb,HomeView.this, R.layout.add_friend_row, mAddFriendArr);
-			mAddFriendList.setAdapter(mAddFriendAdapter);
-			
-			mInviteFriendAdapter = new InviteFriendAdapter(mDb,HomeView.this, R.layout.add_friend_row, mInviteFriendArr);
-			mLvInviteFriendList.setAdapter(mInviteFriendAdapter);
-		}
-		
-	}	
 
-}
 @Override
 protected Dialog onCreateDialog(int id) {
 	switch (id) {
@@ -1335,16 +1177,16 @@ public void setMeetuplocationDialog(final Marker marker,final long current_selec
 		tvDisplayTime = (TextView)meetupUserDlg.findViewById(R.id.tvDisplayTime1);
 		tvDisplayTime.setText(meetuptime);
 		final TextView name = (TextView)meetupUserDlg.findViewById(R.id.ed_name);
-		name.setText(mDb.getUserFirstName()+" "+mDb.getUserLastName());
-		name.setClickable(app.isMeetuplocationEditTextEditable);
+		name.setText(db.getUserFirstName()+" "+db.getUserLastName());
+		name.setClickable(myApp.isMeetuplocationEditTextEditable);
 		final EditText location = (EditText)meetupUserDlg.findViewById(R.id.ed_location);
 		location.setText(meetuplocation);
-		location.setClickable(app.isMeetuplocationEditTextEditable);
+		location.setClickable(myApp.isMeetuplocationEditTextEditable);
 		final EditText desc = (EditText)meetupUserDlg.findViewById(R.id.ed_desc);
 		desc.setText(meetupdesc);
-		desc.setClickable(app.isMeetuplocationEditTextEditable);
-		clock.setClickable(app.isMeetuplocationEditTextEditable);
-		iv_date.setClickable(app.isMeetuplocationEditTextEditable);
+		desc.setClickable(myApp.isMeetuplocationEditTextEditable);
+		clock.setClickable(myApp.isMeetuplocationEditTextEditable);
+		iv_date.setClickable(myApp.isMeetuplocationEditTextEditable);
 		setCurrentDateOnView();
 		clock.setOnClickListener(new OnClickListener() {
 			
@@ -1441,215 +1283,8 @@ public void setMeetuplocationDialog(final Marker marker,final long current_selec
 
 }
 
-public class SubmitMeetUplocation extends AsyncTask<String, String, ArrayList<MeetUpBean>>{
 
-	@Override
-	protected ArrayList<MeetUpBean> doInBackground(String... params) {
-		try {
-	  		
-	  		JSONObject jsonObject = new JSONObject();
-	  		jsonObject.put("fbid", mDb.getUserFbID());
-	  		jsonObject.put("fname", mDb.getUserFirstName());
-	  		jsonObject.put("marker_id", params[0]);
-	  		jsonObject.put("person_name", params[1]);
-	  		jsonObject.put("loc_name", params[2]);
-	  		jsonObject.put("loc_desc", params[3]);
-	  		jsonObject.put("meet_time", params[4]);	  		
-	  		jsonObject.put("lat", params[5]);
-	  		jsonObject.put("lng", params[6]);
-	  		jsonObject.put("meet_date", params[7]);
-	  		jsonObject.put("actn", "add");
-	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/add_meet_up.php", jsonObject);
-	  		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");				
-			Date date = new Date();
-			String _currentdate= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
-			Date currentdate = sdf.parse(_currentdate);
-			Log.e("Current Date", ""+currentdate);
-	  		//if(json.getBoolean("status")){
-	        	meetupinfoarr.clear();
-	        	invalidMarkerIDs.clear();
-	        	deleted_pos.clear();
-	        	JSONArray jArr = json.getJSONArray("MeetList");
-	        	for(int i=0;i<jArr.length();i++){
-	        		JSONObject c = jArr.getJSONObject(i);
-	        		long _marker_id = Long.parseLong(c.getString("marker_id"));
-	        		String _name = c.getString("person_name");
-	        		String _loc = c.getString("loc_name");
-	        		String _desc = c.getString("loc_desc");
-	        		String _identifier = c.getString("identifier");
-	        		String _date = c.getString("meet_date");
-	        		String time = c.getString("meet_time");
-	        		double _lat = Double.parseDouble(c.getString("lat"));
-	        		double _lng = Double.parseDouble(c.getString("lng"));
-	        		Date scheduledate = sdf.parse(_date+" "+time);
-	        		if(currentdate.getTime()<(scheduledate.getTime()+3600000)){
-	        			meetupinfoarr.add(new MeetUpBean(_marker_id, _name, _loc, _desc,_date, time, _identifier,_lat,_lng));
-	        		}else{
-	        			invalidMarkerIDs.add(""+_marker_id);
-	        		}
-	        	}
-	     	return meetupinfoarr;
-	      	
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
 
-	@Override
-	protected void onPostExecute(ArrayList<MeetUpBean> result) {
-		super.onPostExecute(result);
-		dismissProgressDialog();
-		map.clear();
-		if(result != null){
-			
-			for(int i=0; i<result.size();i++){
-					Log.i("Meet Loc", ""+result.get(i).getLocation());
-					if(result.get(i).getOwner().equalsIgnoreCase("ME")){
-						  m =  map.addMarker(new MarkerOptions()
-				    	      .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
-				    	      .title("Name:"+result.get(i).getName())
-				              .snippet("Location:"+result.get(i).getLocation())
-				    	      .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));   
-				              m.setDraggable(true);
-				         
-				         hasmapinfo.put(m, result.get(i).getId());
-					}else{
-						 m =  map.addMarker(new MarkerOptions()
-				    	      .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
-				    	      .title("Name:"+result.get(i).getName())
-				    	      .snippet("Location:"+result.get(i).getLocation())
-				    	      .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));   
-				         	  m.setDraggable(false);
-				         
-				         hasmapinfo.put(m, result.get(i).getId());
-					}
-					
-		}
-		
-				
-			//}
-			
-		}
-		if (invalidMarkerIDs != null) {
-			if (invalidMarkerIDs.size() > 0) {
-				deleteOldMarker();
-			}
-		}
-	}
-
-	@Override
-	protected void onPreExecute() {
-		super.onPreExecute();
-		showProgressDailog();
-	}
-	
-	
-	
-}
-public class GetMeetUplocation extends AsyncTask<String, String, ArrayList<MeetUpBean>>{
-
-	@Override
-	protected ArrayList<MeetUpBean> doInBackground(String... params) {
-		boolean flg = false;
-	  	try {
-	  		
-	  		JSONObject jsonObject = new JSONObject();
-	  		jsonObject.put("fbid", mDb.getUserFbID());
-	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/list_meetup.php", jsonObject);
-	  		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");				
-			Date date = new Date();
-			String _currentdate= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
-			Date currentdate = sdf.parse(_currentdate);
-			Log.e("Current Date111", ""+currentdate);
-	  		//if(json.getBoolean("status")){
-	  			Log.e("Reach here", "Reach here");
-	        	meetupinfoarr.clear();
-	        	invalidMarkerIDs.clear();
-	        	deleted_pos.clear();
-	        	JSONArray jArr = json.getJSONArray("MeetList");
-	        	Log.e("JSON Array Length", ""+jArr.length());
-	        	for(int i=0;i<jArr.length();i++){
-	        		JSONObject c = jArr.getJSONObject(i);
-	        		long _marker_id = Long.parseLong(c.getString("marker_id"));
-	        		String _name = c.getString("person_name");
-	        		String _loc = c.getString("loc_name");
-	        		String _desc = c.getString("loc_desc");
-	        		String _identifier = c.getString("identifier");
-	        		String _date = c.getString("meet_date");
-	        		String time = c.getString("meet_time");
-	        		double _lat = Double.parseDouble(c.getString("lat"));
-	        		double _lng = Double.parseDouble(c.getString("lng"));
-	        		Date scheduledate = sdf.parse(_date+" "+time);
-	        		if(currentdate.getTime()<(scheduledate.getTime()+3600000)){
-	        			meetupinfoarr.add(new MeetUpBean(_marker_id, _name, _loc, _desc,_date, time, _identifier,_lat,_lng));
-	        		}else{
-	        			invalidMarkerIDs.add(""+_marker_id);
-	        		}
-	        		
-	        	}
-	        	return meetupinfoarr;
-	     	
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	@Override
-	protected void onPostExecute(ArrayList<MeetUpBean> result) {
-		super.onPostExecute(result);
-		dismissProgressDialog();
-		map.clear();
-		//Log.e("Meet up Size", ""+result.size());
-		if(result != null){
-			Log.e("Meet up Size", ""+result.size());
-			
-			for(int i=0; i<result.size();i++){
-				Log.e("name", result.get(i).getName());
-				//if(result.get(i).getName().equalsIgnoreCase("asanti namrata")){
-					Log.i("Meet Loc", ""+result.get(i).getLocation());
-					if(result.get(i).getOwner().equalsIgnoreCase("ME")){
-						 /*Marker*/ m =  map.addMarker(new MarkerOptions()
-				    	    .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
-				    	    .title("Name:"+result.get(i).getName())
-				         .snippet("Location:"+result.get(i).getLocation())
-				    	    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));   
-				         m.setDraggable(true);
-				         
-				         hasmapinfo.put(m, result.get(i).getId());
-					}else{
-						 /*Marker*/ m =  map.addMarker(new MarkerOptions()
-				    	    .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
-				    	    .title("Name:"+result.get(i).getName())
-				         .snippet("Location:"+result.get(i).getLocation())
-				    	    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));   
-				         m.setDraggable(false);
-				         
-				         hasmapinfo.put(m, result.get(i).getId());
-					}
-					
-					
-		}
-				if (invalidMarkerIDs != null) {
-					if (invalidMarkerIDs.size() > 0) {
-						deleteOldMarker();
-					}
-				}
-			
-		}
-		
-	}
-
-	@Override
-	protected void onPreExecute() {
-		super.onPreExecute();
-		showProgressDailog();
-	}
-	
-	
-	
-}
 
 
 
@@ -1709,30 +1344,23 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		t.start();
 	}
 	
-	private class CustomInfoWindowAdapter implements InfoWindowAdapter {
-		 
-        private View view;
- 
+	private class CustomInfoWindowAdapter implements InfoWindowAdapter {		 
+        private View view; 
         public CustomInfoWindowAdapter() {
-            view = getLayoutInflater().inflate(R.layout.custom_info_window,
-                    null);
-        }
- 
+            view = getLayoutInflater().inflate(R.layout.custom_info_window,  null);
+        } 
         @Override
-        public View getInfoContents(Marker marker) {
- 
+        public View getInfoContents(Marker marker) { 
             if (HomeView.this.m != null
                     && HomeView.this.m.isInfoWindowShown()) {
             	HomeView.this.m.hideInfoWindow();
             	HomeView.this.m.showInfoWindow();
             }
             return null;
-        }
- 
+        } 
         @Override
         public View getInfoWindow(final Marker marker) {
-        	HomeView.this.m = marker;
-        	
+        	HomeView.this.m = marker;        	
             double lat = marker.getPosition().latitude;
             double lng = marker.getPosition().longitude;
             for(int i = 0; i<meetupinfoarr.size(); i++){
@@ -1742,8 +1370,7 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
                 		break;
                 	}
             	}
-            }
- 
+            } 
            
             final TextView tv_name = ((TextView) view.findViewById(R.id.tv_marker_name));
             tv_name.setText("Name: "+meetupinfoarr.get(pos).getName());
@@ -1761,20 +1388,8 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
             	ll_btn_edit.setVisibility(View.VISIBLE);
             }else{
             	ll_btn_edit.setVisibility(View.GONE);
-            }
-            
-            btn_edit.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					Log.e("Reach here", "Reach here");
-					/*setMeetuplocationDialog(marker, current_selected_marker_id,meetupinfoarr.get(pos).getName(),meetupinfoarr.get(pos).getLocation(),meetupinfoarr.get(pos).getDescription(),meetupinfoarr.get(pos).getDate1(),meetupinfoarr.get(pos).getTime(),meetupinfoarr.get(pos).getOwner());*/
-					
-				}
-			});
+            }   
            
-            
- 
             return view;
         }
     }
@@ -1800,14 +1415,366 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		mGreenBarAdd.setVisibility(baraddfriend);
 		mGreenBarViewProfile.setVisibility(barprofile);
 		
-		app.doTrackFriendLocation = trackfriends;
-		app.isMeetuplocationWindoEnable = showmeetup;				
+		myApp.doTrackFriendLocation = trackfriends;
+		myApp.isMeetuplocationWindoEnable = showmeetup;				
 		Global.isChatActive = ischatactive;
 		mHighlightPos = hightmenu;	
 
 	}
 	
+	public void doTrack(){
+		setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,false,false,false,TRACK_FRIENDS);
+		map.clear();
+		map.setInfoWindowAdapter(null);
+	}
 	
+	public class ChatWeb extends AsyncTask<String, Void, Boolean>{
+		protected void onPreExecute() {
+			
+		}
+
+		@Override
+		protected Boolean doInBackground(String... params) {
+			
+		  	try {
+				JSONObject mJsonObject = new JSONObject();
+				mJsonObject.put("sender_fb_id", params[0]);
+				mJsonObject.put("receiver_fb_id", params[1]);
+				mJsonObject.put("message", params[2]);
+				mJsonObject.put("sender_name", db.getUserFirstName());
+				
+				JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/chat.php", mJsonObject);
+				if(json!=null){
+					return json.getBoolean("status");	
+				}else{
+					return false;
+				}
+				
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
 		
+		@Override
+		protected void onPostExecute(Boolean result) {
+			
+			if(result){
+				
+			}
+		}
+	}
+	
+	public class GetMeetUplocation extends AsyncTask<String, String, ArrayList<MeetUpBean>>{
+
+		@Override
+		protected ArrayList<MeetUpBean> doInBackground(String... params) {
+			boolean flg = false;
+		  	try {
+		  		
+		  		JSONObject jsonObject = new JSONObject();
+		  		jsonObject.put("fbid", db.getUserFbID());
+		  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/list_meetup.php", jsonObject);
+		  		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");				
+				Date date = new Date();
+				String _currentdate= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
+				Date currentdate = sdf.parse(_currentdate);
+				Log.e("Current Date111", ""+currentdate);
+		  		//if(json.getBoolean("status")){
+		  			Log.e("Reach here", "Reach here");
+		        	meetupinfoarr.clear();
+		        	invalidMarkerIDs.clear();
+		        	deleted_pos.clear();
+		        	JSONArray jArr = json.getJSONArray("MeetList");
+		        	Log.e("JSON Array Length", ""+jArr.length());
+		        	for(int i=0;i<jArr.length();i++){
+		        		JSONObject c = jArr.getJSONObject(i);
+		        		long _marker_id = Long.parseLong(c.getString("marker_id"));
+		        		String _name = c.getString("person_name");
+		        		String _loc = c.getString("loc_name");
+		        		String _desc = c.getString("loc_desc");
+		        		String _identifier = c.getString("identifier");
+		        		String _date = c.getString("meet_date");
+		        		String time = c.getString("meet_time");
+		        		double _lat = Double.parseDouble(c.getString("lat"));
+		        		double _lng = Double.parseDouble(c.getString("lng"));
+		        		Date scheduledate = sdf.parse(_date+" "+time);
+		        		if(currentdate.getTime()<(scheduledate.getTime()+3600000)){
+		        			meetupinfoarr.add(new MeetUpBean(_marker_id, _name, _loc, _desc,_date, time, _identifier,_lat,_lng));
+		        		}else{
+		        			invalidMarkerIDs.add(""+_marker_id);
+		        		}
+		        		
+		        	}
+		        	return meetupinfoarr;
+		     	
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<MeetUpBean> result) {
+			super.onPostExecute(result);
+			dismissProgressDialog();
+			map.clear();
+			//Log.e("Meet up Size", ""+result.size());
+			if(result != null){
+				Log.e("Meet up Size", ""+result.size());
+				
+				for(int i=0; i<result.size();i++){
+					Log.e("name", result.get(i).getName());
+					//if(result.get(i).getName().equalsIgnoreCase("asanti namrata")){
+						Log.i("Meet Loc", ""+result.get(i).getLocation());
+						if(result.get(i).getOwner().equalsIgnoreCase("ME")){
+							 /*Marker*/ m =  map.addMarker(new MarkerOptions()
+					    	    .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
+					    	    .title("Name:"+result.get(i).getName())
+					         .snippet("Location:"+result.get(i).getLocation())
+					    	    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));   
+					         m.setDraggable(true);
+					         
+					         hasmapinfo.put(m, result.get(i).getId());
+						}else{
+							 /*Marker*/ m =  map.addMarker(new MarkerOptions()
+					    	    .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
+					    	    .title("Name:"+result.get(i).getName())
+					         .snippet("Location:"+result.get(i).getLocation())
+					    	    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));   
+					         m.setDraggable(false);
+					         
+					         hasmapinfo.put(m, result.get(i).getId());
+						}
+						
+						
+			}
+					if (invalidMarkerIDs != null) {
+						if (invalidMarkerIDs.size() > 0) {
+							deleteOldMarker();
+						}
+					}
+					map.setInfoWindowAdapter(new CustomInfoWindowAdapter());
+			}
+			
+		}
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			showProgressDailog();
+		}
+		
+		
+		
+	}
+	public class SubmitMeetUplocation extends AsyncTask<String, String, ArrayList<MeetUpBean>>{
+
+		@Override
+		protected ArrayList<MeetUpBean> doInBackground(String... params) {
+			try {
+		  		
+		  		JSONObject jsonObject = new JSONObject();
+		  		jsonObject.put("fbid", db.getUserFbID());
+		  		jsonObject.put("fname", db.getUserFirstName());
+		  		jsonObject.put("marker_id", params[0]);
+		  		jsonObject.put("person_name", params[1]);
+		  		jsonObject.put("loc_name", params[2]);
+		  		jsonObject.put("loc_desc", params[3]);
+		  		jsonObject.put("meet_time", params[4]);	  		
+		  		jsonObject.put("lat", params[5]);
+		  		jsonObject.put("lng", params[6]);
+		  		jsonObject.put("meet_date", params[7]);
+		  		jsonObject.put("actn", "add");
+		  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/add_meet_up.php", jsonObject);
+		  		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");				
+				Date date = new Date();
+				String _currentdate= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
+				Date currentdate = sdf.parse(_currentdate);
+				Log.e("Current Date", ""+currentdate);
+		  		//if(json.getBoolean("status")){
+		        	meetupinfoarr.clear();
+		        	invalidMarkerIDs.clear();
+		        	deleted_pos.clear();
+		        	JSONArray jArr = json.getJSONArray("MeetList");
+		        	for(int i=0;i<jArr.length();i++){
+		        		JSONObject c = jArr.getJSONObject(i);
+		        		long _marker_id = Long.parseLong(c.getString("marker_id"));
+		        		String _name = c.getString("person_name");
+		        		String _loc = c.getString("loc_name");
+		        		String _desc = c.getString("loc_desc");
+		        		String _identifier = c.getString("identifier");
+		        		String _date = c.getString("meet_date");
+		        		String time = c.getString("meet_time");
+		        		double _lat = Double.parseDouble(c.getString("lat"));
+		        		double _lng = Double.parseDouble(c.getString("lng"));
+		        		Date scheduledate = sdf.parse(_date+" "+time);
+		        		if(currentdate.getTime()<(scheduledate.getTime()+3600000)){
+		        			meetupinfoarr.add(new MeetUpBean(_marker_id, _name, _loc, _desc,_date, time, _identifier,_lat,_lng));
+		        		}else{
+		        			invalidMarkerIDs.add(""+_marker_id);
+		        		}
+		        	}
+		     	return meetupinfoarr;
+		      	
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(ArrayList<MeetUpBean> result) {
+			super.onPostExecute(result);
+			dismissProgressDialog();
+			map.clear();
+			if(result != null){
+				
+				for(int i=0; i<result.size();i++){
+						Log.i("Meet Loc", ""+result.get(i).getLocation());
+						if(result.get(i).getOwner().equalsIgnoreCase("ME")){
+							  m =  map.addMarker(new MarkerOptions()
+					    	      .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
+					    	      .title("Name:"+result.get(i).getName())
+					              .snippet("Location:"+result.get(i).getLocation())
+					    	      .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));   
+					              m.setDraggable(true);
+					         
+					         hasmapinfo.put(m, result.get(i).getId());
+						}else{
+							 m =  map.addMarker(new MarkerOptions()
+					    	      .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
+					    	      .title("Name:"+result.get(i).getName())
+					    	      .snippet("Location:"+result.get(i).getLocation())
+					    	      .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));   
+					         	  m.setDraggable(false);
+					         
+					         hasmapinfo.put(m, result.get(i).getId());
+						}
+						
+			}
+			
+				
+			}
+			if (invalidMarkerIDs != null) {
+				if (invalidMarkerIDs.size() > 0) {
+					deleteOldMarker();
+				}
+			}
+		}
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			showProgressDailog();
+		}
+		
+		
+		
+	}
+	public class FriendRequestNotificationCount extends AsyncTask<String, Void, Integer>{
+
+		
+		protected void onPreExecute() {
+			
+		}
+
+		@Override
+		protected Integer doInBackground(String... params) {
+			int count = 0;
+			
+		  	try {
+				JSONObject mJsonObject = new JSONObject();
+				mJsonObject.put("fbid", params[0]);
+				JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/count_pending_friend.php", mJsonObject);
+				if(json!=null){
+					count = Integer.parseInt(json.getString("totalpendingfriend"));
+					return count;	
+				}else{
+					return count;
+				}
+				
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			return count;
+		}
+		
+		@Override
+		protected void onPostExecute(Integer result) {
+			
+			if(result>0){
+				mPendingReqCounter.setVisibility(View.VISIBLE);
+				mPendingReqCounter.setText(""+result);
+			}else{
+				mPendingReqCounter.setVisibility(View.GONE);
+			}
+		}
+	}
+	
+	public class getAppUsers extends AsyncTask<String, Void, ArrayList<String>>{		
+		protected void onPreExecute() {
+		showProgressDailog();
+		}
+		@Override
+		protected ArrayList<String> doInBackground(String... params) {			
+		  	try {
+		  		JSONObject jsonObject = new JSONObject();
+		  		jsonObject.put("fbid", db.getUserFbID());
+		  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/app_user.php", jsonObject);
+		        if(json.getBoolean("status")){
+		        	JSONArray  jsonArray = json.getJSONArray("app_users");
+		        	for(int i=0; i<jsonArray.length(); i++){
+		        		JSONObject c = jsonArray.getJSONObject(i);
+		        		String ids = c.getString("id");
+		        		mAppUserFriend.add(ids);
+		        	}
+		        }
+		        return mAppUserFriend;
+				
+			} catch (Exception e) {
+				//prsDlg.dismiss();
+				e.printStackTrace();
+			}
+			return null;
+		}
+		@Override
+		protected void onPostExecute(ArrayList<String> appusersArr) {
+			dismissProgressDialog();
+			boolean flag = false;
+			if(appusersArr != null){
+				facebookfriend = db.getFacebookFriends();
+				try {
+					
+						for(int i=0; i<facebookfriend.size(); i++){
+							flag = false;
+						for(int j=0; j<appusersArr.size();j++){
+							if(facebookfriend.get(i).getId().equalsIgnoreCase(appusersArr.get(j))){
+								
+								mAddFriendArr.add(new AddFriendBean(facebookfriend.get(i).getId(),facebookfriend.get(i).getName()));
+								flag = true;
+								break;
+							}
+							
+						}
+						if(!flag){
+							mInviteFriendArr.add(new InviteFriendBean(facebookfriend.get(i).getId(),facebookfriend.get(i).getName()));
+						}
+						
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				} 
+				
+				mAddFriendAdapter = new AddFriendAdapter(db,HomeView.this, R.layout.add_friend_row, mAddFriendArr);
+				mAddFriendList.setAdapter(mAddFriendAdapter);
+				
+				mInviteFriendAdapter = new InviteFriendAdapter(db,HomeView.this, R.layout.add_friend_row, mInviteFriendArr);
+				mLvInviteFriendList.setAdapter(mInviteFriendAdapter);
+			}
+			
+		}	
+
+	}
 }
 

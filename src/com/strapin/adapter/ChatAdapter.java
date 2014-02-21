@@ -28,11 +28,7 @@ public class ChatAdapter extends ArrayAdapter<ChatBean>{
 		this.mCtx = context;
 		mItems = Global.mChatArr;
 		mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(mCtx);
-		/*for(int i=mChat.size()-1; i>=0; i--){
-			this.mItems.add(new ChatBean(mChat.get(i).getSender(), mChat.get(i).getMessage()));
-		}*/
-		//this.mItems = items;
-		size = mItems.size();
+			size = mItems.size();
 		
 	}		  
 	@Override
@@ -69,12 +65,7 @@ public class ChatAdapter extends ArrayAdapter<ChatBean>{
 		
 		final ChatBean bean = mItems.get(position);
 		if(bean != null){
-			/*if(bean.getSender().equalsIgnoreCase("me")){
-				mHolder.mSender.setVisibility(View.VISIBLE);
-				mHolder.mReceiver.setVisibility(View.GONE);
-				mHolder.mSenderName.setText(Global.mFName);
-				mHolder.mSenderMsg.setText(bean.getMessage());
-			}else*/ if(bean.getSender().equalsIgnoreCase(mDbAdapter.getUserFirstName())){
+			 if(bean.getSender().equalsIgnoreCase(mDbAdapter.getUserFirstName())){
 				mHolder.mSender.setVisibility(View.VISIBLE);
 				mHolder.mReceiver.setVisibility(View.GONE);
 				mHolder.mSenderName.setText("Me");

@@ -10,6 +10,7 @@ import snowmada.main.view.HomeView;
 import snowmada.main.view.R;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -20,10 +21,7 @@ import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -54,13 +52,14 @@ public class HomePresenter implements IHome.Presenter{
 	private Marker marker;
 	private SnowmadaDbAdapter mDbAdapter;
 	private boolean TrackDurationControllFlag = false;
-	private static Handler handler = new Handler();
-	private static Runnable runnable;
-	private static long lastUsed;
-	private static long idle=0;
+	private  Handler handler = new Handler();
+	private  Runnable runnable;
+	private  long lastUsed;
+	private  long idle=0;
 	private ChatAdapter mChatAdapter;
 	private FriendRequestAdapter mRequestAdapter;
 	private int COUNT = 0;
+	public int deletedPos = -1;
 	
 	private ArrayList<FriendRequestBean> mRequestArr = new ArrayList<FriendRequestBean>();
 	
@@ -84,30 +83,36 @@ public class HomePresenter implements IHome.Presenter{
 
 	@Override
 	public void setOnFriendClick(final int pos) {
+		mHomeView.hideSlide().setVisibility(View.GONE);
 		final Dialog dialog = new Dialog(mHomeView.getActivity());				
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 		dialog.setContentView(R.layout.track_dialog);
+		dialog.setCancelable(true);
+		dialog.setCanceledOnTouchOutside(true);		
+		TextView friend_name = (TextView)dialog.findViewById(R.id.tv_friend_full_name);
+		ImageView friend_image = (ImageView)dialog.findViewById(R.id.iv_friend_profile_img);		
+		Button chat_with = (Button)dialog.findViewById(R.id.btn_chat_with_friend);
+		chat_with.setText(Html.fromHtml("<font color=\"#ffffff\">CH</font><font color=\"#28b6ff\">AT</font>"));
+		Button profile = (Button)dialog.findViewById(R.id.btn_view_friend_frofile);
+		profile.setText(Html.fromHtml("<font color=\"#ffffff\">PROF</font><font color=\"#28b6ff\">ILE</font>"));
+		Button track_friend = (Button)dialog.findViewById(R.id.btn_track_friend_location);
+		track_friend.setText(Html.fromHtml("<font color=\"#ffffff\">TRA</font><font color=\"#28b6ff\">CK</font>"));
+		Button delete = (Button)dialog.findViewById(R.id.btn_delete_friend);
+		delete.setText(Html.fromHtml("<font color=\"#ffffff\">DEL</font><font color=\"#28b6ff\">ETE</font>"));
+		imageLoader.DisplayImage("https://graph.facebook.com/"+mFriendArr.get(pos).getFbId()+"/picture",friend_image);
+		TextView online_status = (TextView)dialog.findViewById(R.id.tv_friend_online_status);
+		if(mFriendArr.get(pos).getOnlineStatus().equalsIgnoreCase("1")){
+			online_status.setText("Online");
+			online_status.setTextColor(Color.parseColor("#0be423"));
+		}else{
+			online_status.setText("Offline");
+			online_status.setTextColor(Color.parseColor("#FF0000"));
+		}
 		
-		TextView username = (TextView)dialog.findViewById(R.id.user_name);
-		ImageView image = (ImageView)dialog.findViewById(R.id.img_friend);
-		LinearLayout track = (LinearLayout)dialog.findViewById(R.id.track);
-		LinearLayout chat = (LinearLayout)dialog.findViewById(R.id.chat_layout);
-		LinearLayout profile = (LinearLayout)dialog.findViewById(R.id.profile);
-		ImageView cancel = (ImageView)dialog.findViewById(R.id.cross);
-		imageLoader.DisplayImage("https://graph.facebook.com/"+mFriendArr.get(pos).getFbId()+"/picture",image);
-		dialog.show();
-		username.setText(mFriendArr.get(pos).getName());
-		
-		cancel.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				dialog.cancel();				
-			}
-		});
-		
-		chat.setOnClickListener(new OnClickListener() {
+		friend_name.setText(mFriendArr.get(pos).getName());
+		dialog.show();		
+		chat_with.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -116,39 +121,35 @@ public class HomePresenter implements IHome.Presenter{
 				String fbid = mFriendArr.get(pos).getFbId();
 				mHomeView.getChatWindowActive(friendName,fbid);
 			}
-		});
-		
+		});		
 		profile.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				dialog.cancel();				
 			}
-		});
-		
-		track.setOnClickListener(new OnClickListener() {
-			
+		});		
+		track_friend.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
 
-				if(mFriendArr.get(pos).getOnlineStatus().equalsIgnoreCase("1")){
-					
+				if(mFriendArr.get(pos).getOnlineStatus().equalsIgnoreCase("1")){	
+					if(mHomeView.myApp.isMeetuplocationWindoEnable){
+						mHomeView.doTrack();
+					}
 					mHomeView.hideSlide().setVisibility(View.GONE);
 					mName = mFriendArr.get(pos).getName();
 					Global.sFriendName = mName;
 					Global.sFriendId = mFriendArr.get(pos).getFbId();
 					Global.isZoom = true;
 					if(Utility.isNetworkConnected(mHomeView.getContext())){
-						new PushNotificationWeb().execute(mDbAdapter.getUserFbID(),Global.sFriendId);
-						//new getFriendLocation().execute(Global.sFriendId);
-						mHomeView.app.doTrackFriendLocation = true;
+						new SendTrackNotification().execute(mDbAdapter.getUserFbID(),Global.sFriendId);
+						mHomeView.myApp.doTrackFriendLocation = true;
 						mHomeView.getProgressBarLayout().setVisibility(View.VISIBLE);
 						COUNT = 0;
 					}
 					
 				}else{
-					
-					//Toast.makeText(mHomeView.getContext(), "You can't Track the location of that friend", Toast.LENGTH_LONG).show();
 					final Dialog dialog1 = new Dialog(mHomeView.getActivity());				
 					dialog1.requestWindowFeature(Window.FEATURE_NO_TITLE);
 					dialog1.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -157,7 +158,7 @@ public class HomePresenter implements IHome.Presenter{
 					Button ok = (Button)dialog1.findViewById(R.id.iv_ok);
 					ok.setText(Html.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
 					TextView tv_alert_txt = (TextView)dialog1.findViewById(R.id.tv_alert_text);
-					tv_alert_txt.setText(Html.fromHtml("<font color=\"#ffffff\">ALERT</font><font color=\"#28b6ff\">DIALOG</font>"));
+					tv_alert_txt.setText(Html.fromHtml("<font color=\"#ffffff\">ALERT</font>&nbsp;&nbsp;<font color=\"#28b6ff\">DIALOG</font>"));
 					ok.setOnClickListener(new OnClickListener() {
 						
 						@Override
@@ -169,6 +170,18 @@ public class HomePresenter implements IHome.Presenter{
 				}	
 				dialog.cancel();
 			}
+		});
+		
+		delete.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dialog.cancel();
+				showConfirmDeleteDialog(pos);
+				
+			}
+
+			
 		});
 		}
 	
@@ -191,7 +204,7 @@ public class HomePresenter implements IHome.Presenter{
 				Log.i("idle", "" + idle);
 
 				if (idle >= /*30000*/5*60*1000) {
-					mHomeView.app.doTrackFriendLocation = false;
+					mHomeView.myApp.doTrackFriendLocation = false;
 					mHomeView.getMap().clear();	
 					handler.removeCallbacks(runnable);
 					
@@ -269,7 +282,7 @@ public class SKIEmergencyButtonPressWeb extends AsyncTask<String, Void, Boolean>
 				Button ok = (Button)dialog1.findViewById(R.id.iv_dlg_ok);
 				ok.setText(Html.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
 				TextView tv_dialog = (TextView)dialog1.findViewById(R.id.tv_alert_dialog_text);
-				tv_dialog.setText(Html.fromHtml("<font color=\"#ffffff\">ALERT</font><font color=\"#28b6ff\">DIALOG</font>"));
+				tv_dialog.setText(Html.fromHtml("<font color=\"#ffffff\">ALERT</font>&nbsp;&nbsp;<font color=\"#28b6ff\">DIALOG</font>"));
 				
 				ok.setOnClickListener(new OnClickListener() {
 					
@@ -365,7 +378,7 @@ public class getFriendLocation1 extends AsyncTask<String, Void, Boolean>{
 	  		mLng = lng;
 			
 		} catch (Exception e) {
-			//mDialog.dismiss();
+			//prsDlg.dismiss();
 			e.printStackTrace();
 		}
 		return null;
@@ -377,7 +390,8 @@ public class getFriendLocation1 extends AsyncTask<String, Void, Boolean>{
 		COUNT++;
 		if(COUNT>3){
 			mHomeView.getProgressBarLayout().setVisibility(View.GONE);
-			mHomeView.getMap().clear();				
+		mHomeView.getMap().clear();	
+		
 		marker = mHomeView.getMap().addMarker(new MarkerOptions().position(new LatLng(mLat, mLng)).title("Name:"+mName/*+" "+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()+"Distance:"+distance+" meter"*/).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds())  .icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
 		if(Global.isZoom){
 			Global.isZoom = false;
@@ -397,27 +411,23 @@ public class getFriendLocation1 extends AsyncTask<String, Void, Boolean>{
 	}	
 }
 
-public class PushNotificationWeb extends AsyncTask<String, Void, Boolean>{		
-	protected void onPreExecute() {
-	
-	}
+public class SendTrackNotification extends AsyncTask<String, Void, Boolean>{		
 	@Override
 	protected Boolean doInBackground(String... params) {			
 	  	try {
 	  		JSONObject jsonObject = new JSONObject();
 	  		jsonObject.put("fbid", params[0]);
 	  		jsonObject.put("friend_fb_id", params[1]);	
-	  		Log.e("PushNotificationWeb", jsonObject.toString());
+	  		Log.e("SendTrackNotification", jsonObject.toString());
 	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/send_message.php", jsonObject);
 			
 		} catch (Exception e) {
-			//mDialog.dismiss();
+			//prsDlg.dismiss();
 			e.printStackTrace();
 		}
 		return null;
 	}
-	@Override
-	protected void onPostExecute(Boolean status) {}	
+	
 }
 
 
@@ -433,8 +443,7 @@ public void functionChat(String facebookid, String name) {
 	mHomeView.hideSlide().setVisibility(View.GONE);
 	String fname = name;
 	String[] splitStr = fname.split("\\s+");
-	//Global.mChatSenderID = facebookid;
-	mHomeView.app.getAppInfo().setSenderIDChat(facebookid);
+	mHomeView.myApp.getAppInfo().setSenderIDChat(facebookid);
 	Global.mChatUserName = splitStr[0];
 	new getChatHistory().execute(facebookid,splitStr[0]);
 }
@@ -455,7 +464,7 @@ public class getChatHistory extends AsyncTask<String, Void, ArrayList<ChatBean>>
 	  		jsonObject.put("receiver_name", params[1]);
 	  		
 	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/chat_history.php", jsonObject);
-	  		Log.e("Received friend location JSOn", json.toString());
+	  		Log.e("Received Chat history", json.toString());
 	  		if(json != null){
 				Global.mChatArr.clear();
 					JSONArray array = json.getJSONArray("history");
@@ -474,12 +483,15 @@ public class getChatHistory extends AsyncTask<String, Void, ArrayList<ChatBean>>
 	}
 	@Override
 	protected void onPostExecute(ArrayList<ChatBean> result) {
-		//mDialog.dismiss();
+		//prsDlg.dismiss();
 		if(result != null){
 			if(result.size()>0){
 				mChatAdapter = new ChatAdapter(mHomeView.getContext(), R.layout.chat_row, result);
 				mHomeView.getChatListView().setAdapter(mChatAdapter);
 				mHomeView.getChatListView().setSelection(Global.mChatArr.size()-1);
+			}else{
+				mChatAdapter = new ChatAdapter(mHomeView.getContext(), R.layout.chat_row, result);
+				mHomeView.getChatListView().setAdapter(mChatAdapter);
 			}
 		}		
 	}	
@@ -563,6 +575,78 @@ public void CallChatWindow(String friendName, String fbid) {
 	
 }
 
+public class DeleteFriendWeb extends AsyncTask<String, Void, Boolean>{		
+	protected void onPreExecute() {
+		mDialog = new ProgressDialog(mHomeView.getActivity());
+		mDialog.setMessage("Please wait...");
+		mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		mDialog.setIndeterminate(true);
+		mDialog.setCancelable(false);
+		mDialog.show();
+	}		
+	@Override
+	protected Boolean doInBackground(String... params) {
+		JSONObject json;
+		boolean flag = false;
+	  	try {
+			JSONObject mJsonObject = new JSONObject();
+			mJsonObject.put("fbid", mDbAdapter.getUserFbID());
+			mJsonObject.put("friend_id", params[0]);
+			json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/delete_friend.php", mJsonObject);
+			if(json!=null){
+				flag = json.getBoolean("del_status");
+				
+			}
+	  	}catch (Exception e) {
+			return flag;
+		}
+		return flag;
+	}
+	
+	@Override
+	protected void onPostExecute(Boolean result) {							
+			mDialog.dismiss();		
+			if(result){
+				mFriendArr.remove(deletedPos);
+				
+				mAdapter = new FriendAdapter(HomePresenter.this,mHomeView, R.layout.friend_row1, mFriendArr);				
+				mHomeView.getList().setAdapter(mAdapter);
+			}							
+		}
+	}
 
+public void showConfirmDeleteDialog(final int pos) {
+	final Dialog deleteDlg = new Dialog(mHomeView.getActivity());				
+	deleteDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	deleteDlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+	deleteDlg.setContentView(R.layout.confirm_delete_dlg);
+	deleteDlg.setCancelable(true);
+	deleteDlg.setCanceledOnTouchOutside(true);	
+	Button btn_yes = (Button)deleteDlg.findViewById(R.id.btn_confirm_delete_yes);
+	btn_yes.setText(Html.fromHtml("<font color=\"#ffffff\">YE</font><font color=\"#28b6ff\">S</font>"));
+	Button btn_no = (Button)deleteDlg.findViewById(R.id.btn_confirm_delete_no);
+	btn_no.setText(Html.fromHtml("<font color=\"#ffffff\">N</font><font color=\"#28b6ff\">O</font>"));
+	btn_yes.setOnClickListener(new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			deleteDlg.dismiss();
+			String friend_id = mFriendArr.get(pos).getFbId();
+			deletedPos = pos;
+			new DeleteFriendWeb().execute(friend_id);
+		}
+	});
+	
+	btn_no.setOnClickListener(new OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+		
+			deleteDlg.dismiss();
+			
+		}
+	});
+	deleteDlg.show();	
+}
 
 }
