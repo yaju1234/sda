@@ -28,7 +28,7 @@ public static String mDob = "";
    // public static boolean isTrackFriendLocation = false;
    // public static boolean isMeetUploaction = false;
     
-    public static boolean isInfoWindow = false;
+  //  public static boolean isInfoWindow = false;
     
 	public static JSONArray getFriendJSOn() {
 		return mFriendJSOn;

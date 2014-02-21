@@ -22,6 +22,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -134,9 +136,10 @@ public class HomePresenter implements IHome.Presenter{
 			public void onClick(View v) {
 
 				if(mFriendArr.get(pos).getOnlineStatus().equalsIgnoreCase("1")){	
-					if(mHomeView.myApp.isMeetuplocationWindoEnable){
+					/*if(mHomeView.myApp.isMeetuplocationWindoEnable){
 						mHomeView.doTrack();
-					}
+					}*/
+					TrackDurationControllFlag = true;
 					mHomeView.hideSlide().setVisibility(View.GONE);
 					mName = mFriendArr.get(pos).getName();
 					Global.sFriendName = mName;
@@ -203,9 +206,10 @@ public class HomePresenter implements IHome.Presenter{
 				idle = System.currentTimeMillis() - lastUsed;
 				Log.i("idle", "" + idle);
 
-				if (idle >= /*30000*/5*60*1000) {
+				if (idle >= 30000/*5*60*1000*/) {
 					mHomeView.myApp.doTrackFriendLocation = false;
-					mHomeView.getMap().clear();	
+					//mHomeView.getMap().clear();
+					marker.remove();
 					handler.removeCallbacks(runnable);
 					
 					}
@@ -390,16 +394,20 @@ public class getFriendLocation1 extends AsyncTask<String, Void, Boolean>{
 		COUNT++;
 		if(COUNT>3){
 			mHomeView.getProgressBarLayout().setVisibility(View.GONE);
-		mHomeView.getMap().clear();	
-		
+		//mHomeView.getMap().clear();	
+		if(marker != null){
+			marker.remove();
+		}
 		marker = mHomeView.getMap().addMarker(new MarkerOptions().position(new LatLng(mLat, mLng)).title("Name:"+mName/*+" "+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()+"Distance:"+distance+" meter"*/).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds())  .icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
+		marker.showInfoWindow();
 		if(Global.isZoom){
 			Global.isZoom = false;
 			mHomeView.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLat, mLng), 16));
+			
 		}
-		if(Global.isInfoWindow){
+		/*if(Global.isInfoWindow){
 			marker.showInfoWindow();	
-		}
+		}*/
 		
 		if(TrackDurationControllFlag){
 			TrackDurationControllFlag = false;

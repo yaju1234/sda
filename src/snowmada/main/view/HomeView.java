@@ -274,7 +274,7 @@ public class HomeView extends BaseView implements IHome {
 		map =  ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
 		map.setMyLocationEnabled(true);
 		map.getUiSettings().setCompassEnabled(true);
-		map.setInfoWindowAdapter(null);
+		map.setInfoWindowAdapter(new CustomInfoWindowAdapter());
 		Global.setMap(map);
 		
 		mPresenter = new HomePresenter(this);
@@ -411,6 +411,7 @@ public class HomeView extends BaseView implements IHome {
 		defaultChatWindoOpenFromNotificationList();
 		imageLoader.DisplayImage("https://graph.facebook.com/"+db.getUserFbID()+"/picture",mUserImage);
 		mUserName.setText(db.getUserFirstName());
+		new GetMeetUplocation().execute();
 	}
 	
 	@Override
@@ -534,9 +535,9 @@ public class HomeView extends BaseView implements IHome {
 						dialog.dismiss();
 						myApp.doTrackFriendLocation = false;
 						setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,false,true,false,MEET_UP_LOCATION);
-						map.clear();
+						//map.clear();
 						/*map.setInfoWindowAdapter(new CustomInfoWindowAdapter());*/
-						new GetMeetUplocation().execute();
+						//new GetMeetUplocation().execute();
 						
 					}
 				});
@@ -567,8 +568,8 @@ public class HomeView extends BaseView implements IHome {
 					public void onClick(View v) {
 						dialog.dismiss();
 						setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,false,false,false,TRACK_FRIENDS);
-						map.clear();
-						map.setInfoWindowAdapter(null);
+						//map.clear();
+						//map.setInfoWindowAdapter(null);
 					}
 				});
 				
@@ -579,7 +580,7 @@ public class HomeView extends BaseView implements IHome {
 						dialog.dismiss();
 						setLayoutVisibility(View.GONE, View.GONE, View.VISIBLE, View.GONE, View.GONE, View.GONE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.VISIBLE,View.INVISIBLE,false,false,false,ADD_FRIENDS);
 						if(!(mAddFriendArr.size()>0)){
-							new getAppUsers().execute();
+							new AppUsers().execute();
 							
 						}
 						
@@ -785,9 +786,7 @@ public class HomeView extends BaseView implements IHome {
 		try {
 			unregisterReceiver(mHandleMessageReceiver);
 			GCMRegistrar.onDestroy(this);
-			//handler1.removeCallbacks(runnable1);
-			handler.removeCallbacks(runnable);
-			//handler3.removeCallbacks(runnable3);
+			handler.removeCallbacks(runnable);			
 		} catch (Exception e) {
 			Log.e("UnRegister Receiver Error", "> " + e.getMessage());
 		}
@@ -863,7 +862,7 @@ public void defaultChatWindoOpenFromNotificationList() {
 		}else{
 			myApp.getAppInfo().isAppForeground= true;
 			setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,false,true,false,MEET_UP_LOCATION);
-			new GetMeetUplocation().execute();
+			//new GetMeetUplocation().execute();
 		}
 		
 	
@@ -902,7 +901,6 @@ public void createMenuDialog() {
 public void isSkyPetrolShow() {
 	if(myApp.getAppInfo().isAlertForSKIPatrol){
 		Global.isZoomAtUSerLocationFirstTime = false;
-		//db.updateSKI("0");
 		myApp.getAppInfo().setIsAlertForSKIPatrol(false);
 		String st[] = db.getSkiPetrolInfo();
 		map.addMarker(new MarkerOptions().position(new LatLng(Double.valueOf(st[2]), Double.valueOf(st[3]))).title("Name:"+st[0]+" "+st[1]).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds())  .icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
@@ -992,21 +990,7 @@ public RelativeLayout getProgressBarLayout() {
 
 
 @Override
-public boolean onMarkerClick(Marker marker) {	
-	
-	if(myApp.isMeetuplocationWindoEnable){}else{
-		Global.isInfoWindow = !Global.isInfoWindow;	
-	}	
-	
-	return false;
-}
-
-@Override
 public void onInfoWindowClick(Marker marker) {
-	
-	int p = -1;
-	if(myApp.isMeetuplocationWindoEnable){
-
 		current_selected_marker_id = hasmapinfo.get(marker);
 		for(int i=0; i<meetupinfoarr.size(); i++){
 			if(current_selected_marker_id == meetupinfoarr.get(i).getId()){
@@ -1017,14 +1001,10 @@ public void onInfoWindowClick(Marker marker) {
 				break;
 			}
 		}
-		
-	
-	}
-	
+
 }
 @Override
 public void onMapLongClick(final LatLng point) {
-	Log.e("Reach here", "Reach here");
 	if(myApp.isMeetuplocationWindoEnable){
 		
 		 AlertDialog.Builder builder = new AlertDialog.Builder(HomeView.this);
@@ -1042,9 +1022,9 @@ public void onMapLongClick(final LatLng point) {
                    	    .position(point) 
                    	    .title(""+db.getUserFirstName()+" "+db.getUserLastName())
                         .snippet("Update your information")
-
-                   	    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));   
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));   
                         m.setDraggable(true);
+                       
                         current_time_in_millisecond = System.currentTimeMillis();
                         meetupinfoarr.add(new MeetUpBean(current_time_in_millisecond, "","", "", "","","ME",point.latitude,point.longitude));
                         hasmapinfo.put(m, current_time_in_millisecond);
@@ -1062,88 +1042,28 @@ public void onMapLongClick(final LatLng point) {
                  });
          AlertDialog alert = builder.create();
          alert.show();
-		
-		
-		
-		 
 	}
-	
-	
 }
 
-
-
-@Override
-public void onMarkerDrag(Marker marker) {
-	
-	
-}
-
-
-
-@Override
-public void onMarkerDragEnd(Marker marker) {
-	
-	
-}
-
-
-
-@Override
-public void onMarkerDragStart(Marker marker) {
-	
-	
-}
-
-
-
-
-
-public class CustominFoWindo implements InfoWindowAdapter{
-
-	@Override
-	public View getInfoContents(Marker marker) {
-		  ContextThemeWrapper cw = new ContextThemeWrapper(
-                  getApplicationContext(), R.style.Transparent);
-          // AlertDialog.Builder b = new AlertDialog.Builder(cw);
-          LayoutInflater inflater = (LayoutInflater) cw
-                  .getSystemService(LAYOUT_INFLATER_SERVICE);
-          View layout = inflater.inflate(R.layout.custom_info_window,
-                  null);
-          return layout;
-	}
-
-	@Override
-	public View getInfoWindow(Marker marker) {
-		return null;
-	}
-	
-}
 
 
 @Override
 protected Dialog onCreateDialog(int id) {
 	switch (id) {
 	case TIME_DIALOG_ID:
-		// set time picker as current time
-		 return new TimePickerDialog(this, timePickerListener, hour, minute,
-				true);
-		
+		 return new TimePickerDialog(this, timePickerListener, hour, minute,true);		
 	case DATE_DIALOG_ID:
-		// set date picker as current date
-		 return new DatePickerDialog(this, datePickerListener, year, month,
-				day);
-		
+		 return new DatePickerDialog(this, datePickerListener, year, month,	day);		
 	}
-	return null;
-	
+	return null;	
 }
+
 private TimePickerDialog.OnTimeSetListener timePickerListener = new TimePickerDialog.OnTimeSetListener() {
 	public void onTimeSet(TimePicker view, int selectedHour,int selectedMinute) {
 		hour = selectedHour;
 		minute = selectedMinute;
 		int sec = 00;
-    tvDisplayTime.setText(new StringBuilder().append(pad(hour)).append(":").append(pad(minute)).append(":").append(0).append(0));
+        tvDisplayTime.setText(new StringBuilder().append(pad(hour)).append(":").append(pad(minute)).append(":").append(0).append(0));
 		   
 		
 		
@@ -1361,35 +1281,12 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
         @Override
         public View getInfoWindow(final Marker marker) {
         	HomeView.this.m = marker;        	
-            double lat = marker.getPosition().latitude;
-            double lng = marker.getPosition().longitude;
-            for(int i = 0; i<meetupinfoarr.size(); i++){
-            	if(meetupinfoarr.get(i).getLat()==lat){
-            		if(meetupinfoarr.get(i).getLng()==lng){
-                		pos = i;
-                		break;
-                	}
-            	}
-            } 
            
             final TextView tv_name = ((TextView) view.findViewById(R.id.tv_marker_name));
-            tv_name.setText("Name: "+meetupinfoarr.get(pos).getName());
+            tv_name.setText(marker.getTitle());
             final TextView tv_loc = ((TextView) view.findViewById(R.id.tv_marker_loc));
-            tv_loc.setText("LOcation: "+meetupinfoarr.get(pos).getLocation());
-            final TextView tv_desc = ((TextView) view.findViewById(R.id.tv_marker_desc));
-            tv_desc.setText("Description: "+meetupinfoarr.get(pos).getDescription());
-            final TextView tv_date = ((TextView) view.findViewById(R.id.tv_marker_date));
-            tv_date.setText("Date: "+meetupinfoarr.get(pos).getDate1());
-            final TextView tv_time = ((TextView) view.findViewById(R.id.tv_marker_time));
-            tv_time.setText("Time: "+meetupinfoarr.get(pos).getTime());
-            final LinearLayout ll_btn_edit = (LinearLayout)view.findViewById(R.id.ll_marker_edit);
-            final Button btn_edit = (Button)view.findViewById(R.id.btn_marker_edit);
-            if(meetupinfoarr.get(pos).getOwner().equalsIgnoreCase("ME")){
-            	ll_btn_edit.setVisibility(View.VISIBLE);
-            }else{
-            	ll_btn_edit.setVisibility(View.GONE);
-            }   
-           
+            Log.e("Snippet ", marker.getSnippet());
+            tv_loc.setText(marker.getSnippet());
             return view;
         }
     }
@@ -1424,7 +1321,7 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 	
 	public void doTrack(){
 		setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,false,false,false,TRACK_FRIENDS);
-		map.clear();
+		//map.clear();
 		map.setInfoWindowAdapter(null);
 	}
 	
@@ -1517,31 +1414,25 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		@Override
 		protected void onPostExecute(ArrayList<MeetUpBean> result) {
 			super.onPostExecute(result);
-			dismissProgressDialog();
-			map.clear();
-			//Log.e("Meet up Size", ""+result.size());
 			if(result != null){
-				Log.e("Meet up Size", ""+result.size());
-				
 				for(int i=0; i<result.size();i++){
 					Log.e("name", result.get(i).getName());
-					//if(result.get(i).getName().equalsIgnoreCase("asanti namrata")){
-						Log.i("Meet Loc", ""+result.get(i).getLocation());
 						if(result.get(i).getOwner().equalsIgnoreCase("ME")){
-							 /*Marker*/ m =  map.addMarker(new MarkerOptions()
+							Log.e("Add snippet", "Location:"+result.get(i).getLocation()+"\nDescription: "+result.get(i).getDescription()+"\nDate: "+result.get(i).getDate1()+"\nTime: "+result.get(i).getLocation());
+							 m =  map.addMarker(new MarkerOptions()
 					    	    .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
 					    	    .title("Name:"+result.get(i).getName())
-					         .snippet("Location:"+result.get(i).getLocation())
-					    	    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));   
+					    	    .snippet("Location:"+result.get(i).getLocation()+"\nDescription: "+result.get(i).getDescription()+"\nDate: "+result.get(i).getDate1()+"\nTime: "+result.get(i).getLocation())
+					           .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));   
 					         m.setDraggable(true);
 					         
 					         hasmapinfo.put(m, result.get(i).getId());
 						}else{
-							 /*Marker*/ m =  map.addMarker(new MarkerOptions()
+							 m =  map.addMarker(new MarkerOptions()
 					    	    .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
 					    	    .title("Name:"+result.get(i).getName())
-					         .snippet("Location:"+result.get(i).getLocation())
-					    	    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));   
+					    	    .snippet("Location:"+result.get(i).getLocation()+"\nDescription: "+result.get(i).getDescription()+"\nDate: "+result.get(i).getDate1()+"\nTime: "+result.get(i).getLocation())
+					           .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));   
 					         m.setDraggable(false);
 					         
 					         hasmapinfo.put(m, result.get(i).getId());
@@ -1554,19 +1445,11 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 							deleteOldMarker();
 						}
 					}
-					map.setInfoWindowAdapter(new CustomInfoWindowAdapter());
+					
 			}
 			
 		}
 
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			showProgressDailog();
-		}
-		
-		
-		
 	}
 	public class SubmitMeetUplocation extends AsyncTask<String, String, ArrayList<MeetUpBean>>{
 
@@ -1627,7 +1510,7 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		protected void onPostExecute(ArrayList<MeetUpBean> result) {
 			super.onPostExecute(result);
 			dismissProgressDialog();
-			map.clear();
+			//map.clear();
 			if(result != null){
 				
 				for(int i=0; i<result.size();i++){
@@ -1712,7 +1595,7 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		}
 	}
 	
-	public class getAppUsers extends AsyncTask<String, Void, ArrayList<String>>{		
+	public class AppUsers extends AsyncTask<String, Void, ArrayList<String>>{		
 		protected void onPreExecute() {
 		showProgressDailog();
 		}
@@ -1733,7 +1616,6 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		        return mAppUserFriend;
 				
 			} catch (Exception e) {
-				//prsDlg.dismiss();
 				e.printStackTrace();
 			}
 			return null;
@@ -1754,8 +1636,7 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 								mAddFriendArr.add(new AddFriendBean(facebookfriend.get(i).getId(),facebookfriend.get(i).getName()));
 								flag = true;
 								break;
-							}
-							
+							}							
 						}
 						if(!flag){
 							mInviteFriendArr.add(new InviteFriendBean(facebookfriend.get(i).getId(),facebookfriend.get(i).getName()));

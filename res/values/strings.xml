@@ -41,4 +41,5 @@
     <string name="sky_petrol_dialog_confirmation_text">Do you really want to report\nand emergency?</string>
     <string name="permission_not_granted">Unable to perform selected action because permissions were not granted.</string>
 <string name="allow_track">Allow\nTrack</string>
+<string name="marker_snippet">Location: Kolkata\nDescription: lorem ipsum\nDescription: lorem ipsum\nDate: 2014-02-18\n</string>
 </resources>

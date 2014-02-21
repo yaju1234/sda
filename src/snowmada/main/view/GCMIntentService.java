@@ -91,76 +91,46 @@ public class GCMIntentService extends GCMBaseIntentService {
 
     @Override
     protected boolean onRecoverableError(Context context, String errorId) {
-        // log message
         Log.i(TAG, "Received recoverable error: " + errorId);
-        displayMessage(context, getString(R.string.gcm_recoverable_error,
-                errorId));
+        displayMessage(context, getString(R.string.gcm_recoverable_error,   errorId));
         return super.onRecoverableError(context, errorId);
     }
-
-    /**
-     * Issues a notification to inform the user that server has sent a message.
-     */
+	@SuppressWarnings("deprecation")
 	private static void generateNotification(final Context context,String message) {
 		
 		Log.e("Push notification", message);
-		//Toast.makeText(context, "Your Emergency Becon has been Activated Ski Patrol Has Been Notified", Toast.LENGTH_LONG).show();
 		try {
 			JSONObject json = new JSONObject(message);
 			Global.isZoomAtUSerLocationFirstTime = false;
 			if (json.getString("status").equalsIgnoreCase("1")) {
 				TrackLocation.databaseHelperInstance(context);
-				//TrackLocation.databaseHelperInstance(context).requestUpdate();
 				String noti_msg = json.getString("message");
-
-				locationManager = (LocationManager) context
-						.getSystemService(Context.LOCATION_SERVICE);
-						handler.removeCallbacks(runnable);
-
-					lastUsed = System.currentTimeMillis();
+				locationManager = (LocationManager) context	.getSystemService(Context.LOCATION_SERVICE);
+				handler.removeCallbacks(runnable);
+				lastUsed = System.currentTimeMillis();
 					idle = 0;
 					runnable = new Runnable() {
 						public void run() {
 							handler.postDelayed(runnable, 3000);
-
 							idle = System.currentTimeMillis() - lastUsed;
 							Log.i("idle", "" + idle);
-
 							if (idle >= 5*60*1000) {
-								//TrackLocation.databaseHelperInstance(context).removeLocationUpdate();
 								handler.removeCallbacks(runnable);
 								}
 						}
 					};
 					handler.postDelayed(runnable, 1000);
-
 					int icon = R.drawable.app_logo;
 					long when = System.currentTimeMillis();
-					NotificationManager notificationManager = (NotificationManager) context
-							.getSystemService(Context.NOTIFICATION_SERVICE);
-					Notification notification = new Notification(icon,
-							noti_msg, when);
-
+					NotificationManager notificationManager = (NotificationManager) context	.getSystemService(Context.NOTIFICATION_SERVICE);
+					Notification notification = new Notification(icon,noti_msg, when);
 					String title = context.getString(R.string.app_name);
-
-					Intent notificationIntent = new Intent(context,
-							HomeView.class);
-					// set intent so it does not start a new activity
-					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-							| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-					PendingIntent intent = PendingIntent.getActivity(context,
-							0, new Intent()/* notificationIntent */, 0);
-					notification.setLatestEventInfo(context, title, noti_msg,
-							intent);
+					Intent notificationIntent = new Intent(context,	HomeView.class);
+					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+					PendingIntent intent = PendingIntent.getActivity(context,0, new Intent(), 0);
+					notification.setLatestEventInfo(context, title, noti_msg,intent);
 					notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-					// Play default notification sound
 					notification.defaults |= Notification.DEFAULT_SOUND;
-
-					// notification.sound = Uri.parse("android.resource://" +
-					// context.getPackageName() + "your_sound_file_name.mp3");
-
-					// Vibrate if vibrate is enabled
 					notification.defaults |= Notification.DEFAULT_VIBRATE;
 					notificationManager.notify(0, notification);
 
@@ -173,19 +143,13 @@ public class GCMIntentService extends GCMBaseIntentService {
 				String Fname = json.getString("fname");
 				String Lname = json.getString("lname");
 
-				SnowmadaDbAdapter mDbAdapter = SnowmadaDbAdapter
-						.databaseHelperInstance(context);
+				SnowmadaDbAdapter mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(context);
 				if (mDbAdapter.getSkiPetrolRowCount() > 0) {
-					mDbAdapter.updateSkiPetrolInfo(Fname, Lname, latitude,
-							longitude);
+					mDbAdapter.updateSkiPetrolInfo(Fname, Lname, latitude,	longitude);
 				} else {
-					mDbAdapter.insertSkiPetrolInfo(Fname, Lname, latitude,
-							longitude);
+					mDbAdapter.insertSkiPetrolInfo(Fname, Lname, latitude,longitude);
 				}
-				Intent intent = new Intent(
-						"SNOWMADA_GET_CURRENT_LOCATION_INTENT");
-				Log.e("json.getStringgfg1111", "json.getStringgfg111");
-			
+				Intent intent = new Intent(	"SNOWMADA_GET_CURRENT_LOCATION_INTENT");				
 				context.sendBroadcast(intent);
 				
 			}else  if(json.getString("status").equalsIgnoreCase("4")) {
@@ -193,119 +157,69 @@ public class GCMIntentService extends GCMBaseIntentService {
 				 String name = json.getString("name");
 				 String sender_fb_id = json.getString("sender_fb_id");
 				 
-				if(/*Global.isApplicationForeground*/app.getAppInfo().isAppForeground){
+				if(app.getAppInfo().isAppForeground){
 					
 					if(Global.isChatActive){
 						if(!name.equalsIgnoreCase(Global.mChatUserName)){// Third person ping
 							
 							int icon = R.drawable.app_logo;
 							long when = System.currentTimeMillis();
-							NotificationManager notificationManager = (NotificationManager) context
-									.getSystemService(Context.NOTIFICATION_SERVICE);
-							Notification notification = new Notification(icon,
-									name+":"+msg, when);
-
+							NotificationManager notificationManager = (NotificationManager) context	.getSystemService(Context.NOTIFICATION_SERVICE);
+							Notification notification = new Notification(icon,name+":"+msg, when);
 							String title = context.getString(R.string.app_name);
-
-							Intent notificationIntent = new Intent(context,
-									HomeView.class);
+							Intent notificationIntent = new Intent(context,	HomeView.class);
 							notificationIntent.putExtra("sender_fb_id", sender_fb_id);
 							notificationIntent.putExtra("sender_name", name);
 							notificationIntent.putExtra("event", "chat");
-							// set intent so it does not start a new activity
-							notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-									| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-							PendingIntent intent = PendingIntent.getActivity(context,
-									0, /*new Intent()*/ notificationIntent , 0);
+							notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP	| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+							PendingIntent intent = PendingIntent.getActivity(context,0,notificationIntent , 0);
 							notification.setLatestEventInfo(context, title, name+":"+msg,
 									intent);
 							notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-							// Play default notification sound
 							notification.defaults |= Notification.DEFAULT_SOUND;
-
-							// notification.sound = Uri.parse("android.resource://" +
-							// context.getPackageName() + "your_sound_file_name.mp3");
-
-							// Vibrate if vibrate is enabled
 							notification.defaults |= Notification.DEFAULT_VIBRATE;
 							notificationManager.notify(0, notification);
 						}
 						
 					}else{
-						// When chat is not active but myApp is foreground
-						 
-						//if(!SnowmadaDbAdapter.databaseHelperInstance(context).isUserMessageExist(sender_fb_id)){
 							SnowmadaDbAdapter.databaseHelperInstance(context).insertChatMessage(sender_fb_id, name,"1", msg);
-						/*}else{
-							SnowmadaDbAdapter.databaseHelperInstance(context).updateChatMessageInfo(sender_fb_id, msg);
-						}
-						*/
-						int icon = R.drawable.app_logo;
+						
+							int icon = R.drawable.app_logo;
 							long when = System.currentTimeMillis();											
-							NotificationManager notificationManager = (NotificationManager) context
-									.getSystemService(Context.NOTIFICATION_SERVICE);
-							Notification notification = new Notification(icon,
-									name+":"+msg, when);
-
+							NotificationManager notificationManager = (NotificationManager) context	.getSystemService(Context.NOTIFICATION_SERVICE);
+							Notification notification = new Notification(icon,	name+":"+msg, when);
 							String title = context.getString(R.string.app_name);
-
-							Intent notificationIntent = new Intent(context,
-									HomeView.class);
+							Intent notificationIntent = new Intent(context,	HomeView.class);
 							notificationIntent.putExtra("sender_fb_id", sender_fb_id);
 							notificationIntent.putExtra("sender_name", name);
-							// set intent so it does not start a new activity
-							notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-									| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-							PendingIntent intent = PendingIntent.getActivity(context,
-									0, /*new Intent()*/ notificationIntent , 0);
-							notification.setLatestEventInfo(context, title, name+":"+msg,
-									intent);
+							notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+							PendingIntent intent = PendingIntent.getActivity(context,0,  notificationIntent , 0);
+							notification.setLatestEventInfo(context, title, name+":"+msg,	intent);
 							notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-							// Play default notification sound
 							notification.defaults |= Notification.DEFAULT_SOUND;
-
-							// notification.sound = Uri.parse("android.resource://" +
-							// context.getPackageName() + "your_sound_file_name.mp3");
-
-							// Vibrate if vibrate is enabled
 							notification.defaults |= Notification.DEFAULT_VIBRATE;
 							notificationManager.notify(0, notification);
 					}
 				}else{//  myApp is background
-
 					
 					 int icon = R.drawable.app_logo;
 						long when = System.currentTimeMillis();
-						NotificationManager notificationManager = (NotificationManager) context
-								.getSystemService(Context.NOTIFICATION_SERVICE);
-						Notification notification = new Notification(icon,
-								name+":"+msg, when);
+						NotificationManager notificationManager = (NotificationManager) context	.getSystemService(Context.NOTIFICATION_SERVICE);
+						Notification notification = new Notification(icon,	name+":"+msg, when);
 
 						String title = context.getString(R.string.app_name);
 
-						Intent notificationIntent = new Intent(context,
-								HomeView.class);
+						Intent notificationIntent = new Intent(context,	HomeView.class);
 						notificationIntent.putExtra("sender_fb_id", sender_fb_id);
 						notificationIntent.putExtra("sender_name", name);
 						notificationIntent.putExtra("event", "chat");
-						// set intent so it does not start a new activity
 						notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
 								| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-						PendingIntent intent = PendingIntent.getActivity(context,
-								0, /*new Intent()*/ notificationIntent , 0);
+						PendingIntent intent = PendingIntent.getActivity(context,0, /*new Intent()*/ notificationIntent , 0);
 						notification.setLatestEventInfo(context, title, name+":"+msg,
 								intent);
 						notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-						// Play default notification sound
 						notification.defaults |= Notification.DEFAULT_SOUND;
-
-						// notification.sound = Uri.parse("android.resource://" +
-						// context.getPackageName() + "your_sound_file_name.mp3");
-
-						// Vibrate if vibrate is enabled
 						notification.defaults |= Notification.DEFAULT_VIBRATE;
 						notificationManager.notify(0, notification);
 				
@@ -319,33 +233,13 @@ public class GCMIntentService extends GCMBaseIntentService {
 				 Log.e("pending request", "pending request");
 				 int icon = R.drawable.app_logo;
 					long when = System.currentTimeMillis();
-					NotificationManager notificationManager = (NotificationManager) context
-							.getSystemService(Context.NOTIFICATION_SERVICE);
-					Notification notification = new Notification(icon,
-							sender_name+" "+msg, when);
-
+					NotificationManager notificationManager = (NotificationManager) context	.getSystemService(Context.NOTIFICATION_SERVICE);
+					Notification notification = new Notification(icon,	sender_name+" "+msg, when);
 					String title = context.getString(R.string.app_name);
-
-					/*Intent notificationIntent = new Intent(context,
-							HomeView.class);
-					notificationIntent.putExtra("sender_fb_id", sender_fb_id);
-					notificationIntent.putExtra("sender_name", name);
-					// set intent so it does not start a new activity
-					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-							| Intent.FLAG_ACTIVITY_SINGLE_TOP);*/
-					PendingIntent intent = PendingIntent.getActivity(context,
-							0, new Intent() /*notificationIntent*/ , 0);
-					notification.setLatestEventInfo(context, title, sender_name+" "+msg,
-							intent);
+					PendingIntent intent = PendingIntent.getActivity(context,0, new Intent() , 0);
+					notification.setLatestEventInfo(context, title, sender_name+" "+msg,intent);
 					notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-					// Play default notification sound
 					notification.defaults |= Notification.DEFAULT_SOUND;
-
-					// notification.sound = Uri.parse("android.resource://" +
-					// context.getPackageName() + "your_sound_file_name.mp3");
-
-					// Vibrate if vibrate is enabled
 					notification.defaults |= Notification.DEFAULT_VIBRATE;
 					notificationManager.notify(0, notification);
 				 
@@ -361,31 +255,12 @@ public class GCMIntentService extends GCMBaseIntentService {
 					long when = System.currentTimeMillis();
 					NotificationManager notificationManager = (NotificationManager) context
 							.getSystemService(Context.NOTIFICATION_SERVICE);
-					Notification notification = new Notification(icon,
-							friend_name+" "+msg, when);
-
+					Notification notification = new Notification(icon,	friend_name+" "+msg, when);
 					String title = context.getString(R.string.app_name);
-
-					/*Intent notificationIntent = new Intent(context,
-							HomeView.class);
-					notificationIntent.putExtra("sender_fb_id", sender_fb_id);
-					notificationIntent.putExtra("sender_name", name);
-					// set intent so it does not start a new activity
-					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-							| Intent.FLAG_ACTIVITY_SINGLE_TOP);*/
-					PendingIntent intent = PendingIntent.getActivity(context,
-							0, new Intent() /*notificationIntent*/ , 0);
-					notification.setLatestEventInfo(context, title, friend_name+":"+msg,
-							intent);
+					PendingIntent intent = PendingIntent.getActivity(context,0, new Intent(), 0);
+					notification.setLatestEventInfo(context, title, friend_name+":"+msg,intent);
 					notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-					// Play default notification sound
 					notification.defaults |= Notification.DEFAULT_SOUND;
-
-					// notification.sound = Uri.parse("android.resource://" +
-					// context.getPackageName() + "your_sound_file_name.mp3");
-
-					// Vibrate if vibrate is enabled
 					notification.defaults |= Notification.DEFAULT_VIBRATE;
 					notificationManager.notify(0, notification);
 			 }else if(json.getString("status").equalsIgnoreCase("7")){//Request acknowledgment
@@ -395,32 +270,16 @@ public class GCMIntentService extends GCMBaseIntentService {
 				 
 				 int icon = R.drawable.app_logo;
 					long when = System.currentTimeMillis();
-					NotificationManager notificationManager = (NotificationManager) context
-							.getSystemService(Context.NOTIFICATION_SERVICE);
-					Notification notification = new Notification(icon,
-							name+" "+msg, when);
-
+					NotificationManager notificationManager = (NotificationManager) context	.getSystemService(Context.NOTIFICATION_SERVICE);
+					Notification notification = new Notification(icon,name+" "+msg, when);
 					String title = context.getString(R.string.app_name);
-
-					Intent notificationIntent = new Intent(context,
-							HomeView.class);
+					Intent notificationIntent = new Intent(context,	HomeView.class);
 					notificationIntent.putExtra("event", "meetup");
-					// set intent so it does not start a new activity
-					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-							| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-					PendingIntent intent = PendingIntent.getActivity(context,
-							0, /*new Intent()*/ notificationIntent , 0);
-					notification.setLatestEventInfo(context, title, name+":"+msg,
-							intent);
+					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP	| Intent.FLAG_ACTIVITY_SINGLE_TOP);
+					PendingIntent intent = PendingIntent.getActivity(context,0,notificationIntent , 0);
+					notification.setLatestEventInfo(context, title, name+":"+msg,intent);
 					notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-					// Play default notification sound
 					notification.defaults |= Notification.DEFAULT_SOUND;
-
-					// notification.sound = Uri.parse("android.resource://" +
-					// context.getPackageName() + "your_sound_file_name.mp3");
-
-					// Vibrate if vibrate is enabled
 					notification.defaults |= Notification.DEFAULT_VIBRATE;
 					notificationManager.notify(0, notification);
 			 }
