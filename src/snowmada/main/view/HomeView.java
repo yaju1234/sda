@@ -31,15 +31,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -67,6 +66,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.strapin.Enum.URL;
 import com.strapin.Interface.IHome;
 import com.strapin.Util.ImageLoader;
 import com.strapin.adapter.AddFriendAdapter;
@@ -80,7 +80,7 @@ import com.strapin.bean.DealsBean;
 import com.strapin.bean.FacebookFriendBean;
 import com.strapin.bean.InviteFriendBean;
 import com.strapin.bean.MeetUpBean;
-import com.strapin.bean.MessageBean;
+import com.strapin.bean.NewMessage;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
 import com.strapin.presenter.HomePresenter;
@@ -91,9 +91,9 @@ public class HomeView extends BaseView implements IHome {
 	
 	private VerticalTextView mBtnSlider;
 	
-	private Button mAddFriend;
-	private Button mInviteFriend;
-	private Button mPendingReq;	
+	private Button mTabAddFriend;
+	private Button mTabInviteFriend;
+	private Button mTabPendingRequest;	
 	
 	private TextView mUserName;
 	private TextView mPendingReqCounter;
@@ -102,7 +102,6 @@ public class HomeView extends BaseView implements IHome {
 	private TextView mTvMenuBottom;
 	private TextView tvDisplayTime;
 	private TextView tvDisplayDate;
-	
 	
 	private EditText mSearchAddFriend;
 	private EditText et_search_invite_friend;
@@ -118,9 +117,9 @@ public class HomeView extends BaseView implements IHome {
 	private ListView mLvMessageList;
 	private ListView mLvInviteFriendList;
 	
-	private HomePresenter mPresenter;
+	public HomePresenter presenter;
 	
-	private GoogleMap map;
+	public GoogleMap map;
 	
 	private LinearLayout mIconMeetup;
 	private LinearLayout mIconChatLive;
@@ -167,6 +166,7 @@ public class HomeView extends BaseView implements IHome {
 	private ArrayList<InviteFriendBean> mInviteFriendSearchArr = new ArrayList<InviteFriendBean>();
 	private ArrayList<FacebookFriendBean> facebookfriend = new ArrayList<FacebookFriendBean>();
 	private ArrayList<String> mAppUserFriend = new ArrayList<String>();
+	private ArrayList<NewMessage> msg = new ArrayList<NewMessage>();
 	
 	private DealsAdapter mAdapter;
 	private AddFriendAdapter mAddFriendAdapter;
@@ -201,18 +201,71 @@ public class HomeView extends BaseView implements IHome {
 	public List<Integer> deleted_pos = new ArrayList<Integer>();
 	public List<String> invalidMarkerIDs = new ArrayList<String>();
 	public ArrayList<MeetUpBean> meetupinfoarr = new ArrayList<MeetUpBean>();
-	public ArrayList<MeetUpBean> tempmeetupinfoarr = new ArrayList<MeetUpBean>();
-	public HashMap<Marker, Long> hasmapinfo = new  HashMap<Marker, Long>();
+	public HashMap<Marker, Long> markerIdHasMap = new  HashMap<Marker, Long>();
 	public long current_selected_marker_id = 0;
-	private int hour;
-	private int minute;
-	private int year;
-	private int month;
-	private int day;
-	private long current_time_in_millisecond = 0;
+	public int hour;
+	public int minute;
+	public int year;
+	public int month;
+	public int day;
+	public long current_time_in_millisecond = 0;
 	
-	private   Marker m;
-	int pos = -1;
+	public   Marker m;
+	public int pos = -1;
+	
+	public String[] markersst;
+	public int updatepos = -1;
+	
+	public Handler handle = new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case 1:
+				meetupinfoarr.get(updatepos).setName(db.getUserFirstName()+" "+db.getUserLastName());
+				meetupinfoarr.get(updatepos).setLocation(markersst[2]);
+				meetupinfoarr.get(updatepos).setDescription(markersst[3]);
+				meetupinfoarr.get(updatepos).setDate1(markersst[7]);
+				meetupinfoarr.get(updatepos).setTime(markersst[4]);
+				meetupinfoarr.get(updatepos).setLat(Double.parseDouble(markersst[5]));
+				meetupinfoarr.get(updatepos).setLng(Double.parseDouble(markersst[6]));
+				
+				map.clear();
+				mViewSlider.setVisibility(View.VISIBLE);
+				mViewSlider.setVisibility(View.GONE);
+				for(int i=0; i<meetupinfoarr.size();i++){
+						if(meetupinfoarr.get(i).getOwner().equalsIgnoreCase("ME")){
+							 m =  map.addMarker(new MarkerOptions()
+					    	     .position(new LatLng(meetupinfoarr.get(i).getLat(), meetupinfoarr.get(i).getLng())) 
+					    	     .title("Name:"+meetupinfoarr.get(i).getName())
+					    	     .snippet("Location:"+meetupinfoarr.get(i).getLocation()+"\nDescription: "+meetupinfoarr.get(i).getDescription()+"\nDate: "+meetupinfoarr.get(i).getDate1()+"\nTime: "+meetupinfoarr.get(i).getTime())
+					             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));   
+					             m.setDraggable(true);					         
+					             markerIdHasMap.put(m, meetupinfoarr.get(i).getId());
+						}else{
+							 m =  map.addMarker(new MarkerOptions()
+					    	     .position(new LatLng(meetupinfoarr.get(i).getLat(), meetupinfoarr.get(i).getLng())) 
+					    	     .title("Name:"+meetupinfoarr.get(i).getName())
+					    	     .snippet("Location:"+meetupinfoarr.get(i).getLocation()+"\nDescription: "+meetupinfoarr.get(i).getDescription()+"\nDate: "+meetupinfoarr.get(i).getDate1()+"\nTime: "+meetupinfoarr.get(i).getTime())
+					             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));   
+					             m.setDraggable(false);					         
+					             markerIdHasMap.put(m, meetupinfoarr.get(i).getId());
+						}						
+			}
+					if (invalidMarkerIDs != null) {
+						if (invalidMarkerIDs.size() > 0) {
+							deleteOldMarker();
+						}
+					}
+				break;
+
+			default:
+				break;
+			}
+		}
+		
+	};
 		
 
 	  	
@@ -226,9 +279,9 @@ public class HomeView extends BaseView implements IHome {
 		
 		mBtnSlider = (VerticalTextView)findViewById(R.id.btn_slider);
 		mBtnSlider.setText(Html.fromHtml("<font color=\"#ffffff\">FRIE</font><font color=\"#28b6ff\">NDS</font>"));
-		mAddFriend = (Button)findViewById(R.id.btn_add_friend);
-		mInviteFriend = (Button)findViewById(R.id.btn_invite_friend);
-		mPendingReq = (Button)findViewById(R.id.btn_request);
+		mTabAddFriend = (Button)findViewById(R.id.btn_add_friend);
+		mTabInviteFriend = (Button)findViewById(R.id.btn_invite_friend);
+		mTabPendingRequest = (Button)findViewById(R.id.btn_request);
 		
 		mUserName = (TextView)findViewById(R.id.tv_home_view_user_name);
 		mTvMsgNotiCounter = (TextView)findViewById(R.id.tv_msg_notification_count);
@@ -277,15 +330,15 @@ public class HomeView extends BaseView implements IHome {
 		map.setInfoWindowAdapter(new CustomInfoWindowAdapter());
 		Global.setMap(map);
 		
-		mPresenter = new HomePresenter(this);
+		presenter = new HomePresenter(this);
 		
 		mBtnSlider.setOnClickListener(this);
 		mUserImage.setOnClickListener(this);
 		mBottonMenu.setOnClickListener(this);
 		mIvSkyPatrol.setOnClickListener(this);
-		mAddFriend.setOnClickListener(this);
-		mInviteFriend.setOnClickListener(this);
-		mPendingReq.setOnClickListener(this);
+		mTabAddFriend.setOnClickListener(this);
+		mTabInviteFriend.setOnClickListener(this);
+		mTabPendingRequest.setOnClickListener(this);
 		mMassageLayout.setOnClickListener(this);
 		mChatSendButton.setOnClickListener(this);
 		map.setOnMapLongClickListener(this);		
@@ -397,21 +450,23 @@ public class HomeView extends BaseView implements IHome {
 		
 		mRlProgressBarLayout.setVisibility(View.GONE);
 		
-		Global.isChatActive = false;		
+		myApp.isChatActive = false;		
 		Global.mSelectedTab = 1;
 		Global.isAddSnowmadaFriend = false;
 		Global.isZoomAtUSerLocationFirstTime = true;	
 		
-		createRunnableThread();
+		doCallasyncWeb();
 		callService();		
 		getDeviceId();		
 		isSkyPetrolShow();
-	    TrackLocation.databaseHelperInstance(getApplicationContext());
+	    
 	    createMenuDialog();
 		defaultChatWindoOpenFromNotificationList();
+		TrackLocation.databaseHelperInstance(getApplicationContext());
 		imageLoader.DisplayImage("https://graph.facebook.com/"+db.getUserFbID()+"/picture",mUserImage);
 		mUserName.setText(db.getUserFirstName());
 		new GetMeetUplocation().execute();
+		new MessageWeb().execute();
 	}
 	
 	@Override
@@ -427,9 +482,7 @@ public class HomeView extends BaseView implements IHome {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_logout:
-			//db.updateSession(0);
 			myApp.getAppInfo().setSession(false);
-			//Intent intent = new Intent(HomeView.this, SigninView.class);startActivity(intent);
 			finish();
 			break;
 
@@ -449,7 +502,7 @@ public class HomeView extends BaseView implements IHome {
 				mViewSlider.setVisibility(View.VISIBLE);
 				//mBottonMenu.setBackgroundResource(R.drawable.menu_deactive);
 				if (Global.isAddSnowmadaFriend) {
-					mPresenter.callAdapter();
+					presenter.callAdapter();
 					Global.isAddSnowmadaFriend = false;
 				}
 
@@ -470,41 +523,39 @@ public class HomeView extends BaseView implements IHome {
 		}
 		
 		if(v == mIvSkyPatrol){
-			mPresenter.doSkiPatrolFunction();	
+			presenter.doSkiPatrolFunction();	
 		}
 		if(v == mMassageLayout){
-			
-			if(mLayoutMessageNotificationList.getVisibility() == View.VISIBLE){
-				mLayoutMessageNotificationList.setVisibility(View.GONE);
-			}else{
-				int count = db.getTotalMessageCount();
-				if(count>0){
-					
+			Log.e("Message icon click", ""+msg.size());
+			if(msg.size()>0){
+				if(mLayoutMessageNotificationList.getVisibility() ==View.VISIBLE){
+					mLayoutMessageNotificationList.setVisibility(View.GONE);
+				}else{
 					mLayoutMessageNotificationList.setVisibility(View.VISIBLE);
-					ArrayList<MessageBean> mList = new ArrayList<MessageBean>();
-					mList = db.getAllChatMessageInfo();
-					mMassageAdapter = new OfflineMessageAdapter(mLayoutMessageNotificationList,mPresenter,HomeView.this, getApplicationContext(), R.layout.message_notification_row, mList);
+					mMassageAdapter = new OfflineMessageAdapter(presenter,HomeView.this, R.layout.message_notification_row, msg);
 					mLvMessageList.setAdapter(mMassageAdapter);
 				}
-			}		
+				
+			}
+		
 		}
 		
-/////////////**************** Header part Click listener END*****************************///////////////////		
+//************************* Header part Click listener END*****************************************************************	
 
-/////////////**************** Add friend part Click listener Start*****************************///////////////////	
-		if (v == mAddFriend) {
+//************************ Add friend part Click listener Start************************************************************	
+		if (v == mTabAddFriend) {
 			setFriendView(BUTTON_ADD_FRIEND);
 		}
 
-		if (v == mInviteFriend) {
+		if (v == mTabInviteFriend) {
 			setFriendView(BUTTON_INVITE_FRIEND);
 		}
 
-		if (v == mPendingReq) {
+		if (v == mTabPendingRequest) {
 			setFriendView(BUTTON_PENDING_REQUEST);
 		}
-/////////////**************** Add friend part Click listener End*****************************///////////////////
-/////////////**************** Chat  Click listener Start*****************************///////////////////	
+//****************************** Add friend part Click listener End********************************************************
+//****************************** Chat  Click listener Start****************************************************************	
 		if(v == mChatSendButton){
 
 			if(!mTvActiveChatFriend.getText().toString().equalsIgnoreCase("Please Select A Friend To Chat With")){
@@ -522,22 +573,16 @@ public class HomeView extends BaseView implements IHome {
 				Toast.makeText(getApplicationContext(), "Please select a friend", Toast.LENGTH_LONG).show();
 			}
 		}
-/////////////**************** Add  Click listener End*****************************///////////////////		
-/////////////**************** Footer part Click listener Start*****************************///////////////////
+//******************************* Add  Click listener End*************************************************************	
+//******************************* Footer part Click listener Start****************************************************
 		if(v == mBottonMenu){
-		
-				//setVisibility(mHighlightPos);	
-				
-				mIconMeetup.setOnClickListener(new OnClickListener() {
+			mIconMeetup.setOnClickListener(new OnClickListener() {
 					
 					@Override
 					public void onClick(View v) {
 						dialog.dismiss();
 						myApp.doTrackFriendLocation = false;
 						setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,false,true,false,MEET_UP_LOCATION);
-						//map.clear();
-						/*map.setInfoWindowAdapter(new CustomInfoWindowAdapter());*/
-						//new GetMeetUplocation().execute();
 						
 					}
 				});
@@ -568,8 +613,7 @@ public class HomeView extends BaseView implements IHome {
 					public void onClick(View v) {
 						dialog.dismiss();
 						setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,false,false,false,TRACK_FRIENDS);
-						//map.clear();
-						//map.setInfoWindowAdapter(null);
+						
 					}
 				});
 				
@@ -619,9 +663,9 @@ public class HomeView extends BaseView implements IHome {
 				 
 				
 			}
-//////////////**************** Footer part Click listener END****************************///////////////////		 
+//************************************ Footer part Click listener END*************************************************		 
 
-/////////////**************** Footer part Click listener END*****************************///////////////////
+//************************************ Footer part Click listener END*********************************************************
 		
 		
 		 }
@@ -642,58 +686,15 @@ public class HomeView extends BaseView implements IHome {
 	public void setFriendView(int i){
 		switch (i) {
 		case BUTTON_ADD_FRIEND:
-			Global.mSelectedTab = 1;
-			mRequestList.setVisibility(View.GONE);
-			mLvInviteFriendList.setVisibility(View.GONE);
-			mAddFriendList.setVisibility(View.VISIBLE);
-			mAddFriendSearchLayout.setVisibility(View.VISIBLE);
-			mInviteFriendSearchLayout.setVisibility(View.GONE);
-			
-			mPendingReq.setBackgroundResource(R.drawable.tab_unselect);
-			mAddFriend.setBackgroundResource(R.drawable.tab_select);
-			mInviteFriend.setBackgroundResource(R.drawable.tab_unselect);
-			mPendingReq.setTextColor(Color.parseColor("#ffffff"));
-			mAddFriend.setTextColor(Color.parseColor("#00ccff"));
-			mInviteFriend.setTextColor(Color.parseColor("#ffffff"));
-			mTabSElectImage.setBackgroundResource(R.drawable.add_friend_text);
+			setFriendTab(1,View.VISIBLE,View.GONE,View.GONE,View.VISIBLE,View.GONE,R.drawable.tab_select,R.drawable.tab_unselect,R.drawable.tab_unselect,"#00ccff","#ffffff","#ffffff",R.drawable.add_friend_text);		
 			break;
 		case BUTTON_INVITE_FRIEND:
-			Global.mSelectedTab = 2;
-			mRequestList.setVisibility(View.GONE);
-			mAddFriendList.setVisibility(View.GONE);
-			mLvInviteFriendList.setVisibility(View.VISIBLE);
-			mAddFriendSearchLayout.setVisibility(View.GONE);
-			mInviteFriendSearchLayout.setVisibility(View.VISIBLE);
-			
-			mPendingReq.setBackgroundResource(R.drawable.tab_unselect);
-			mAddFriend.setBackgroundResource(R.drawable.tab_unselect);
-			mInviteFriend.setBackgroundResource(R.drawable.tab_select);
-			mPendingReq.setTextColor(Color.parseColor("#ffffff"));
-			mAddFriend.setTextColor(Color.parseColor("#ffffff"));
-			mInviteFriend.setTextColor(Color.parseColor("#00ccff"));
-			mTabSElectImage.setBackgroundResource(R.drawable.add_friend_text);
+			setFriendTab(2,View.GONE,View.VISIBLE,View.GONE,View.GONE,View.VISIBLE,R.drawable.tab_unselect,R.drawable.tab_select,R.drawable.tab_unselect,"#ffffff","#00ccff","#ffffff",R.drawable.add_friend_text);
 			break;
 		case BUTTON_PENDING_REQUEST:
-			Global.mSelectedTab = 3;
-			
-			mRequestList.setVisibility(View.VISIBLE);
-			mAddFriendList.setVisibility(View.GONE);
-			mLvInviteFriendList.setVisibility(View.GONE);
-			mAddFriendSearchLayout.setVisibility(View.GONE);
-			mInviteFriendSearchLayout.setVisibility(View.GONE);
-			
-			mReqTab.setBackgroundResource(R.drawable.tab_select);
-			mAddFriend.setBackgroundResource(R.drawable.tab_unselect);
-			mInviteFriend.setBackgroundResource(R.drawable.tab_unselect);
-			mPendingReq.setTextColor(Color.parseColor("#00ccff"));
-			mAddFriend.setTextColor(Color.parseColor("#ffffff"));
-			mInviteFriend.setTextColor(Color.parseColor("#ffffff"));
-			mTabSElectImage.setBackgroundResource(R.drawable.requests_friend_text);
-			mPresenter.getFriendRequest();
-	break;
-
-		default:
-			break;
+			setFriendTab(3,View.GONE,View.GONE,View.VISIBLE,View.GONE,View.GONE,R.drawable.tab_unselect,R.drawable.tab_unselect,R.drawable.tab_select,"#ffffff","#ffffff","#00ccff",R.drawable.requests_friend_text);			
+			presenter.getFriendRequest();
+	        break;
 		}
 	}
 	
@@ -743,10 +744,9 @@ public class HomeView extends BaseView implements IHome {
 				 if(json.getString("status").equalsIgnoreCase("3")){
 					 String onlinestatus = json.getString("onlinestatus");
 					 String onlinefbid = json.getString("fbid");
-					 mPresenter.findListPosition(onlinestatus, onlinefbid);
+					 presenter.findListPosition(onlinestatus, onlinefbid);
 				 }else if(json.getString("status").equalsIgnoreCase("4")){
-					 Log.e("Global.mChatUserName", Global.mChatUserName);
-					 Log.e("json.getString name", json.getString("name"));
+					 new MessageWeb().execute();
 					 if(Global.mChatUserName.equalsIgnoreCase(json.getString("name"))){
 						 String msg = json.getString("chatmessage");
 						 String name = json.getString("name");
@@ -762,7 +762,7 @@ public class HomeView extends BaseView implements IHome {
 					 String record_id = json.getString("recordid");
 					 String track_status = json.getString("trackstatus");
 					 
-					 mPresenter.updatePendingFriendList(sender_id,sender_name,receiver_fbid,record_id,track_status);
+					 presenter.updatePendingFriendList(sender_id,sender_name,receiver_fbid,record_id,track_status);
 					 
 				 }else if(json.getString("status").equalsIgnoreCase("6")){//Request acknowledgment
 					 Global.isAddSnowmadaFriend = true;
@@ -793,17 +793,6 @@ public class HomeView extends BaseView implements IHome {
 		
 		super.onDestroy();
 	} 
-	
-
-	
-
-
-
-
-
-
-
-
 
 @Override
 public TextView getChatFriend() {
@@ -831,7 +820,7 @@ public void getMassageNotification(){
 public void getChatWindowActive(String friendName,String fbid){
 	myApp.getAppInfo().isAppForeground= true;
 	setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.INVISIBLE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,false,false,true,CHAT_LIVE);	
-	mPresenter.functionChat(fbid,friendName);
+	presenter.functionChat(fbid,friendName);
 	mTvActiveChatFriend.setText(friendName);
 }
 
@@ -848,7 +837,9 @@ public ListView getRequestList() {
 public void defaultChatWindoOpenFromNotificationList() {
 	Bundle bundle = getIntent().getExtras();
 	if(bundle!=null){
+		Log.e("bundle.getString",""+bundle.getString("event"));
 		if(bundle.getString("event").equalsIgnoreCase("chat")){
+			Toast.makeText(getApplicationContext(), "Chat", 1000).show();
 			myApp.getAppInfo().isAppForeground = true;
 			setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.INVISIBLE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,false,false,true,CHAT_LIVE);
 				
@@ -857,12 +848,21 @@ public void defaultChatWindoOpenFromNotificationList() {
 			String[] splitStr = sender_name.split("\\s+");
 			Global.mChatUserName = splitStr[0];
 			myApp.getAppInfo().setSenderIDChat(getIntent().getExtras().getString("sender_fb_id"));
-			mPresenter.functionChat(sender_fb_id, sender_name);
+			presenter.functionChat(sender_fb_id, sender_name);
 			mTvActiveChatFriend.setText(sender_name);
 		}else{
-			myApp.getAppInfo().isAppForeground= true;
-			setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,false,true,false,MEET_UP_LOCATION);
-			//new GetMeetUplocation().execute();
+			Log.e("bundle.getStringq4req3wr",""+bundle.getString("event"));
+			Global.isZoomAtUSerLocationFirstTime = false;
+			myApp.getAppInfo().setIsAlertForSKIPatrol(false);
+			db.getMeetUpLocation1();
+			String st[] = db.getMeetUpLocation();
+			for(int i=0;i<st.length;i++){
+				Log.e("LOG",""+st[i]);
+			}
+			db.updateMeetUpStatus(Integer.parseInt(st[0]));
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.valueOf(st[1]), Double.valueOf(st[2])), 16));
+			
+			
 		}
 		
 	
@@ -897,14 +897,16 @@ public void createMenuDialog() {
 	
 }
 
+@SuppressWarnings("deprecation")
 @Override
 public void isSkyPetrolShow() {
 	if(myApp.getAppInfo().isAlertForSKIPatrol){
 		Global.isZoomAtUSerLocationFirstTime = false;
 		myApp.getAppInfo().setIsAlertForSKIPatrol(false);
 		String st[] = db.getSkiPetrolInfo();
-		map.addMarker(new MarkerOptions().position(new LatLng(Double.valueOf(st[2]), Double.valueOf(st[3]))).title("Name:"+st[0]+" "+st[1]).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds())  .icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.valueOf(st[2]), Double.valueOf(st[3])), 16));
+		presenter.trackSKIPatrol(st[0], st[1]+" "+st[2]);
+		/*map.addMarker(new MarkerOptions().position(new LatLng(Double.valueOf(st[2]), Double.valueOf(st[3]))).title("Name:"+st[0]+" "+st[1]).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds())  .icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.valueOf(st[2]), Double.valueOf(st[3])), 16));*/
 	}
 	
 }
@@ -913,9 +915,7 @@ public void isSkyPetrolShow() {
 public void getDeviceId() {
 	cd = new ConnectionDetector(getApplicationContext());
 	if (!cd.isConnectingToInternet()) {
-		alert.showAlertDialog(HomeView.this,
-				"Internet Connection Error",
-				"Please connect to working Internet connection", false);
+		alert.showAlertDialog(HomeView.this,"Internet Connection Error","Please connect to working Internet connection", false);
 		return;
 	}		
 
@@ -956,18 +956,19 @@ public void getDeviceId() {
 }
 
 @Override
-public void createRunnableThread() {
+public void doCallasyncWeb() {
 	
 	runnable = new Runnable(){
 		   public void run() {
 			    handler.postDelayed(runnable, 3000);
 			    getMassageNotification();
 			    if(myApp.isNetworkConnected(getApplicationContext())){
-			    	 new FriendRequestNotificationCount().execute(db.getUserFbID());
+			    	 new FriendRequestNotificationCount().execute();
+			    	/* new MessageWeb().execute();*/
 			    }
 			   
 			   if(myApp.doTrackFriendLocation){
-				   mPresenter.getFriendCurrentLocation();
+				   presenter.getFriendCurrentLocation();
 			   }
 			
 		   } 
@@ -991,7 +992,7 @@ public RelativeLayout getProgressBarLayout() {
 
 @Override
 public void onInfoWindowClick(Marker marker) {
-		current_selected_marker_id = hasmapinfo.get(marker);
+		current_selected_marker_id = markerIdHasMap.get(marker);
 		for(int i=0; i<meetupinfoarr.size(); i++){
 			if(current_selected_marker_id == meetupinfoarr.get(i).getId()){
 				if(meetupinfoarr.get(i).getOwner().equalsIgnoreCase("ME")){
@@ -1027,15 +1028,13 @@ public void onMapLongClick(final LatLng point) {
                        
                         current_time_in_millisecond = System.currentTimeMillis();
                         meetupinfoarr.add(new MeetUpBean(current_time_in_millisecond, "","", "", "","","ME",point.latitude,point.longitude));
-                        hasmapinfo.put(m, current_time_in_millisecond);
-                         // map.setInfoWindowAdapter(new CustominFoWindo());
+                        markerIdHasMap.put(m, current_time_in_millisecond);
+                       
                      }
                  });
-         builder.setNegativeButton("No",
-                 new DialogInterface.OnClickListener() {
+         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                      @Override
-                     public void onClick(DialogInterface dialog,
-                             int which) {
+                     public void onClick(DialogInterface dialog, int which) {
                          dialog.dismiss();
                          
                      }
@@ -1087,10 +1086,8 @@ public void setMeetuplocationDialog(final Marker marker,final long current_selec
 		Button submit = (Button)meetupUserDlg.findViewById(R.id.btn_submit);
 		setCustomizeColorText(submit, "SUB", "MIT");
 		Button cancel = (Button)meetupUserDlg.findViewById(R.id.btn_cancel);
-		setCustomizeColorText(cancel, "CAN", "CEL");
-		
-		ImageView iv_date =(ImageView)meetupUserDlg.findViewById(R.id.image_date);
-		
+		setCustomizeColorText(cancel, "CAN", "CEL");		
+		ImageView iv_date =(ImageView)meetupUserDlg.findViewById(R.id.image_date);		
 		ImageView clock =(ImageView)meetupUserDlg.findViewById(R.id.image_clock);
 		tvDisplayDate= (TextView)meetupUserDlg.findViewById(R.id.tvDisplayDate1);
 		tvDisplayDate.setText(meetupdate);
@@ -1110,6 +1107,7 @@ public void setMeetuplocationDialog(final Marker marker,final long current_selec
 		setCurrentDateOnView();
 		clock.setOnClickListener(new OnClickListener() {
 			
+			@SuppressWarnings("deprecation")
 			@Override
 			public void onClick(View v) {
 				showDialog(TIME_DIALOG_ID);
@@ -1119,6 +1117,7 @@ public void setMeetuplocationDialog(final Marker marker,final long current_selec
 		
 		iv_date.setOnClickListener(new OnClickListener() {
 			
+			@SuppressWarnings("deprecation")
 			@Override
 			public void onClick(View v) {
 				showDialog(DATE_DIALOG_ID);
@@ -1151,16 +1150,11 @@ public void setMeetuplocationDialog(final Marker marker,final long current_selec
 					}else{
 					
 			        	try {
-			        		
-							
-							
-							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-							
+			        		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 							Date date = new Date();
 							String _currentdate= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
 							Date currentdate = sdf.parse(_currentdate);
 							Date scheduledate = sdf.parse(_date+" "+_time);
-							
 							if(scheduledate.compareTo(currentdate)<0){
 								Toast.makeText(getApplicationContext(), "Plesase insert a valid Date&TIme", Toast.LENGTH_LONG).show();
 							}else{							
@@ -1179,13 +1173,8 @@ public void setMeetuplocationDialog(final Marker marker,final long current_selec
 							e.printStackTrace();
 						}
 			        	
-						
-					
 					}
-					
-					
 				}
-				
 			}
 		});
 		
@@ -1199,8 +1188,6 @@ public void setMeetuplocationDialog(final Marker marker,final long current_selec
 		});
 		
 		meetupUserDlg.show();
-	
-
 }
 
 
@@ -1210,14 +1197,10 @@ public void setMeetuplocationDialog(final Marker marker,final long current_selec
 
 private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
 
-	// when dialog box is closed, below method will be called.
-	public void onDateSet(DatePicker view, int selectedYear,
-			int selectedMonth, int selectedDay) {
+	public void onDateSet(DatePicker view, int selectedYear,int selectedMonth, int selectedDay) {
 		year = selectedYear;
 		month = selectedMonth;
 		day = selectedDay;
-
-		// set selected date into textview
 		if((month + 1)<10 && day<10){
 			tvDisplayDate.setText(new StringBuilder().append(year).append("-").append(0).append(month + 1).append("-").append(0).append(day));	
 		}else if((month + 1)<10){
@@ -1314,7 +1297,7 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		
 		myApp.doTrackFriendLocation = trackfriends;
 		myApp.isMeetuplocationWindoEnable = showmeetup;				
-		Global.isChatActive = ischatactive;
+		myApp.isChatActive = ischatactive;
 		mHighlightPos = hightmenu;	
 
 	}
@@ -1376,7 +1359,7 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 				Date date = new Date();
 				String _currentdate= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
 				Date currentdate = sdf.parse(_currentdate);
-				Log.e("Current Date111", ""+currentdate);
+				
 		  		//if(json.getBoolean("status")){
 		  			Log.e("Reach here", "Reach here");
 		        	meetupinfoarr.clear();
@@ -1418,24 +1401,24 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 				for(int i=0; i<result.size();i++){
 					Log.e("name", result.get(i).getName());
 						if(result.get(i).getOwner().equalsIgnoreCase("ME")){
-							Log.e("Add snippet", "Location:"+result.get(i).getLocation()+"\nDescription: "+result.get(i).getDescription()+"\nDate: "+result.get(i).getDate1()+"\nTime: "+result.get(i).getLocation());
+							Log.e("Add snippet", "Location:"+result.get(i).getLocation()+"\nDescription: "+result.get(i).getDescription()+"\nDate: "+result.get(i).getDate1()+"\nTime: "+result.get(i).getTime());
 							 m =  map.addMarker(new MarkerOptions()
 					    	    .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
 					    	    .title("Name:"+result.get(i).getName())
-					    	    .snippet("Location:"+result.get(i).getLocation()+"\nDescription: "+result.get(i).getDescription()+"\nDate: "+result.get(i).getDate1()+"\nTime: "+result.get(i).getLocation())
+					    	    .snippet("Location:"+result.get(i).getLocation()+"\nDescription: "+result.get(i).getDescription()+"\nDate: "+result.get(i).getDate1()+"\nTime: "+result.get(i).getTime())
 					           .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));   
 					         m.setDraggable(true);
 					         
-					         hasmapinfo.put(m, result.get(i).getId());
+					         markerIdHasMap.put(m, result.get(i).getId());
 						}else{
 							 m =  map.addMarker(new MarkerOptions()
 					    	    .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
 					    	    .title("Name:"+result.get(i).getName())
-					    	    .snippet("Location:"+result.get(i).getLocation()+"\nDescription: "+result.get(i).getDescription()+"\nDate: "+result.get(i).getDate1()+"\nTime: "+result.get(i).getLocation())
+					    	    .snippet("Location:"+result.get(i).getLocation()+"\nDescription: "+result.get(i).getDescription()+"\nDate: "+result.get(i).getDate1()+"\nTime: "+result.get(i).getTime())
 					           .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));   
 					         m.setDraggable(false);
 					         
-					         hasmapinfo.put(m, result.get(i).getId());
+					         markerIdHasMap.put(m, result.get(i).getId());
 						}
 						
 						
@@ -1451,10 +1434,13 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		}
 
 	}
-	public class SubmitMeetUplocation extends AsyncTask<String, String, ArrayList<MeetUpBean>>{
+	
+	// Put/Edit a MEET UP location into the Google map
+	public class SubmitMeetUplocation extends AsyncTask<String, String, String[]>{
 
 		@Override
-		protected ArrayList<MeetUpBean> doInBackground(String... params) {
+		protected String[] doInBackground(String... params) {
+			boolean flag = false;
 			try {
 		  		
 		  		JSONObject jsonObject = new JSONObject();
@@ -1470,80 +1456,38 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		  		jsonObject.put("meet_date", params[7]);
 		  		jsonObject.put("actn", "add");
 		  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/add_meet_up.php", jsonObject);
-		  		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");				
-				Date date = new Date();
-				String _currentdate= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
-				Date currentdate = sdf.parse(_currentdate);
-				Log.e("Current Date", ""+currentdate);
-		  		//if(json.getBoolean("status")){
-		        	meetupinfoarr.clear();
-		        	invalidMarkerIDs.clear();
-		        	deleted_pos.clear();
-		        	JSONArray jArr = json.getJSONArray("MeetList");
-		        	for(int i=0;i<jArr.length();i++){
-		        		JSONObject c = jArr.getJSONObject(i);
-		        		long _marker_id = Long.parseLong(c.getString("marker_id"));
-		        		String _name = c.getString("person_name");
-		        		String _loc = c.getString("loc_name");
-		        		String _desc = c.getString("loc_desc");
-		        		String _identifier = c.getString("identifier");
-		        		String _date = c.getString("meet_date");
-		        		String time = c.getString("meet_time");
-		        		double _lat = Double.parseDouble(c.getString("lat"));
-		        		double _lng = Double.parseDouble(c.getString("lng"));
-		        		Date scheduledate = sdf.parse(_date+" "+time);
-		        		if(currentdate.getTime()<(scheduledate.getTime()+3600000)){
-		        			meetupinfoarr.add(new MeetUpBean(_marker_id, _name, _loc, _desc,_date, time, _identifier,_lat,_lng));
-		        		}else{
-		        			invalidMarkerIDs.add(""+_marker_id);
-		        		}
-		        	}
-		     	return meetupinfoarr;
-		      	
-			} catch (Exception e) {
+		  		if(json!=null){
+		  			flag = json.getBoolean("status");
+		  			if(flag){
+		  				return params;
+		  			}
+		  		}
+		  		
+			}catch (Exception e) {
 				e.printStackTrace();
 			}
 			return null;
 		}
 
 		@Override
-		protected void onPostExecute(ArrayList<MeetUpBean> result) {
+		protected void onPostExecute(String[] result) {
 			super.onPostExecute(result);
 			dismissProgressDialog();
-			//map.clear();
-			if(result != null){
+			if(result !=null){
+				int pos = -1;
+				long marker_id = Long.parseLong(result[0]);
+				for(int i=0;i<meetupinfoarr.size();i++){
+					if(marker_id == meetupinfoarr.get(i).getId()){
+						pos = i;
+						break;
+					}
+				}
+				markersst = result;
+				updatepos = pos;
+				handle.sendEmptyMessage(1);
 				
-				for(int i=0; i<result.size();i++){
-						Log.i("Meet Loc", ""+result.get(i).getLocation());
-						if(result.get(i).getOwner().equalsIgnoreCase("ME")){
-							  m =  map.addMarker(new MarkerOptions()
-					    	      .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
-					    	      .title("Name:"+result.get(i).getName())
-					              .snippet("Location:"+result.get(i).getLocation())
-					    	      .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));   
-					              m.setDraggable(true);
-					         
-					         hasmapinfo.put(m, result.get(i).getId());
-						}else{
-							 m =  map.addMarker(new MarkerOptions()
-					    	      .position(new LatLng(result.get(i).getLat(), result.get(i).getLng())) 
-					    	      .title("Name:"+result.get(i).getName())
-					    	      .snippet("Location:"+result.get(i).getLocation())
-					    	      .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));   
-					         	  m.setDraggable(false);
-					         
-					         hasmapinfo.put(m, result.get(i).getId());
-						}
-						
 			}
 			
-				
-			}
-			if (invalidMarkerIDs != null) {
-				if (invalidMarkerIDs.size() > 0) {
-					deleteOldMarker();
-				}
-			}
 		}
 
 		@Override
@@ -1556,22 +1500,15 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		
 	}
 	public class FriendRequestNotificationCount extends AsyncTask<String, Void, Integer>{
-
-		
-		protected void onPreExecute() {
-			
-		}
-
-		@Override
+	@Override
 		protected Integer doInBackground(String... params) {
-			int count = 0;
-			
+			int count = 0;			
 		  	try {
-				JSONObject mJsonObject = new JSONObject();
-				mJsonObject.put("fbid", params[0]);
-				JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/count_pending_friend.php", mJsonObject);
-				if(json!=null){
-					count = Integer.parseInt(json.getString("totalpendingfriend"));
+				JSONObject req = new JSONObject();
+				req.put("fbid",db.getUserFbID());
+				JSONObject res = KlHttpClient.SendHttpPost(URL.COUNT_PENDING_FRIEND.getUrl(), req);
+				if(res!=null){
+					count = Integer.parseInt(res.getString("totalpendingfriend"));
 					return count;	
 				}else{
 					return count;
@@ -1602,11 +1539,11 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		@Override
 		protected ArrayList<String> doInBackground(String... params) {			
 		  	try {
-		  		JSONObject jsonObject = new JSONObject();
-		  		jsonObject.put("fbid", db.getUserFbID());
-		  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/app_user.php", jsonObject);
-		        if(json.getBoolean("status")){
-		        	JSONArray  jsonArray = json.getJSONArray("app_users");
+		  		JSONObject request = new JSONObject();
+		  		request.put("fbid", db.getUserFbID());
+		  		JSONObject response = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/app_user.php", request);
+		        if(response.getBoolean("status")){
+		        	JSONArray  jsonArray = response.getJSONArray("app_users");
 		        	for(int i=0; i<jsonArray.length(); i++){
 		        		JSONObject c = jsonArray.getJSONObject(i);
 		        		String ids = c.getString("id");
@@ -1656,6 +1593,60 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 			
 		}	
 
+	}
+	
+	public class MessageWeb extends AsyncTask<String, String, ArrayList<NewMessage>>{
+
+		@Override
+		protected ArrayList<NewMessage> doInBackground(String... params) {
+			
+			try {
+				JSONObject request  = new JSONObject();
+				request.put("receiver_fb_id", db.getUserFbID());
+				JSONObject response  = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/new_chat_history.php", request);
+		        if(response!=null){
+		        	msg.clear();
+		        	JSONArray  jsonArray = response.getJSONArray("newReply");
+		        	for(int i=0; i<jsonArray.length(); i++){
+		        		JSONObject c = jsonArray.getJSONObject(i);
+		        		String id = c.getString("cr_id");
+		        		String name = c.getString("sender");
+		        		String message = c.getString("message");
+		        		String date1 = c.getString("date");
+		        		msg.add(new NewMessage(id, date1, name, message));
+		        	}
+		        }
+		        return msg;
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+}
+	
+	public void setFriendTab(int selectedTab, int addfriendlistview,
+			int invitefriendlistview, int pendingreqview,
+			int addsearcglayoutview, int invitesearchlayoutview,
+			int drawableaddfriend, int drawableinvitefriend, int requestfriend,
+			String addfriendtextcolor, String invitefriendtextcolor,
+			String pendingreqtextcolor, int tabselectImage) {
+		Global.mSelectedTab = selectedTab;
+		mAddFriendList.setVisibility(addfriendlistview);
+		mLvInviteFriendList.setVisibility(invitefriendlistview);
+		mRequestList.setVisibility(pendingreqview);
+
+		mAddFriendSearchLayout.setVisibility(addsearcglayoutview);
+		mInviteFriendSearchLayout.setVisibility(invitesearchlayoutview);
+
+		mTabAddFriend.setBackgroundResource(drawableaddfriend);
+		mTabInviteFriend.setBackgroundResource(drawableinvitefriend);
+		mTabPendingRequest.setBackgroundResource(requestfriend);
+
+		mTabAddFriend.setTextColor(Color.parseColor(addfriendtextcolor));
+		mTabInviteFriend.setTextColor(Color.parseColor(invitefriendtextcolor));
+		mTabPendingRequest.setTextColor(Color.parseColor(pendingreqtextcolor));
+
+		mTabSElectImage.setBackgroundResource(tabselectImage);
 	}
 }
 

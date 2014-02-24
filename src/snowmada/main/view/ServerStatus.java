@@ -72,7 +72,6 @@ public class ServerStatus extends Service{
 	  		try {
 				jsonObject.put("fbid", mDbAdapter.getUserFbID());
 				jsonObject.put("signal_status", 1);
-				Log.e("Online status", jsonObject.toString());
 				JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/device_signal_status.php", jsonObject);
 				if(json!=null){
 					return json.getBoolean("status");

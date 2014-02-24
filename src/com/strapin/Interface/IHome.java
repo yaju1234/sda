@@ -34,7 +34,7 @@ public interface IHome {
 	public void createMenuDialog();
 	public void isSkyPetrolShow();
 	public void getDeviceId();
-	public void createRunnableThread();
+	public void doCallasyncWeb();
 	public void callService();
 	public RelativeLayout getProgressBarLayout();
 

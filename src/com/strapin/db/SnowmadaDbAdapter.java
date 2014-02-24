@@ -232,19 +232,16 @@ public class SnowmadaDbAdapter {
 	
 ///////////////////////////////////////////// For MEETUP table Start ////////////////////////
 	
-public long insertMeetUpInfo(final String FacebookId, final String Name,final String Location,final String Latitude,final String Longitude,final String  t,final String About,final String Status,final String Creater) {
+public long insertMeetUpInfo(final String lat,final String lng,String status) {
+	Log.e("lat1", lat);
+	Log.e("lng1", lng);
+	Log.e("status", status);
 	final ContentValues values = new ContentValues();
 
-	values.put(TableConstantName.FACEBOOK_ID, FacebookId);
-	values.put(TableConstantName.NAME, Name);
-	values.put(TableConstantName.LOCATION, Location);
-	values.put(TableConstantName.LATITUDE, Latitude);
-	values.put(TableConstantName.LONGITUDE, Longitude);		
-	values.put(TableConstantName.CLOCKTIME, t);
-	values.put(TableConstantName.ABOUT, About);
-	values.put(TableConstantName.STATUS, Status);
-	values.put(TableConstantName.CREATOR, Creater);
-
+	values.put(TableConstantName.LATITUDE, lat);
+	values.put(TableConstantName.LONGITUDE, lng);		
+	values.put(TableConstantName.STATUS, status);
+	
 	try {
 		sDb.beginTransaction();
 		final long state = sDb.insert(TableConstantName.TABLE_MEETUP, null,	values);
@@ -257,62 +254,37 @@ public long insertMeetUpInfo(final String FacebookId, final String Name,final St
 	}
 }
 	
-
-public ArrayList<MeetUpInfoBean> getAllMeetUpInfo(){
-	ArrayList<MeetUpInfoBean> mCheckBeans = new  ArrayList<MeetUpInfoBean>();
+public void getMeetUpLocation1(){	
 	
-	Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_MEETUP, null);		
-	if(mCursor.getCount()>0){
-		mCursor.moveToFirst();
-		while(!mCursor.isAfterLast()){
-			String mFacebookId = mCursor.getString(1);
-			String mName = mCursor.getString(2);
-			String mLocation = mCursor.getString(3);
-			String mLatitude = mCursor.getString(4);
-			String mLongitude = mCursor.getString(5);
-			String mTime = mCursor.getString(6);
-			String mAbout = mCursor.getString(7);
-			String mStatus = mCursor.getString(8);
-			String mCreater = mCursor.getString(9);
-
-			mCheckBeans.add(new MeetUpInfoBean(mFacebookId, mName, mLocation, mLatitude, mLongitude, mTime, mAbout, mStatus, mCreater));
-			mCursor.moveToNext();
-		}
-	}
-	mCursor.close();
-	return mCheckBeans;
-}
-
-public String[] getMeetUpInfoOnLocation(String lat,String lng){
-	
-	
-	//"select * from " +TableConstantName.COUPON_TABLE+ " where " +TableConstantName.COUPON_RETAILER_NAME+ " = '"+retailerName+"'"+ " AND ("+TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'"+" OR "+TableConstantName.COUPON_CATAGORY + "=" + "'"+category_Common+"'"+")", null);
-	String args[] = new String[9];
-	Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_MEETUP + " where " + TableConstantName.LATITUDE + "='"+lat+"'"+" and "+TableConstantName.LONGITUDE + "= '"+lng+"'", null);		
+	//String args[] = new String[3];
+	Cursor mCursor = sDb.rawQuery("SELECT *   FROM    meetup",null);	
+	Log.e("mCursor.getCount()", ""+mCursor.getCount());
 	if(mCursor.getCount()>0){
 		mCheckBeans.clear();
 		mCursor.moveToFirst();
 		while(!mCursor.isAfterLast()){
-			String mFacebookId = mCursor.getString(1);
-			args[0] = mFacebookId;
-			String mName = mCursor.getString(2);
-			args[1] = mName;
-			String mLocation = mCursor.getString(3);
-			args[2] = mLocation;
-			String mLatitude = mCursor.getString(4);
-			args[3] = mLatitude;
-			String mLongitude = mCursor.getString(5);
-			args[4] = mLongitude;
-			String mTime = mCursor.getString(6);
-			args[5] = mTime;
-			String mAbout = mCursor.getString(7);
-			args[6] = mAbout;
-			String mStatus = mCursor.getString(8);
-			args[7] = mStatus;
-			String mCreater = mCursor.getString(9);
-			args[8] = mCreater;
+			Log.e("ID", mCursor.getString(0));
+			Log.e("lat", mCursor.getString(1));
+			Log.e("lng", mCursor.getString(2));
+			mCursor.moveToNext();
+		}
+	}
+	mCursor.close();
+	//return args;
+}
 
-			//mCheckBeans.add(new MeetUpInfoBean(mFacebookId, mName, mLocation, mLatitude, mLongitude, mTime, mAbout, mStatus, mCreater));
+
+public String[] getMeetUpLocation(){	
+	
+	String args[] = new String[3];
+	Cursor mCursor = sDb.rawQuery("SELECT *   FROM    "+ TableConstantName.TABLE_MEETUP +"   WHERE    "+ TableConstantName.ID  +" = (SELECT MAX( "+ TableConstantName.ID +")  FROM "+ TableConstantName.TABLE_MEETUP +")",null);		
+	if(mCursor.getCount()>0){
+		mCheckBeans.clear();
+		mCursor.moveToFirst();
+		while(!mCursor.isAfterLast()){
+			args[0] = mCursor.getString(0);
+			args[1] = mCursor.getString(1);
+			args[2] = mCursor.getString(2);
 			mCursor.moveToNext();
 		}
 	}
@@ -320,28 +292,11 @@ public String[] getMeetUpInfoOnLocation(String lat,String lng){
 	return args;
 }
 
-public int getMarkerID(String lat,String lng){
-Log.e("lat", lat);
-	int markerid = -1;
-	Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_MEETUP+ " where " + TableConstantName.LATITUDE + "='"+lat+"'"+" and "+TableConstantName.LONGITUDE + "= '"+lng+"'", null);
-	if(mCursor.getCount()>0){
-		mCursor.moveToFirst();
-		Log.e("hello", "reach here");
-		while(!mCursor.isAfterLast()){
-			markerid = Integer.parseInt(mCursor.getString(0));		
-			mCursor.moveToNext();
-		}	
-	}
-	mCursor.close();
-	return markerid;
-}
 
-public boolean updateMeetUpInfo(final int Id, final String Latitude,final String Longitude){
-
+public boolean updateMeetUpStatus(final int Id){
+int status = 0;
 	final ContentValues values = new ContentValues();
-	values.put(TableConstantName.LATITUDE, Latitude);
-	values.put(TableConstantName.LONGITUDE, Longitude);		
-	
+	values.put(TableConstantName.STATUS, ""+status);
 	try {
 		sDb.beginTransaction();
 		final boolean state = sDb.update(TableConstantName.TABLE_MEETUP, values, TableConstantName.ID + "=" + "'"+Id+"'", null)>0;
@@ -354,27 +309,15 @@ public boolean updateMeetUpInfo(final int Id, final String Latitude,final String
 	}
 }
 
-public int getMeetUpRowCount() {
-	int count = -1;
 
-	final Cursor mCursor = sDb.query(TableConstantName.TABLE_MEETUP,new String[] { "count(*) " + TableConstantName.FACEBOOK_ID },
-			null, null, null, null, null);
-	if (mCursor != null) {
-		mCursor.moveToFirst();
-		count = mCursor.getInt(mCursor
-				.getColumnIndex(TableConstantName.FACEBOOK_ID));
-		mCursor.close();
-	}
-	return count;
-}
 
 ///////////////////////////////////////  For MEETUP table END ////////////////////////////////////////////////
 
 ///////////////////////////////////////  For SKIPETROL table start ////////////////////////////////////////////////
 
-public long insertSkiPetrolInfo(final String FirstName,final String LastName,final String Latitude,final String Longitude) {
+public long insertSkiPetrolInfo(final String patrolerid,final String FirstName,final String LastName,final String Latitude,final String Longitude) {
 	final ContentValues values = new ContentValues();
-	
+	values.put(TableConstantName.PATROLER_ID, patrolerid);
 	values.put(TableConstantName.FIRSTNAME, FirstName);
 	values.put(TableConstantName.LASTNAME, LastName);
 	values.put(TableConstantName.LATITUDE, Latitude);
@@ -394,19 +337,21 @@ public long insertSkiPetrolInfo(final String FirstName,final String LastName,fin
 
 public String[] getSkiPetrolInfo(){
 	
-	String args[] = new String[4];
+	String args[] = new String[5];
 	Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_SKIPETROL, null);		
 	if(mCursor.getCount()>0){
 		mCursor.moveToFirst();
 		while(!mCursor.isAfterLast()){
-			String mFirstName = mCursor.getString(1);
-			args[0] = mFirstName;
-			String mLastName = mCursor.getString(2);
-			args[1] = mLastName;
-			String mLatitude = mCursor.getString(3);
-			args[2] = mLatitude;
-			String mLongitude = mCursor.getString(4);
-			args[3] = mLongitude;
+			String patroler_id = mCursor.getString(1);
+			args[0] = patroler_id;
+			String mFirstName = mCursor.getString(2);
+			args[1] = mFirstName;
+			String mLastName = mCursor.getString(3);
+			args[2] = mLastName;
+			String mLatitude = mCursor.getString(4);
+			args[3] = mLatitude;
+			String mLongitude = mCursor.getString(5);
+			args[4] = mLongitude;
 			mCursor.moveToNext();
 		}
 	}
@@ -428,9 +373,10 @@ public int getSkiPetrolRowCount() {
 	return count;
 }
 
-public boolean updateSkiPetrolInfo(final String FirstName,final String LastName, final String Latitude,final String Longitude){
+public boolean updateSkiPetrolInfo(final String patrolerid,final String FirstName,final String LastName, final String Latitude,final String Longitude){
 	int id = 1;
 	final ContentValues values = new ContentValues();
+	values.put(TableConstantName.PATROLER_ID, patrolerid);
 	values.put(TableConstantName.FIRSTNAME, FirstName);
 	values.put(TableConstantName.LASTNAME, LastName);
 	values.put(TableConstantName.LATITUDE, Latitude);

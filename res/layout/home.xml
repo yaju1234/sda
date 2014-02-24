@@ -131,7 +131,7 @@
         android:background="@drawable/rounded_corner"
         android:orientation="vertical"
         android:paddingBottom="5dp"
-        android:visibility="gone" >
+        android:visibility="visible" >
 
         <ListView
             android:id="@+id/lv_message"

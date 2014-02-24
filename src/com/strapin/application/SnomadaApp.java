@@ -11,6 +11,9 @@ public class SnomadaApp extends Application {
 	public boolean isMeetuplocationEditTextEditable = false;
 	public boolean isMeetuplocationWindoEnable = false;
 	public boolean doTrackFriendLocation = false;
+	public boolean isChatActive = false;
+	public String friendId="";
+	public boolean isTrackingSKIPatrol = false;
 	
 
 	public AppInfo getAppInfo() {

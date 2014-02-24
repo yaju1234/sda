@@ -15,7 +15,7 @@ public static String mDob = "";
     public static JSONArray mFriendJSOn = new JSONArray();
     
     public static String sFriendName = "";
-    public static String sFriendId = "";
+    //public static String sFriendId = "";
    // public static  boolean flag = true;
     public static  boolean isZoom = false;
     
@@ -60,7 +60,7 @@ public static String mDob = "";
 	
 	/*public static boolean isApplicationForeground = false;*/
 	
-	public static boolean isChatActive  = false;
+	//public static boolean isChatActive  = false;
 	public static ArrayList<ChatBean> mChatArr = new ArrayList<ChatBean>();
 	//public static String mChatSenderID="";
 	

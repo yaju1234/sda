@@ -62,6 +62,7 @@ public class HomePresenter implements IHome.Presenter{
 	private FriendRequestAdapter mRequestAdapter;
 	private int COUNT = 0;
 	public int deletedPos = -1;
+	public boolean isTracking = false;
 	
 	private ArrayList<FriendRequestBean> mRequestArr = new ArrayList<FriendRequestBean>();
 	
@@ -81,7 +82,25 @@ public class HomePresenter implements IHome.Presenter{
 		}
 	}
 	
-	
+	public void trackSKIPatrol(String id,String name){	
+			
+				TrackDurationControllFlag = true;
+				mHomeView.hideSlide().setVisibility(View.GONE);
+				mHomeView.myApp.friendId = id;
+				mName = name;
+				Global.sFriendName = mName;
+				Global.isZoom = true;
+				COUNT = 0;
+				isTracking = false;
+				if(marker!=null){
+					marker.remove();
+				}
+				mHomeView.getProgressBarLayout().setVisibility(View.VISIBLE);
+				handler.removeCallbacks(runnable);
+				mHomeView.myApp.doTrackFriendLocation = true;
+				
+		
+	}
 
 	@Override
 	public void setOnFriendClick(final int pos) {
@@ -134,45 +153,48 @@ public class HomePresenter implements IHome.Presenter{
 		track_friend.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
-
-				if(mFriendArr.get(pos).getOnlineStatus().equalsIgnoreCase("1")){	
-					/*if(mHomeView.myApp.isMeetuplocationWindoEnable){
-						mHomeView.doTrack();
-					}*/
-					TrackDurationControllFlag = true;
-					mHomeView.hideSlide().setVisibility(View.GONE);
-					mName = mFriendArr.get(pos).getName();
-					Global.sFriendName = mName;
-					Global.sFriendId = mFriendArr.get(pos).getFbId();
-					Global.isZoom = true;
-					if(Utility.isNetworkConnected(mHomeView.getContext())){
-						new SendTrackNotification().execute(mDbAdapter.getUserFbID(),Global.sFriendId);
-						mHomeView.myApp.doTrackFriendLocation = true;
-						mHomeView.getProgressBarLayout().setVisibility(View.VISIBLE);
-						COUNT = 0;
-					}
-					
-				}else{
-					final Dialog dialog1 = new Dialog(mHomeView.getActivity());				
-					dialog1.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					dialog1.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-					dialog1.setContentView(R.layout.track_fail_dialog);
-					dialog1.setCancelable(false);
-					Button ok = (Button)dialog1.findViewById(R.id.iv_ok);
-					ok.setText(Html.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
-					TextView tv_alert_txt = (TextView)dialog1.findViewById(R.id.tv_alert_text);
-					tv_alert_txt.setText(Html.fromHtml("<font color=\"#ffffff\">ALERT</font>&nbsp;&nbsp;<font color=\"#28b6ff\">DIALOG</font>"));
-					ok.setOnClickListener(new OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							dialog1.dismiss();							
+				if(isTracking){
+					isTracking = false;
+					if(mFriendArr.get(pos).getOnlineStatus().equalsIgnoreCase("1")){	
+						TrackDurationControllFlag = true;
+						mHomeView.hideSlide().setVisibility(View.GONE);
+						mName = mFriendArr.get(pos).getName();
+						Global.sFriendName = mName;
+						mHomeView.myApp.friendId = mFriendArr.get(pos).getFbId();
+						Global.isZoom = true;
+						if(Utility.isNetworkConnected(mHomeView.getContext())){
+							new SendTrackNotification().execute();
+							mHomeView.myApp.doTrackFriendLocation = true;
+							mHomeView.getProgressBarLayout().setVisibility(View.VISIBLE);
+							COUNT = 0;
 						}
-					});
-					dialog1.show();
-				}	
-				dialog.cancel();
-			}
+						
+					}else{
+						final Dialog dialog1 = new Dialog(mHomeView.getActivity());				
+						dialog1.requestWindowFeature(Window.FEATURE_NO_TITLE);
+						dialog1.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+						dialog1.setContentView(R.layout.track_fail_dialog);
+						dialog1.setCancelable(false);
+						Button ok = (Button)dialog1.findViewById(R.id.iv_ok);
+						ok.setText(Html.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
+						TextView tv_alert_txt = (TextView)dialog1.findViewById(R.id.tv_alert_text);
+						tv_alert_txt.setText(Html.fromHtml("<font color=\"#ffffff\">ALERT</font>&nbsp;&nbsp;<font color=\"#28b6ff\">DIALOG</font>"));
+						ok.setOnClickListener(new OnClickListener() {
+							
+							@Override
+							public void onClick(View v) {
+								isTracking = true;
+								dialog1.dismiss();							
+							}
+						});
+						dialog1.show();
+					}	
+					dialog.cancel();
+				}else{
+					Toast.makeText(mHomeView, "Please wait... tracing continue", Toast.LENGTH_LONG).show();
+				}
+				}
+				
 		});
 		
 		delete.setOnClickListener(new OnClickListener() {
@@ -191,8 +213,8 @@ public class HomePresenter implements IHome.Presenter{
 	
 	@Override
 	public void getFriendCurrentLocation() {
-		if(Utility.isNetworkConnected(mHomeView.getContext())){
-			new getFriendLocation1().execute(Global.sFriendId);
+		if(mHomeView.myApp.isNetworkConnected(mHomeView)){
+			new LocationTrack().execute();
 		}		
 	}
 	
@@ -206,9 +228,10 @@ public class HomePresenter implements IHome.Presenter{
 				idle = System.currentTimeMillis() - lastUsed;
 				Log.i("idle", "" + idle);
 
-				if (idle >= 30000/*5*60*1000*/) {
+				if (idle >= 60000) {
 					mHomeView.myApp.doTrackFriendLocation = false;
-					//mHomeView.getMap().clear();
+					COUNT = 0;
+					isTracking = true;
 					marker.remove();
 					handler.removeCallbacks(runnable);
 					
@@ -260,12 +283,10 @@ public class SKIEmergencyButtonPressWeb extends AsyncTask<String, Void, Boolean>
 		protected Boolean doInBackground(String... params) {
 			
 		  	try {
-				JSONObject mJsonObject = new JSONObject();
-				mJsonObject.put("fbid", params[0]);
-				
-				Log.e("JSON", mJsonObject.toString());
-				JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/ski_patrol.php", mJsonObject);
-				return json.getBoolean("status");
+				JSONObject request = new JSONObject();
+				request.put("fbid", params[0]);
+				JSONObject response = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/ski_patrol.php", request);
+				return response.getBoolean("status");
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -364,15 +385,13 @@ public class GetFriendListWeb extends AsyncTask<String, Void, Boolean>{
 
 
 
-public class getFriendLocation1 extends AsyncTask<String, Void, Boolean>{		
-	protected void onPreExecute() {
-	
-	}
+public class LocationTrack extends AsyncTask<String, Void, Boolean>{		
+
 	@Override
 	protected Boolean doInBackground(String... params) {			
 	  	try {
 	  		JSONObject jsonObject = new JSONObject();
-	  		jsonObject.put("fbid", params[0]);
+	  		jsonObject.put("fbid", mHomeView.myApp.friendId);
 	  		
 	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/getlocation.php", jsonObject);
 	  		Log.e("Received friend location JSOn", json.toString());
@@ -398,17 +417,19 @@ public class getFriendLocation1 extends AsyncTask<String, Void, Boolean>{
 		if(marker != null){
 			marker.remove();
 		}
-		marker = mHomeView.getMap().addMarker(new MarkerOptions().position(new LatLng(mLat, mLng)).title("Name:"+mName/*+" "+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()+"Distance:"+distance+" meter"*/).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds())  .icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
-		marker.showInfoWindow();
-		if(Global.isZoom){
-			Global.isZoom = false;
-			mHomeView.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLat, mLng), 16));
-			
+		//Toast.makeText(mHomeView, "Test12", 1000).show();
+		if(mHomeView.myApp.doTrackFriendLocation){
+			marker = mHomeView.getMap().addMarker(new MarkerOptions().position(new LatLng(mLat, mLng)).title("Name:"+mName/*+" "+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()+"Distance:"+distance+" meter"*/).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds())  .icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
+			marker.showInfoWindow();
+			//Toast.makeText(mHomeView, "Test44", 1000).show();
+			if(Global.isZoom){
+				Global.isZoom = false;
+				mHomeView.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLat, mLng), 16));
+				
+			}
 		}
-		/*if(Global.isInfoWindow){
-			marker.showInfoWindow();	
-		}*/
 		
+			
 		if(TrackDurationControllFlag){
 			TrackDurationControllFlag = false;
 			HandleTrackPeriod();
@@ -424,8 +445,8 @@ public class SendTrackNotification extends AsyncTask<String, Void, Boolean>{
 	protected Boolean doInBackground(String... params) {			
 	  	try {
 	  		JSONObject jsonObject = new JSONObject();
-	  		jsonObject.put("fbid", params[0]);
-	  		jsonObject.put("friend_fb_id", params[1]);	
+	  		jsonObject.put("fbid", mDbAdapter.getUserFbID());
+	  		jsonObject.put("friend_fb_id", mHomeView.myApp.friendId);	
 	  		Log.e("SendTrackNotification", jsonObject.toString());
 	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/send_message.php", jsonObject);
 			

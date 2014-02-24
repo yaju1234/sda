@@ -124,7 +124,7 @@ public class TrackLocation implements LocationListener, GooglePlayServicesClient
 			  		jsonObject.put("fbid", mDbAdapter.getUserFbID());
 			  		jsonObject.put("lat", params[0]);
 			  		jsonObject.put("lng", params[1]);
-			  		JSONObject json = KlHttpClient.SendHttpPost(URL.SET_USER_LOCATION.getURL(), jsonObject);
+			  		JSONObject json = KlHttpClient.SendHttpPost(URL.SET_USER_LOCATION.getUrl(), jsonObject);
 			   if(json != null){
 				   return json.getBoolean("status");
 			   }

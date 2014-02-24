@@ -63,9 +63,8 @@ public class DialogActivity extends BaseView{
 	        		Intent i = new Intent(getApplicationContext(),HomeView.class);
 	        		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	        		startActivity(i);
-	        		DialogActivity.this.finish();
-	        		
-	        		//alogActivity.this.finish();
+	        		DialogActivity.this.finish(); 
+	        	
 	        		
 	        	}else{
 	        		Intent i = new Intent(getApplicationContext(),SplashView.class);

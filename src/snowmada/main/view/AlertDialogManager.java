@@ -22,7 +22,7 @@ public class AlertDialogManager {
 		// Setting Dialog Title
 		alertDialog.setTitle(title);
 
-		// Setting Dialog Message
+		// Setting Dialog NewMessage
 		alertDialog.setMessage(message);
 
 		if(status != null)
@@ -35,7 +35,7 @@ public class AlertDialogManager {
 			}
 		});
 
-		// Showing Alert Message
+		// Showing Alert NewMessage
 		alertDialog.show();
 	}
 }

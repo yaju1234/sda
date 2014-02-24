@@ -16,82 +16,60 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.strapin.Util.ImageLoader;
-import com.strapin.bean.MessageBean;
+import com.strapin.bean.NewMessage;
 import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.presenter.HomePresenter;
 
 @SuppressWarnings("unused")
-public class OfflineMessageAdapter extends ArrayAdapter<MessageBean>{
+public class OfflineMessageAdapter extends ArrayAdapter<NewMessage>{
 	
-	private Context mCtx;
-	private ArrayList<MessageBean> mItems = new ArrayList<MessageBean>();
+	private ArrayList<NewMessage> mItems = new ArrayList<NewMessage>();
 	private ViewHolder mHolder;
 	private ImageLoader imageLoader;
 	private Activity activity;
 	private HomePresenter mPresenter;
-	private SnowmadaDbAdapter mSdb;
 	private LinearLayout mLayoutMessageNotificationList; 
-	public OfflineMessageAdapter( LinearLayout mLayoutMessageNotificationList ,HomePresenter mPresenter,Activity activity,Context context, int textViewResourceId,	ArrayList<MessageBean> mChat) {
-		super(context, textViewResourceId);
-		this.mCtx = context;
+	public OfflineMessageAdapter(HomePresenter mPresenter,Activity activity, int textViewResourceId,	ArrayList<NewMessage> mChat) {
+		super(activity, textViewResourceId);
 		this.activity = activity;
 		this.mItems = mChat;
 		this.mPresenter = mPresenter;
-		imageLoader=new ImageLoader(activity);
-		this.mLayoutMessageNotificationList =mLayoutMessageNotificationList ; 
-		mSdb = SnowmadaDbAdapter.databaseHelperInstance(mCtx);
-		Log.e("SIze", ""+mItems.size());
-		
+		imageLoader=new ImageLoader(activity);		
 	}		  
 	@Override
 	public int getCount() {
 		return mItems.size();
 	}
 
-	
-	
 	@Override
 	public View getView( final int position,  View convertView, ViewGroup parent) {
 		View v = convertView;
 		if (v == null) {
-			LayoutInflater vi = (LayoutInflater) mCtx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater vi = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			v = vi.inflate(R.layout.message_notification_row, null);
 			mHolder = new ViewHolder();
 			v.setTag(mHolder);	
-			mHolder.mSenderMsg = (TextView)v.findViewById(R.id.friend_message);
-			mHolder.mSenderName = (TextView)v.findViewById(R.id.facebook_friend_name);
-			mHolder.mFriendImage = (ImageView)v.findViewById(R.id.user_friend_image);
-			mHolder.mMain = (RelativeLayout)v.findViewById(R.id.main);
+			mHolder.message = (TextView)v.findViewById(R.id.tv_reply_message);
+			mHolder.name = (TextView)v.findViewById(R.id.tv_name);
+			mHolder.image = (ImageView)v.findViewById(R.id.iv_profile_image);
+			mHolder.main = (RelativeLayout)v.findViewById(R.id.rl_main);
 		}
 		else {
 			mHolder =  (ViewHolder) v.getTag();
 		}	
-		
-		mHolder.mMain.setOnClickListener(new OnClickListener() {
 			
-			@Override
-			public void onClick(View v) {
-				mLayoutMessageNotificationList.setVisibility(View.GONE);
-				//mSdb.deleteChatMessage( mItems.get(position).getSenderFbId());
-				mSdb.UpdateMessageStatus(""+mItems.get(position).getId());
-				mPresenter.CallChatWindow(mItems.get(position).getSenderName(), mItems.get(position).getSenderFbId());	
-				
-			}
-		});
-		
-		final MessageBean bean = mItems.get(position);
+		final NewMessage bean = mItems.get(position);
 		if(bean!= null){
-			//Log.e("Adapter", ""+bean.getSenderName());
-			mHolder.mSenderName.setText(bean.getSenderName());
-			mHolder.mSenderMsg.setText(bean.getTextMessage());
-			imageLoader.DisplayImage("https://graph.facebook.com/"+bean.getSenderFbId()+"/picture",mHolder.mFriendImage);				
+			mHolder.name.setText(bean.getName());
+			mHolder.message.setText(bean.getMessage());
+			imageLoader.DisplayImage("https://graph.facebook.com/"+bean.getId()+"/picture",mHolder.image);				
 		}		
 		return v;
 	}
 	class ViewHolder {	
-		public TextView mSenderName;
-		public TextView mSenderMsg;	
-		public ImageView mFriendImage;
-		public RelativeLayout mMain;
+		public TextView name;
+		public TextView message;	
+		public ImageView image;
+		public RelativeLayout main;
 	}
 }

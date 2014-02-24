@@ -25,7 +25,8 @@ public class BaseView extends FragmentActivity implements IBase,OnClickListener,
 	public SnomadaApp myApp;
 	public boolean inIt  = false;
 	public ProgressDialog prsDlg;
-	public SnowmadaDbAdapter db;;
+	public SnowmadaDbAdapter db;
+	
 	//public ImageLoader imageLoader;
 //	public DisplayImageOptions options;
 

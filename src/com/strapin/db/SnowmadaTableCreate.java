@@ -31,20 +31,15 @@ public class SnowmadaTableCreate {
 			+ TableConstantName.TABLE_MEETUP + " ("
 			+ TableConstantName.ID
 			+ "  INTEGER PRIMARY KEY AUTOINCREMENT, "
-			+ TableConstantName.FACEBOOK_ID + " TEXT, "
-			+ TableConstantName.NAME + " TEXT, "
-			+ TableConstantName.LOCATION + " TEXT, "
 			+ TableConstantName.LATITUDE + " TEXT, "
 			+ TableConstantName.LONGITUDE + " TEXT, "
-			+ TableConstantName.CLOCKTIME + " TEXT, "
-			+ TableConstantName.ABOUT + " TEXT, "
-			+ TableConstantName.STATUS + " TEXT, "
-			+ TableConstantName.CREATOR + "		  TEXT);";
+			+ TableConstantName.STATUS + "		  TEXT);";
 	
 	private static final String DATABASE_SKIPETROL = "CREATE TABLE "
 			+ TableConstantName.TABLE_SKIPETROL + " ("
 			+ TableConstantName.ID
 			+ "  INTEGER PRIMARY KEY AUTOINCREMENT, "
+			+ TableConstantName.PATROLER_ID + " TEXT, "
 			+ TableConstantName.FIRSTNAME + " TEXT, "
 			+ TableConstantName.LASTNAME + " TEXT, "
 			+ TableConstantName.LATITUDE + " TEXT, "
@@ -94,13 +89,13 @@ public class SnowmadaTableCreate {
 	public static void onUpgrade(SQLiteDatabase database, int oldVersion,
 			int newVersion) {
 		    Log.w(SnowmadaTableCreate.class.getName(),"Upgrading database from version " + oldVersion + " to "+ newVersion + ", which will destroy all old data");
-			database.execSQL("DROP TABLE IF EXISTS" + TableConstantName.TABLE_NAME);
-			database.execSQL("DROP TABLE IF EXISTS" + TableConstantName.TABLE_SKI);
-			database.execSQL("DROP TABLE IF EXISTS" + TableConstantName.TABLE_MEETUP);
-			database.execSQL("DROP TABLE IF EXISTS" + TableConstantName.TABLE_SKIPETROL);
-			database.execSQL("DROP TABLE IF EXISTS" + TableConstantName.TABLE_MESSAGE);
-			database.execSQL("DROP TABLE IF EXISTS" + TableConstantName.TABLE_FB_FRIENDS);
-			database.execSQL("DROP TABLE IF EXISTS" + TableConstantName.TABLE_SESSION);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_NAME);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_SKI);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_MEETUP);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_SKIPETROL);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_MESSAGE);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_FB_FRIENDS);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_SESSION);
 		onCreate(database);
 	}
 }

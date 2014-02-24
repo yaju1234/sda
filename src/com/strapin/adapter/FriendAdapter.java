@@ -93,7 +93,7 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 			@Override
 			public void onClick(View v) {					
 					String fname = mItems.get(position).getName();
-					if(Global.isChatActive){
+					if(activity.myApp.isChatActive){
 						activity.myApp.getAppInfo().setSenderIDChat( mItems.get(position).getFbId());
 							String[] splitStr = fname.split("\\s+");
 							Global.mChatUserName = splitStr[0];
@@ -101,6 +101,7 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 							mPresenter.functionChat(mItems.get(position).getFbId(), mItems.get(position).getName());
 						
 					}else{
+						activity.myApp.isTrackingSKIPatrol = false;
 					mPresenter.setOnFriendClick(position);
 					}				
 			}

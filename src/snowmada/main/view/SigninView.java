@@ -197,7 +197,7 @@ public class SigninView extends BaseView {
 		  		jsonObject.put("fbid", db.getUserFbID());
 		  		jsonObject.put("fname", db.getUserFirstName());
 		  		jsonObject.put("lname", db.getUserLastName());
-		  		JSONObject json = KlHttpClient.SendHttpPost(URL.LOGIN.getURL(), jsonObject);
+		  		JSONObject json = KlHttpClient.SendHttpPost(URL.LOGIN.getUrl(), jsonObject);
 		    return json.getBoolean("status");
 				
 			} catch (Exception e) {
