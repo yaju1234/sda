@@ -62,22 +62,22 @@ public class HomePresenter implements IHome.Presenter{
 	private FriendRequestAdapter mRequestAdapter;
 	private int COUNT = 0;
 	public int deletedPos = -1;
-	public boolean isTracking = false;
+	public boolean isTracking = true;
 	
 	private ArrayList<FriendRequestBean> mRequestArr = new ArrayList<FriendRequestBean>();
 	
 	
 	public HomePresenter(HomeView mHomeView){
 		this.mHomeView = mHomeView;
-		mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(mHomeView.getActivity());
-		imageLoader=new ImageLoader(mHomeView.getActivity());
+		mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(mHomeView);
+		imageLoader=new ImageLoader(mHomeView);
 		callAdapter();
 		
 	}
 
 	@Override
 	public void callAdapter() {
-		if(Utility.isNetworkConnected(mHomeView.getContext())){
+		if(Utility.isNetworkConnected(mHomeView)){
 			new GetFriendListWeb().execute();
 		}
 	}
@@ -105,7 +105,7 @@ public class HomePresenter implements IHome.Presenter{
 	@Override
 	public void setOnFriendClick(final int pos) {
 		mHomeView.hideSlide().setVisibility(View.GONE);
-		final Dialog dialog = new Dialog(mHomeView.getActivity());				
+		final Dialog dialog = new Dialog(mHomeView);				
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 		dialog.setContentView(R.layout.track_dialog);
@@ -162,7 +162,7 @@ public class HomePresenter implements IHome.Presenter{
 						Global.sFriendName = mName;
 						mHomeView.myApp.friendId = mFriendArr.get(pos).getFbId();
 						Global.isZoom = true;
-						if(Utility.isNetworkConnected(mHomeView.getContext())){
+						if(Utility.isNetworkConnected(mHomeView)){
 							new SendTrackNotification().execute();
 							mHomeView.myApp.doTrackFriendLocation = true;
 							mHomeView.getProgressBarLayout().setVisibility(View.VISIBLE);
@@ -170,7 +170,7 @@ public class HomePresenter implements IHome.Presenter{
 						}
 						
 					}else{
-						final Dialog dialog1 = new Dialog(mHomeView.getActivity());				
+						final Dialog dialog1 = new Dialog(mHomeView);				
 						dialog1.requestWindowFeature(Window.FEATURE_NO_TITLE);
 						dialog1.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 						dialog1.setContentView(R.layout.track_fail_dialog);
@@ -232,7 +232,10 @@ public class HomePresenter implements IHome.Presenter{
 					mHomeView.myApp.doTrackFriendLocation = false;
 					COUNT = 0;
 					isTracking = true;
-					marker.remove();
+					if(marker!=null){
+						marker.remove();
+					}
+					
 					handler.removeCallbacks(runnable);
 					
 					}
@@ -271,7 +274,7 @@ public class SKIEmergencyButtonPressWeb extends AsyncTask<String, Void, Boolean>
 
 		
 		protected void onPreExecute() {
-			mDialog = new ProgressDialog(mHomeView.getActivity());
+			mDialog = new ProgressDialog(mHomeView);
 			mDialog.setMessage("Please wait...");
 			mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			mDialog.setIndeterminate(true);
@@ -298,7 +301,7 @@ public class SKIEmergencyButtonPressWeb extends AsyncTask<String, Void, Boolean>
 			mDialog.dismiss();
 			if(result){
 				
-				final Dialog dialog1 = new Dialog(mHomeView.getActivity());				
+				final Dialog dialog1 = new Dialog(mHomeView);				
 				dialog1.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				dialog1.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 				dialog1.setContentView(R.layout.skipetrol_btn_press_dialog);
@@ -326,7 +329,7 @@ public class SKIEmergencyButtonPressWeb extends AsyncTask<String, Void, Boolean>
 
 public class GetFriendListWeb extends AsyncTask<String, Void, Boolean>{		
 	protected void onPreExecute() {
-		mDialog = new ProgressDialog(mHomeView.getContext());
+		mDialog = new ProgressDialog(mHomeView);
 		mDialog.setMessage("Please wait...");
 		mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		mDialog.setIndeterminate(true);
@@ -408,20 +411,16 @@ public class LocationTrack extends AsyncTask<String, Void, Boolean>{
 	}
 	@Override
 	protected void onPostExecute(Boolean status) {
-		//Toast.makeText(mHomeView, ""+COUNT, Toast.LENGTH_LONG).show();
 		
 		COUNT++;
 		if(COUNT>3){
 			mHomeView.getProgressBarLayout().setVisibility(View.GONE);
-		//mHomeView.getMap().clear();	
 		if(marker != null){
 			marker.remove();
 		}
-		//Toast.makeText(mHomeView, "Test12", 1000).show();
 		if(mHomeView.myApp.doTrackFriendLocation){
 			marker = mHomeView.getMap().addMarker(new MarkerOptions().position(new LatLng(mLat, mLng)).title("Name:"+mName/*+" "+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()+"Distance:"+distance+" meter"*/).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds())  .icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
 			marker.showInfoWindow();
-			//Toast.makeText(mHomeView, "Test44", 1000).show();
 			if(Global.isZoom){
 				Global.isZoom = false;
 				mHomeView.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLat, mLng), 16));
@@ -515,11 +514,11 @@ public class getChatHistory extends AsyncTask<String, Void, ArrayList<ChatBean>>
 		//prsDlg.dismiss();
 		if(result != null){
 			if(result.size()>0){
-				mChatAdapter = new ChatAdapter(mHomeView.getContext(), R.layout.chat_row, result);
+				mChatAdapter = new ChatAdapter(mHomeView, R.layout.chat_row, result);
 				mHomeView.getChatListView().setAdapter(mChatAdapter);
 				mHomeView.getChatListView().setSelection(Global.mChatArr.size()-1);
 			}else{
-				mChatAdapter = new ChatAdapter(mHomeView.getContext(), R.layout.chat_row, result);
+				mChatAdapter = new ChatAdapter(mHomeView, R.layout.chat_row, result);
 				mHomeView.getChatListView().setAdapter(mChatAdapter);
 			}
 		}		
@@ -528,7 +527,7 @@ public class getChatHistory extends AsyncTask<String, Void, ArrayList<ChatBean>>
 
 public void ackAfterFriendRequest(int pos){
 	mRequestArr.remove(pos);
-	mRequestAdapter = new FriendRequestAdapter(HomePresenter.this,mHomeView.getActivity(),mHomeView.getActivity(),R.layout.request_notification_row, mRequestArr);
+	mRequestAdapter = new FriendRequestAdapter(mHomeView,R.layout.request_notification_row, mRequestArr);
 	mHomeView.getRequestList().setAdapter(mRequestAdapter);	
 }
 
@@ -538,7 +537,7 @@ public void getFriendRequest(){
 
 public class GetAllFriendRequest extends AsyncTask<String, Void, Boolean>{		
 	protected void onPreExecute() {
-		mDialog = new ProgressDialog(mHomeView.getActivity());
+		mDialog = new ProgressDialog(mHomeView);
 		mDialog.setMessage("Please wait...");
 		mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		mDialog.setIndeterminate(true);
@@ -585,7 +584,7 @@ public class GetAllFriendRequest extends AsyncTask<String, Void, Boolean>{
 	protected void onPostExecute(Boolean result) {							
 			mDialog.dismiss();		
 			if(result){
-				mRequestAdapter = new FriendRequestAdapter(HomePresenter.this,mHomeView.getActivity(),mHomeView.getActivity(),R.layout.request_notification_row, mRequestArr);
+				mRequestAdapter = new FriendRequestAdapter(mHomeView,R.layout.request_notification_row, mRequestArr);
 				mHomeView.getRequestList().setAdapter(mRequestAdapter);	
 			}							
 		}
@@ -594,7 +593,7 @@ public class GetAllFriendRequest extends AsyncTask<String, Void, Boolean>{
 public void updatePendingFriendList(String sender_id, String sender_name,
 		String receiver_fbid, String record_id, String track_status) {
 		mRequestArr.add(new FriendRequestBean(sender_id, mDbAdapter.getUserFbID(), sender_name, record_id,track_status));
-		mRequestAdapter = new FriendRequestAdapter(HomePresenter.this,mHomeView.getActivity(),mHomeView.getActivity(),R.layout.request_notification_row, mRequestArr);
+		mRequestAdapter = new FriendRequestAdapter(mHomeView,R.layout.request_notification_row, mRequestArr);
 		mHomeView.getRequestList().setAdapter(mRequestAdapter);	
 	}
 
@@ -606,7 +605,7 @@ public void CallChatWindow(String friendName, String fbid) {
 
 public class DeleteFriendWeb extends AsyncTask<String, Void, Boolean>{		
 	protected void onPreExecute() {
-		mDialog = new ProgressDialog(mHomeView.getActivity());
+		mDialog = new ProgressDialog(mHomeView);
 		mDialog.setMessage("Please wait...");
 		mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		mDialog.setIndeterminate(true);
@@ -645,7 +644,7 @@ public class DeleteFriendWeb extends AsyncTask<String, Void, Boolean>{
 	}
 
 public void showConfirmDeleteDialog(final int pos) {
-	final Dialog deleteDlg = new Dialog(mHomeView.getActivity());				
+	final Dialog deleteDlg = new Dialog(mHomeView);				
 	deleteDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
 	deleteDlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 	deleteDlg.setContentView(R.layout.confirm_delete_dlg);

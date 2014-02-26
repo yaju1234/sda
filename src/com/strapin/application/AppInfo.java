@@ -43,24 +43,28 @@ public class AppInfo {
 		session = flg;
 		Editor edit = sharedPreferences.edit();
 		edit.putBoolean(Constant.Settings.IS_SESSION_AVAILABLE.name(), session);
+		edit.commit();
 	}
 	
 	public void setSenderIDChat(String  id){
 		senderIdChat = id;
 		Editor edit = sharedPreferences.edit();
 		edit.putString(Constant.Settings.SENDER_ID_CHAT.name(), senderIdChat);
+		edit.commit();
 	}
 	
 	public void setIsAppForgroung(boolean flg){
 		isAppForeground = flg;
 		Editor edit = sharedPreferences.edit();
 		edit.putBoolean(Constant.Settings.APP_FOREGROUND.name(), isAppForeground);
+		edit.commit();
 	}
 	
 	public void setIsAlertForSKIPatrol(boolean flg){
 		isAlertForSKIPatrol = flg;
 		Editor edit = sharedPreferences.edit();
 		edit.putBoolean(Constant.Settings.ALERT_SKI_PATROL.name(), isAlertForSKIPatrol);
+		edit.commit();
 	}
 
 }

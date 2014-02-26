@@ -3,7 +3,7 @@ package com.strapin.db;
 public class TableConstantName {
 	
 	public static final String DATABASE_NAME = "snowmada.db";
-	public static final int    DATABASE_VERSION = 3;
+	public static final int    DATABASE_VERSION = 4;
 	
 	public static final String TABLE_NAME = "snowmada";
 	public static final String ID = "Id";

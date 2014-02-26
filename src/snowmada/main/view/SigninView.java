@@ -5,6 +5,10 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+
 import com.facebook.*;
 import com.facebook.model.GraphObject;
 import com.facebook.model.GraphUser;
@@ -20,11 +24,12 @@ import org.json.JSONObject;
 
 public class SigninView extends BaseView {
 
-   private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
+    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     private LoginButton loginButton;
     private PendingAction pendingAction = PendingAction.NONE;
     private GraphUser user;
     private boolean isUiUpdateCall = false; 
+    private Button mSignup;
    
     private enum PendingAction {
         NONE,
@@ -70,6 +75,16 @@ public class SigninView extends BaseView {
         setContentView(R.layout.signin);
 
         loginButton = (LoginButton) findViewById(R.id.login_button);
+        mSignup = (Button)findViewById(R.id.btn_sign_up);
+        
+        mSignup.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				
+			}
+		});
         
 
     	Session session = Session.getActiveSession();
@@ -158,6 +173,7 @@ public class SigninView extends BaseView {
     	     
     	        if (enableButtons && user != null) {
     	        	showProgressDailog();
+    	        	myApp.getAppInfo().setUserInfo(user.getFirstName(), user.getLastName(), user.getId());
     	        	if(db.getRowCount()>0){
     					db.updateUserInfo(user.getId(),user.getFirstName(),user.getLastName());
     				}else{

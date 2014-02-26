@@ -7,6 +7,8 @@ import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.strapin.Interface.IBase;
 import com.strapin.application.AppInfo;
 import com.strapin.application.SnomadaApp;
@@ -27,8 +29,8 @@ public class BaseView extends FragmentActivity implements IBase,OnClickListener,
 	public ProgressDialog prsDlg;
 	public SnowmadaDbAdapter db;
 	
-	//public ImageLoader imageLoader;
-//	public DisplayImageOptions options;
+	public ImageLoader imageLoader;
+    public DisplayImageOptions options;
 
 	@Override
 	protected void onStart() {

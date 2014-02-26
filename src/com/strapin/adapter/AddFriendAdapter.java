@@ -7,7 +7,6 @@ import org.json.JSONObject;
 import snowmada.main.view.HomeView;
 import snowmada.main.view.R;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -23,18 +22,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-
-import com.google.android.gms.maps.model.Marker;
 import com.strapin.Util.ImageLoader;
 import com.strapin.bean.AddFriendBean;
 import com.strapin.db.SnowmadaDbAdapter;
-import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
 
 public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
@@ -44,11 +38,7 @@ public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
 	int size = 0;
 	public ImageLoader imageLoader;
 	private HomeView activity;
-	private Marker marker;
 	private ProgressDialog mDialog;
-	private Double mLat;
-	private Double mLng;
-	private String mName;
 	private SnowmadaDbAdapter mSdb;
 	
 	public AddFriendAdapter(SnowmadaDbAdapter sdb,HomeView activity, int textViewResourceId,	ArrayList<AddFriendBean> items) {
@@ -56,8 +46,7 @@ public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
 		mSdb = sdb;
 		this.mItems = items;
 		size = mItems.size();
-		this.activity =activity;
-		
+		this.activity =activity;		
 		imageLoader=new ImageLoader(activity);
 		
 	}		  
@@ -93,11 +82,8 @@ public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
 			@Override
 			public void onClick(View v) {
 				
-				if(Global.mSelectedTab == 1){
-
-
-					//Log.e("Reach here", "reach here");
-					final Dialog dialog = new Dialog(activity);				
+				if(activity.myApp.selectedTab == 1){
+final Dialog dialog = new Dialog(activity);				
 					dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 					dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 					dialog.setContentView(R.layout.friend_add_dialog);
@@ -112,26 +98,8 @@ public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
 					
 					name.setText(mItems.get(position).getName());
 					isTrack.setChecked(true);
-					/*if(mItems.get(position).isStatus()){
-						isTrack.setChecked(true);
-					}else{
-						isTrack.setChecked(false);
-					}*/
 					imageLoader.DisplayImage("https://graph.facebook.com/"+mItems.get(position).getFacebookId()+"/picture",image);
-					
-					/*isTrack.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 						
-						@Override
-						public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-							if(mItems.get(position).isStatus()){
-								
-							}else{
-								isTrack.setChecked(false);
-								Toast.makeText(mCtx, "This Friend does not use this application. You can't access his location", Toast.LENGTH_LONG).show();
-							}						
-						}
-					});*/
-					
 					yes.setOnClickListener(new OnClickListener() {
 						
 						@Override
@@ -214,7 +182,7 @@ public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
 				mDialog.dismiss();
 				if(status){
 					Toast.makeText(activity, "Friend added successfully", Toast.LENGTH_LONG).show();
-					//Global.isAddSnowmadaFriend = true;
+					//Global.isWebServiceCallForRefreshFriendList = true;
 				}
 				
 			}	

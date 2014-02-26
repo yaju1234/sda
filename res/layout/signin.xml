@@ -87,21 +87,7 @@
             android:textSize="15sp"
             android:textStyle="bold" />
     </RelativeLayout>
-
-    <!--
-         <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="10dp"
-        android:layout_alignParentTop="true"
-        android:visibility="visible"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/app_logo" />
-    -->
-
-
-    
+  
          <Button
         android:id="@+id/btn_sign_up"
         android:layout_width="wrap_content"
@@ -124,13 +110,6 @@
         facebook:confirm_logout="false"
         facebook:fetch_user_info="true" />
 
-   <!--  <Button
-        android:id="@+id/btn_facebook"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/btn_sign_up"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="6dp"
-        android:background="@drawable/facebook_login_btn" /> -->
+ 
 
 </RelativeLayout>

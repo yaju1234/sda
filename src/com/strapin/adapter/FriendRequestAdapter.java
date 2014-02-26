@@ -4,12 +4,11 @@ import java.util.ArrayList;
 
 import org.json.JSONObject;
 
+import snowmada.main.view.HomeView;
 import snowmada.main.view.R;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,26 +23,20 @@ import android.widget.TextView;
 
 import com.strapin.Util.ImageLoader;
 import com.strapin.bean.FriendRequestBean;
-import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
-import com.strapin.presenter.HomePresenter;
 
 public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
-	private Context mCtx;
 	private ViewHolder mHolder;
-	private Activity activity;
+	private HomeView activity;
 	private ProgressDialog mDialog;
 	private ImageLoader imageLoader;
 	public ArrayList<FriendRequestBean> item = new ArrayList<FriendRequestBean>();
-	private HomePresenter mPresenter;
 	private int pos;
 	  
-	public FriendRequestAdapter(HomePresenter mPresenter,Activity activity,Context context, int textViewResourceId,	ArrayList<FriendRequestBean> items) {
-		super(context, textViewResourceId);
-		this.mCtx = context;
+	public FriendRequestAdapter(HomeView activity, int textViewResourceId,	ArrayList<FriendRequestBean> items) {
+		super(activity, textViewResourceId);
 		this.item = items;	
 		this.activity = activity;
-		this.mPresenter = mPresenter;
 		imageLoader=new ImageLoader(activity);
 	}	
 
@@ -61,7 +54,7 @@ public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
 	public View getView( final int position,  View convertView, ViewGroup parent) {
 		View v = convertView;
 		if (v == null) {
-			LayoutInflater vi = (LayoutInflater) mCtx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater vi = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			v = vi.inflate(R.layout.request_notification_row, null);
 
 			mHolder = new ViewHolder();
@@ -77,8 +70,6 @@ public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
 				
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					Log.e("isChecked", ""+isChecked);
-					
 					if(isChecked){
 						item.get(position).setTrackStatus("1");
 						mHolder.mTrackStatus.setChecked(true);
@@ -97,13 +88,9 @@ public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
 				@Override
 				public void onClick(View v) {					
 					String action = "accept";
-					pos = position;
-					
-					
-					
+					pos = position;					
 					String record_id = item.get(position).getRecordId();
 					String track_status= item.get(position).getTrackStatus();
-					Log.e("item.get(position).getTrackStatus()", item.get(position).getTrackStatus());
 					new AddFriendStatus().execute(action,record_id,track_status);
 				}
 			});
@@ -156,17 +143,16 @@ public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
 		}		
 		@Override
 		protected Boolean doInBackground(String... params) {
-			JSONObject json;
+			JSONObject response;
 			boolean flag = false;
 		  	try {
-				JSONObject mJsonObject = new JSONObject();
-				mJsonObject.put("actn", params[0]);
-				mJsonObject.put("recordid", params[1]);
-				mJsonObject.put("track_status", params[2]);
-				Log.e("ACk mJSON REQ", mJsonObject.toString());
-				json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/accept_friend.php", mJsonObject);
-				if(json!=null){
-					flag = json.getBoolean("status");
+				JSONObject request = new JSONObject();
+				request.put("actn", params[0]);
+				request.put("recordid", params[1]);
+				request.put("track_status", params[2]);
+				response = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/accept_friend.php", request);
+				if(response!=null){
+					flag = response.getBoolean("status");
 				}
 				
 		  	}catch (Exception e) {
@@ -180,8 +166,8 @@ public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
 		protected void onPostExecute(Boolean result) {							
 				mDialog.dismiss();		
 				if(result){
-					Global.isAddSnowmadaFriend = true;
-					mPresenter.ackAfterFriendRequest(pos);
+					activity.myApp.isWebServiceCallForRefreshFriendList = true;
+					activity.presenter.ackAfterFriendRequest(pos);
 				}							
 			}
 		}

@@ -5,8 +5,8 @@
     android:background="@color/black"
     android:gravity="center|top"
     android:paddingTop="20dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
     android:paddingBottom="20dp"
     android:orientation="vertical" >
 

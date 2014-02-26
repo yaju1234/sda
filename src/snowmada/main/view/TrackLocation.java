@@ -15,6 +15,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.strapin.Enum.URL;
 import com.strapin.Util.Utility;
+import com.strapin.application.SnomadaApp;
 import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
@@ -30,14 +31,14 @@ public class TrackLocation implements LocationListener, GooglePlayServicesClient
 	public static final int MILLISECONDS_PER_SECOND = 1000;
 	public static final int UPDATE_INTERVAL_IN_SECONDS = 2;
 	public static final int FAST_CEILING_IN_SECONDS = 1;
-	public static final long UPDATE_INTERVAL_IN_MILLISECONDS = MILLISECONDS_PER_SECOND
-			* UPDATE_INTERVAL_IN_SECONDS;
-	public static final long FAST_INTERVAL_CEILING_IN_MILLISECONDS = MILLISECONDS_PER_SECOND
-			* FAST_CEILING_IN_SECONDS;
+	public static final long UPDATE_INTERVAL_IN_MILLISECONDS = MILLISECONDS_PER_SECOND	* UPDATE_INTERVAL_IN_SECONDS;
+	public static final long FAST_INTERVAL_CEILING_IN_MILLISECONDS = MILLISECONDS_PER_SECOND* FAST_CEILING_IN_SECONDS;
 	private SnowmadaDbAdapter mDbAdapter;
+	private SnomadaApp app;
 	
 	private TrackLocation(final Context context) {
 		sContext = context;
+		
 		
 	}
 	

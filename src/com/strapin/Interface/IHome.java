@@ -21,8 +21,6 @@ public interface IHome {
 		public void CallChatWindow(String friendName,String fbid);
 		
 	}
-	public Activity getActivity();
-	public Context getContext();
 	public ListView getList();
 	public GoogleMap getMap();
 	public Sliding hideSlide();
@@ -33,7 +31,7 @@ public interface IHome {
 	public void defaultChatWindoOpenFromNotificationList();
 	public void createMenuDialog();
 	public void isSkyPetrolShow();
-	public void getDeviceId();
+	public void getPushNotificationDeviceID();
 	public void doCallasyncWeb();
 	public void callService();
 	public RelativeLayout getProgressBarLayout();

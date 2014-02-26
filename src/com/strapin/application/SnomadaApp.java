@@ -14,6 +14,8 @@ public class SnomadaApp extends Application {
 	public boolean isChatActive = false;
 	public String friendId="";
 	public boolean isTrackingSKIPatrol = false;
+	public  int selectedTab = 1;
+	public  boolean isWebServiceCallForRefreshFriendList = false;
 	
 
 	public AppInfo getAppInfo() {

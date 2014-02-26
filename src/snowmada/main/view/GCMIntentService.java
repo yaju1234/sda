@@ -151,7 +151,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 				    PendingIntent intent = PendingIntent.getActivity(context,0, new Intent() , 0);					
 				   showNotification(context, total_msg,intent);				 
 			 }else if(json.getString("status").equalsIgnoreCase("6")){//Request acknowledgment				
-				 Global.isAddSnowmadaFriend = true;
+				 app.isWebServiceCallForRefreshFriendList = true;
 				 String friend_name = json.getString("friend_name");
 				 String msg = "has accept your friend request";				 
 				 total_msg = friend_name+" "+msg;				 
