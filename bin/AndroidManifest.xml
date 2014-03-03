@@ -87,6 +87,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".SigninView" android:theme="@android:style/Theme.NoTitleBar"  android:screenOrientation="portrait"></activity>
+         <activity android:name=".SignUpView" android:theme="@android:style/Theme.NoTitleBar"  android:screenOrientation="portrait"></activity>
     <activity android:name=".HomeView" android:theme="@android:style/Theme.NoTitleBar"  android:screenOrientation="portrait"></activity>
         <activity android:name=".DialogActivity" android:theme="@android:style/Theme.NoTitleBar"  android:screenOrientation="portrait"></activity>
     

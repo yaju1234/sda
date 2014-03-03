@@ -197,8 +197,8 @@ public class HomeView extends BaseView implements IHome {
 	public List<Integer> deletedPos = new ArrayList<Integer>();
 	public List<String> invalidMarkerIDs = new ArrayList<String>();
 	public ArrayList<MeetUpBean> meetupinfoarr = new ArrayList<MeetUpBean>();
-	public HashMap<Marker, Long> markerIdHasMap = new  HashMap<Marker, Long>();
-	public long current_selected_marker_id = 0;
+	public HashMap<Marker, String> markerIdHasMap = new  HashMap<Marker, String>();
+	public String current_selected_marker_id = "";
 	public int hour;
 	public int minute;
 	public int year;
@@ -939,8 +939,8 @@ public void onMapLongClick(final LatLng point) {
                         m.setDraggable(true);
                        
                         current_time_in_millisecond = System.currentTimeMillis();
-                        meetupinfoarr.add(new MeetUpBean(current_time_in_millisecond, "","", "", "","","ME",point.latitude,point.longitude));
-                        markerIdHasMap.put(m, current_time_in_millisecond);
+                        meetupinfoarr.add(new MeetUpBean(""+current_time_in_millisecond, "","", "", "","","ME",point.latitude,point.longitude));
+                        markerIdHasMap.put(m, ""+current_time_in_millisecond);
                        
                      }
                  });
@@ -989,7 +989,7 @@ private static String pad(int c) {
 		return "0" + String.valueOf(c);
 }
 
-public void setMeetuplocationDialog(final Marker marker,final long current_selected_marker_id,final String meetupusername,final String meetuplocation, final String meetupdesc, final String meetupdate,final String meetuptime, final String owner){
+public void setMeetuplocationDialog(final Marker marker,final String current_selected_marker_id,final String meetupusername,final String meetuplocation, final String meetupdesc, final String meetupdate,final String meetuptime, final String owner){
 	
 		meetupUserDlg = new Dialog(HomeView.this);				
 		meetupUserDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1048,7 +1048,7 @@ public void setMeetuplocationDialog(final Marker marker,final long current_selec
 					String _desc = desc.getText().toString().trim();
 					String _date = tvDisplayDate.getText().toString().trim();
 					String _time = tvDisplayTime.getText().toString().trim();
-					long _id = current_selected_marker_id;
+					String _id = current_selected_marker_id;
 					double _lat = marker.getPosition().latitude;
 					double _lng = marker.getPosition().longitude;
 					if(_loc_name.length()==0){
@@ -1281,7 +1281,7 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		        	Log.e("JSON Array Length", ""+jArr.length());
 		        	for(int i=0;i<jArr.length();i++){
 		        		JSONObject c = jArr.getJSONObject(i);
-		        		long _marker_id = Long.parseLong(c.getString("marker_id"));
+		        		String _marker_id = c.getString("marker_id");
 		        		String _name = c.getString("person_name");
 		        		String _loc = c.getString("loc_name");
 		        		String _desc = c.getString("loc_desc");
@@ -1353,8 +1353,7 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		@Override
 		protected String[] doInBackground(String... params) {
 			boolean flag = false;
-			try {
-		  		
+			try {		  		
 		  		JSONObject jsonObject = new JSONObject();
 		  		jsonObject.put("fbid", db.getUserFbID());
 		  		jsonObject.put("fname", db.getUserFirstName());
@@ -1387,7 +1386,7 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 			dismissProgressDialog();
 			if(result !=null){
 				int pos = -1;
-				long marker_id = Long.parseLong(result[0]);
+				String marker_id = result[0];
 				for(int i=0;i<meetupinfoarr.size();i++){
 					if(marker_id == meetupinfoarr.get(i).getId()){
 						pos = i;

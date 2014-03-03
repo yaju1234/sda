@@ -19,7 +19,7 @@ public class KlHttpClient {
 	private static final String TAG = "HttpClient";
 
 	public static JSONObject SendHttpPost(String URL, JSONObject jsonObjSend) {
-
+Log.i("URL", URL);
 		try {
 			DefaultHttpClient httpclient = new DefaultHttpClient();
 			HttpPost httpPostRequest = new HttpPost(URL);
