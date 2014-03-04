@@ -6,6 +6,8 @@ import android.content.Context;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
@@ -33,8 +35,7 @@ public class TrackLocation implements LocationListener, GooglePlayServicesClient
 	public static final int FAST_CEILING_IN_SECONDS = 1;
 	public static final long UPDATE_INTERVAL_IN_MILLISECONDS = MILLISECONDS_PER_SECOND	* UPDATE_INTERVAL_IN_SECONDS;
 	public static final long FAST_INTERVAL_CEILING_IN_MILLISECONDS = MILLISECONDS_PER_SECOND* FAST_CEILING_IN_SECONDS;
-	private SnowmadaDbAdapter mDbAdapter;
-	private SnomadaApp app;
+	private static  SnomadaApp app;
 	
 	private TrackLocation(final Context context) {
 		sContext = context;
@@ -42,10 +43,11 @@ public class TrackLocation implements LocationListener, GooglePlayServicesClient
 		
 	}
 	
-	public static TrackLocation databaseHelperInstance(final Context context) {
+	public static TrackLocation createInstance(final Context context,SnomadaApp App) {
 		
 		if (sInstance == null) {
 			sInstance = new TrackLocation(context);
+			app = App;
 			
 			open();
 		}
@@ -75,35 +77,26 @@ public class TrackLocation implements LocationListener, GooglePlayServicesClient
 	}
 	
 	public void requestUpdate(){
-		mLocationClient.requestLocationUpdates(mLocationRequest, sInstance);
-		
+		mLocationClient.requestLocationUpdates(mLocationRequest, sInstance);		
 	}
 
 	@Override
-	public void onConnectionFailed(ConnectionResult result) {
-		
-		
-	}
+	public void onConnectionFailed(ConnectionResult result) {}
 
 	@Override
-	public void onConnected(Bundle connectionHint) {
-		
+	public void onConnected(Bundle connectionHint) {		
 		mLocationClient.requestLocationUpdates(mLocationRequest,this);
 	}
 
 	@Override
-	public void onDisconnected() {
-		
-		
-	}
+	public void onDisconnected() {	}
 
 	@Override
 	public void onLocationChanged(Location location) {
-		mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(sContext);
-			if(Global.isZoomAtUSerLocationFirstTime){
+			if(app.isZoom){
+				app.isZoom = false;
+			   Global.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
 			
-			Global.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
-			Global.isZoomAtUSerLocationFirstTime = false;
 		}
 		if(isUpload){
 			if(Utility.isNetworkConnected(sContext)){
@@ -122,10 +115,11 @@ public class TrackLocation implements LocationListener, GooglePlayServicesClient
 			protected Boolean doInBackground(String... params) {			
 			  	try {
 			  		JSONObject jsonObject = new JSONObject();
-			  		jsonObject.put("fbid", mDbAdapter.getUserFbID());
+			  		jsonObject.put("user_id", app.getAppInfo().userId);
 			  		jsonObject.put("lat", params[0]);
 			  		jsonObject.put("lng", params[1]);
-			  		JSONObject json = KlHttpClient.SendHttpPost(URL.SET_USER_LOCATION.getUrl(), jsonObject);
+			  		Log.i("SEND USER LOCATION =====>", jsonObject.toString());
+			  		JSONObject json = KlHttpClient.SendHttpPost(URL.SEND_CURRENT_LOCATION.getUrl(), jsonObject);
 			   if(json != null){
 				   return json.getBoolean("status");
 			   }

@@ -1,30 +1,25 @@
 package com.strapin.bean;
 
 public class AddFriendBean {
-	private String mFacebookId;
-	private String mName;
+	public String friendId;
+	public String name;
 	
-	public AddFriendBean(String mFacebookId,String mName){
-		this.mFacebookId = mFacebookId;
-		this.mName = mName;
-		
-		
-	}
+	public AddFriendBean(String friendid,String name){
+		this.friendId = friendid;
+		this.name = name;	
+		}
 
-	public String getFacebookId() {
-		return mFacebookId;
+	public String getFriendId() {
+		return friendId;
 	}
-
-	public void setFacebookId(String mFacebookId) {
-		this.mFacebookId = mFacebookId;
+	public void setFriendId(String friendid) {
+		this.friendId = friendid;
 	}
-
 	public String getName() {
-		return mName;
+		return name;
 	}
-
-	public void setName(String mName) {
-		this.mName = mName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

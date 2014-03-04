@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.strapin.Util.Utility;
+import com.strapin.application.SnomadaApp;
 import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.network.KlHttpClient;
 
@@ -18,9 +19,9 @@ public class ServerStatus extends Service{
 
 	  private static final int TIME_SPAN = 15000;
 	 private static final int START_TIME_DELAY = 0000;
-	 private SnowmadaDbAdapter mDbAdapter;
-	 private Handler handler = new Handler();
+	private Handler handler = new Handler();
 	 private Runnable runnable;
+	 private SnomadaApp app = null;;
 	 
 
 	 @Override
@@ -31,7 +32,7 @@ public class ServerStatus extends Service{
 	 @Override
 	public void onCreate() {
 		super.onCreate();
-		mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(getApplicationContext());		
+		app = (SnomadaApp) getApplication();
 		Log.e("Service created", "Service created");
 		 doUpdateStatus();
 	}
@@ -51,12 +52,7 @@ public class ServerStatus extends Service{
 			 handler.postDelayed(runnable,START_TIME_DELAY);		
 	 
 	 }
-	/*@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.e("onStartCommand", "onStartCommand");
-		 doUpdateStatus();
-		return START_STICKY;
-	}*/
+	 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -70,7 +66,7 @@ public class ServerStatus extends Service{
 		protected Boolean doInBackground(String... params) {
 			JSONObject jsonObject = new JSONObject();
 	  		try {
-				jsonObject.put("fbid", mDbAdapter.getUserFbID());
+				jsonObject.put("fbid", app.getAppInfo().userId);
 				jsonObject.put("signal_status", 1);
 				JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/device_signal_status.php", jsonObject);
 				if(json!=null){

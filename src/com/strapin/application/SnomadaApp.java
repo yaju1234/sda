@@ -14,8 +14,11 @@ public class SnomadaApp extends Application {
 	public boolean isChatActive = false;
 	public String friendId="";
 	public boolean isTrackingSKIPatrol = false;
-	public  int selectedTab = 1;
-	public  boolean isWebServiceCallForRefreshFriendList = false;
+	public int selectedTab = 1;
+	public boolean isWebServiceCallForRefreshFriendList = false;
+	public boolean isZoom = true;
+	/*public  GoogleMap map=null;*/
+	public  String IMname = "";
 	
 
 	public AppInfo getAppInfo() {
@@ -32,5 +35,6 @@ public class SnomadaApp extends Application {
 		    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 		    return activeNetworkInfo != null && activeNetworkInfo.isConnected();    
 		}
-	
+
+
 }

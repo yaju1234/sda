@@ -4,8 +4,6 @@ import snowmada.main.view.Sliding;
 
 import com.google.android.gms.maps.GoogleMap;
 
-import android.app.Activity;
-import android.content.Context;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -30,7 +28,6 @@ public interface IHome {
 	public void init();
 	public void defaultChatWindoOpenFromNotificationList();
 	public void createMenuDialog();
-	public void isSkyPetrolShow();
 	public void getPushNotificationDeviceID();
 	public void doCallasyncWeb();
 	public void callService();

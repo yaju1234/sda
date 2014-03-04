@@ -7,15 +7,15 @@ import com.strapin.bean.ChatBean;
 
 public class Global {
 	
-public static String mDob = "";
+//public static String mDob = "";
     public static boolean isLoginFirstTime = false;
     public static boolean isMyLocationCurrentUploadIntoServer = true;
    
-    public static String sFriendName = "";
+   // public static String sFriendName = "";
     public static  boolean isZoom = false;
     
     
-    public static String mChatUserName = "";
+    /*public static String mChatUserName = "";*/
      
   	  
 	public static GoogleMap map;

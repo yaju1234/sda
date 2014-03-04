@@ -89,7 +89,7 @@
         <activity android:name=".SigninView" android:theme="@android:style/Theme.NoTitleBar"  android:screenOrientation="portrait"></activity>
          <activity android:name=".SignUpView" android:theme="@android:style/Theme.NoTitleBar"  android:screenOrientation="portrait"></activity>
     <activity android:name=".HomeView" android:theme="@android:style/Theme.NoTitleBar"  android:screenOrientation="portrait"></activity>
-        <activity android:name=".DialogActivity" android:theme="@android:style/Theme.NoTitleBar"  android:screenOrientation="portrait"></activity>
+        <activity android:name="snowmada.main.view.SKIDialogActivity" android:theme="@android:style/Theme.NoTitleBar"  android:screenOrientation="portrait"></activity>
     
     <meta-data
     android:name="com.google.android.maps.v2.API_KEY"
@@ -104,9 +104,9 @@
    </intent-filter>  
   </receiver>  
      
-         <receiver android:name=".MyAlertReceiver">
+         <receiver android:name="snowmada.main.view.SkiPatrolAlertReceiver">
              <intent-filter >
-                 <action android:name="SNOWMADA_GET_CURRENT_LOCATION_INTENT" />
+                 <action android:name="SKI_PATROL_INTENT" />
              </intent-filter>
          </receiver>
          

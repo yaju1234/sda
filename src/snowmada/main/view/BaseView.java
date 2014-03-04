@@ -1,6 +1,15 @@
 package snowmada.main.view;
 
 
+import android.app.ProgressDialog;
+import android.os.StrictMode;
+import android.support.v4.app.FragmentActivity;
+import android.text.Html;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
@@ -14,23 +23,15 @@ import com.strapin.application.AppInfo;
 import com.strapin.application.SnomadaApp;
 import com.strapin.db.SnowmadaDbAdapter;
 
-import android.app.ProgressDialog;
-import android.os.StrictMode;
-import android.support.v4.app.FragmentActivity;
-import android.text.Html;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-
 public class BaseView extends FragmentActivity implements IBase,OnClickListener,OnMarkerClickListener,OnMapLongClickListener,OnMarkerDragListener,OnInfoWindowClickListener{
 	public SnomadaApp myApp;
 	public boolean inIt  = false;
 	public ProgressDialog prsDlg;
-	public SnowmadaDbAdapter db;
-	
+	public SnowmadaDbAdapter db;	
 	public ImageLoader imageLoader;
     public DisplayImageOptions options;
+    
+    
 
 	@Override
 	protected void onStart() {
@@ -46,15 +47,6 @@ public class BaseView extends FragmentActivity implements IBase,OnClickListener,
 		if(!myApp.inIt){
 			myApp.inIt = true;
 			myApp.setAppInfo(new AppInfo(this));
-			
-			/*imageLoader = ImageLoader.getInstance();
-			options = new DisplayImageOptions.Builder()
-			.showStubImage(R.drawable.app_logo)
-			.showImageForEmptyUri(R.drawable.app_logo)
-			.cacheInMemory()
-			.cacheOnDisc()
-			.displayer(new RoundedBitmapDisplayer(20))
-			.build();*/
 			
 		}
 		init();

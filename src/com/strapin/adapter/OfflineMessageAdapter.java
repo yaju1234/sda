@@ -2,6 +2,7 @@ package com.strapin.adapter;
 
 import java.util.ArrayList;
 
+import snowmada.main.view.HomeView;
 import snowmada.main.view.R;
 import android.app.Activity;
 import android.content.Context;
@@ -26,14 +27,13 @@ public class OfflineMessageAdapter extends ArrayAdapter<NewMessage>{
 	private ArrayList<NewMessage> mItems = new ArrayList<NewMessage>();
 	private ViewHolder mHolder;
 	private ImageLoader imageLoader;
-	private Activity activity;
+	private HomeView activity;
 	private HomePresenter mPresenter;
 	private LinearLayout mLayoutMessageNotificationList; 
-	public OfflineMessageAdapter(HomePresenter mPresenter,Activity activity, int textViewResourceId,	ArrayList<NewMessage> mChat) {
+	public OfflineMessageAdapter(HomeView activity, int textViewResourceId,	ArrayList<NewMessage> mChat) {
 		super(activity, textViewResourceId);
 		this.activity = activity;
 		this.mItems = mChat;
-		this.mPresenter = mPresenter;
 		imageLoader=new ImageLoader(activity);		
 	}		  
 	@Override

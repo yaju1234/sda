@@ -19,7 +19,7 @@ public class KlHttpClient {
 	private static final String TAG = "HttpClient";
 
 	public static JSONObject SendHttpPost(String URL, JSONObject jsonObjSend) {
-Log.i("URL", URL);
+		
 		try {
 			DefaultHttpClient httpclient = new DefaultHttpClient();
 			HttpPost httpPostRequest = new HttpPost(URL);
@@ -34,7 +34,7 @@ Log.i("URL", URL);
 
 			long t = System.currentTimeMillis();
 			HttpResponse response = (HttpResponse) httpclient.execute(httpPostRequest);
-			Log.i(TAG, "HTTPResponse received in [" + (System.currentTimeMillis()-t) + "ms]");
+			//Log.i(TAG, "HTTPResponse received in [" + (System.currentTimeMillis()-t) + "ms]");
 
 			HttpEntity entity = response.getEntity();
 
@@ -50,7 +50,7 @@ Log.i("URL", URL);
 				resultString = resultString.substring(0,resultString.length()-1); 
 
 				JSONObject jsonObjRecv = new JSONObject(resultString);
-				Log.i(TAG,"<JSONObject>\n"+jsonObjRecv.toString()+"\n</JSONObject>");
+				//Log.i(TAG,"<JSONObject>\n"+jsonObjRecv.toString()+"\n</JSONObject>");
 
 				return jsonObjRecv;
 			} 
@@ -72,7 +72,6 @@ Log.i("URL", URL);
 		String line = null;
 		try {
 			while ((line = reader.readLine()) != null) {
-				Log.e("Line", line);
 				sb.append(line + "\n");
 				
 			}

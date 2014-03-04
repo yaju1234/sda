@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.strapin.bean.FacebookFriendBean;
 import com.strapin.bean.MeetUpInfoBean;
 import com.strapin.bean.MessageBean;
+import com.strapin.bean.Patrol;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -44,7 +45,7 @@ public class SnowmadaDbAdapter {
 	
 ////////////////////////////////////////  For Snomada Table Strat  ///////////////////////
 	
-	public long insertUserInfo(final String facebookId, final String fname,final String lname) {
+	/*public long insertUserInfo(final String facebookId, final String fname,final String lname) {
 		final ContentValues values = new ContentValues();
 		values.put(TableConstantName.FACEBOOK_ID, facebookId);
 		values.put(TableConstantName.FB_USER_FIRSTNAME, fname);
@@ -85,73 +86,73 @@ public class SnowmadaDbAdapter {
 	public String getUserFbID(){
 		int i = 1;
 		String fbid = "";
-		Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_NAME+ " where " +TableConstantName.ID+ " = '"+i+"'", null);
-		//Log.e("mCursor.getCount()", ""+mCursor.getCount());
-		if(mCursor.getCount()>0){
-			mCursor.moveToFirst();
-			fbid = mCursor.getString(3);
-			/*while(!mCursor.isAfterLast()){
-				 fbid = mCursor.getString(1);
-				 mCursor.moveToNext();
-				//int CouponStatus = mCursor.getInt(3);			
+		Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_NAME+ " where " +TableConstantName.ID+ " = '"+i+"'", null);
+		//Log.e("cursor.getCount()", ""+cursor.getCount());
+		if(cursor.getCount()>0){
+			cursor.moveToFirst();
+			fbid = cursor.getString(3);
+			while(!cursor.isAfterLast()){
+				 fbid = cursor.getString(1);
+				 cursor.moveToNext();
+				//int CouponStatus = cursor.getInt(3);			
 				
-			}*/	
+			}	
 		}
-		mCursor.close();
+		cursor.close();
 		return fbid;
 	}
 	
 	public String getUserFirstName(){
 		int i = 1;
 		String fbid = "";
-		Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_NAME+ " where " +TableConstantName.ID+ " = '"+i+"'", null);
-		//Log.e("mCursor.getCount()", ""+mCursor.getCount());
-		if(mCursor.getCount()>0){
-			mCursor.moveToFirst();
-			fbid = mCursor.getString(1);
-			/*while(!mCursor.isAfterLast()){
-				 fbid = mCursor.getString(1);
-				 mCursor.moveToNext();
-				//int CouponStatus = mCursor.getInt(3);			
+		Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_NAME+ " where " +TableConstantName.ID+ " = '"+i+"'", null);
+		//Log.e("cursor.getCount()", ""+cursor.getCount());
+		if(cursor.getCount()>0){
+			cursor.moveToFirst();
+			fbid = cursor.getString(1);
+			while(!cursor.isAfterLast()){
+				 fbid = cursor.getString(1);
+				 cursor.moveToNext();
+				//int CouponStatus = cursor.getInt(3);			
 				
-			}*/	
+			}	
 		}
-		mCursor.close();
+		cursor.close();
 		return fbid;
 	}
 	
 	public String getUserLastName(){
 		int i = 1;
 		String fbid = "";
-		Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_NAME+ " where " +TableConstantName.ID+ " = '"+i+"'", null);
-		//Log.e("mCursor.getCount()", ""+mCursor.getCount());
-		if(mCursor.getCount()>0){
-			mCursor.moveToFirst();
-			fbid = mCursor.getString(2);
-			/*while(!mCursor.isAfterLast()){
-				 fbid = mCursor.getString(1);
-				 mCursor.moveToNext();
-				//int CouponStatus = mCursor.getInt(3);			
+		Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_NAME+ " where " +TableConstantName.ID+ " = '"+i+"'", null);
+		//Log.e("cursor.getCount()", ""+cursor.getCount());
+		if(cursor.getCount()>0){
+			cursor.moveToFirst();
+			fbid = cursor.getString(2);
+			while(!cursor.isAfterLast()){
+				 fbid = cursor.getString(1);
+				 cursor.moveToNext();
+				//int CouponStatus = cursor.getInt(3);			
 				
-			}*/	
+			}	
 		}
-		mCursor.close();
+		cursor.close();
 		return fbid;
 	}
 	
 	public int getRowCount() {
 		int count = -1;
 
-		final Cursor mCursor = sDb.query(TableConstantName.TABLE_NAME,new String[] { "count(*) " + TableConstantName.FACEBOOK_ID },
+		final Cursor cursor = sDb.query(TableConstantName.TABLE_NAME,new String[] { "count(*) " + TableConstantName.FACEBOOK_ID },
 				null, null, null, null, null);
-		if (mCursor != null) {
-			mCursor.moveToFirst();
-			count = mCursor.getInt(mCursor
+		if (cursor != null) {
+			cursor.moveToFirst();
+			count = cursor.getInt(cursor
 					.getColumnIndex(TableConstantName.FACEBOOK_ID));
-			mCursor.close();
+			cursor.close();
 		}
 		return count;
-	}
+	}*/
 	
 ////////////////////////////////////////For Snomada Table END  ///////////////////////
 	
@@ -160,13 +161,13 @@ public class SnowmadaDbAdapter {
 /*	public int getSKIRowCount() {
 		int count = -1;
 
-		final Cursor mCursor = sDb.query(TableConstantName.TABLE_SKI,new String[] { "count(*) " + TableConstantName.STATUS },
+		final Cursor cursor = sDb.query(TableConstantName.TABLE_SKI,new String[] { "count(*) " + TableConstantName.STATUS },
 				null, null, null, null, null);
-		if (mCursor != null) {
-			mCursor.moveToFirst();
-			count = mCursor.getInt(mCursor
+		if (cursor != null) {
+			cursor.moveToFirst();
+			count = cursor.getInt(cursor
 					.getColumnIndex(TableConstantName.STATUS));
-			mCursor.close();
+			cursor.close();
 		}
 		return count;
 	}*/
@@ -176,19 +177,19 @@ public class SnowmadaDbAdapter {
 	/*public String getSKIStatus(){
 		int i = 1;
 		String status = "";
-		Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_SKI+ " where " +TableConstantName.ID+ " = '"+i+"'", null);
-		//Log.e("mCursor.getCount()", ""+mCursor.getCount());
-		if(mCursor.getCount()>0){
-			mCursor.moveToFirst();
-			status = mCursor.getString(1);
-			while(!mCursor.isAfterLast()){
-				 fbid = mCursor.getString(1);
-				 mCursor.moveToNext();
-				//int CouponStatus = mCursor.getInt(3);			
+		Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_SKI+ " where " +TableConstantName.ID+ " = '"+i+"'", null);
+		//Log.e("cursor.getCount()", ""+cursor.getCount());
+		if(cursor.getCount()>0){
+			cursor.moveToFirst();
+			status = cursor.getString(1);
+			while(!cursor.isAfterLast()){
+				 fbid = cursor.getString(1);
+				 cursor.moveToNext();
+				//int CouponStatus = cursor.getInt(3);			
 				
 			}	
 		}
-		mCursor.close();
+		cursor.close();
 		return status;
 	}*/
 	
@@ -257,19 +258,19 @@ public long insertMeetUpInfo(final String lat,final String lng,String status) {
 public void getMeetUpLocation1(){	
 	
 	//String args[] = new String[3];
-	Cursor mCursor = sDb.rawQuery("SELECT *   FROM    meetup",null);	
-	Log.e("mCursor.getCount()", ""+mCursor.getCount());
-	if(mCursor.getCount()>0){
+	Cursor cursor = sDb.rawQuery("SELECT *   FROM    meetup",null);	
+	Log.e("cursor.getCount()", ""+cursor.getCount());
+	if(cursor.getCount()>0){
 		mCheckBeans.clear();
-		mCursor.moveToFirst();
-		while(!mCursor.isAfterLast()){
-			Log.e("ID", mCursor.getString(0));
-			Log.e("lat", mCursor.getString(1));
-			Log.e("lng", mCursor.getString(2));
-			mCursor.moveToNext();
+		cursor.moveToFirst();
+		while(!cursor.isAfterLast()){
+			Log.e("ID", cursor.getString(0));
+			Log.e("lat", cursor.getString(1));
+			Log.e("lng", cursor.getString(2));
+			cursor.moveToNext();
 		}
 	}
-	mCursor.close();
+	cursor.close();
 	//return args;
 }
 
@@ -277,18 +278,18 @@ public void getMeetUpLocation1(){
 public String[] getMeetUpLocation(){	
 	
 	String args[] = new String[3];
-	Cursor mCursor = sDb.rawQuery("SELECT *   FROM    "+ TableConstantName.TABLE_MEETUP +"   WHERE    "+ TableConstantName.ID  +" = (SELECT MAX( "+ TableConstantName.ID +")  FROM "+ TableConstantName.TABLE_MEETUP +")",null);		
-	if(mCursor.getCount()>0){
+	Cursor cursor = sDb.rawQuery("SELECT *   FROM    "+ TableConstantName.TABLE_MEETUP +"   WHERE    "+ TableConstantName.ID  +" = (SELECT MAX( "+ TableConstantName.ID +")  FROM "+ TableConstantName.TABLE_MEETUP +")",null);		
+	if(cursor.getCount()>0){
 		mCheckBeans.clear();
-		mCursor.moveToFirst();
-		while(!mCursor.isAfterLast()){
-			args[0] = mCursor.getString(0);
-			args[1] = mCursor.getString(1);
-			args[2] = mCursor.getString(2);
-			mCursor.moveToNext();
+		cursor.moveToFirst();
+		while(!cursor.isAfterLast()){
+			args[0] = cursor.getString(0);
+			args[1] = cursor.getString(1);
+			args[2] = cursor.getString(2);
+			cursor.moveToNext();
 		}
 	}
-	mCursor.close();
+	cursor.close();
 	return args;
 }
 
@@ -335,40 +336,30 @@ public long insertSkiPetrolInfo(final String patrolerid,final String FirstName,f
 	}
 }
 
-public String[] getSkiPetrolInfo(){
-	
-	String args[] = new String[5];
-	Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_SKIPETROL, null);		
-	if(mCursor.getCount()>0){
-		mCursor.moveToFirst();
-		while(!mCursor.isAfterLast()){
-			String patroler_id = mCursor.getString(1);
-			args[0] = patroler_id;
-			String mFirstName = mCursor.getString(2);
-			args[1] = mFirstName;
-			String mLastName = mCursor.getString(3);
-			args[2] = mLastName;
-			String mLatitude = mCursor.getString(4);
-			args[3] = mLatitude;
-			String mLongitude = mCursor.getString(5);
-			args[4] = mLongitude;
-			mCursor.moveToNext();
+public Patrol getSkiPetrolInfo(){
+	Patrol p = null;
+	Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_SKIPETROL, null);		
+	if(cursor.getCount()>0){
+		cursor.moveToFirst();
+		while(!cursor.isAfterLast()){
+			p = new Patrol(cursor.getString(1), cursor.getString(2), cursor.getString(3));
+			cursor.moveToNext();
 		}
 	}
-	mCursor.close();
-	return args;
+	cursor.close();
+	return p;
 }
 
 public int getSkiPetrolRowCount() {
 	int count = -1;
 
-	final Cursor mCursor = sDb.query(TableConstantName.TABLE_SKIPETROL,new String[] { "count(*) " + TableConstantName.ID },
+	final Cursor cursor = sDb.query(TableConstantName.TABLE_SKIPETROL,new String[] { "count(*) " + TableConstantName.ID },
 			null, null, null, null, null);
-	if (mCursor != null) {
-		mCursor.moveToFirst();
-		count = mCursor.getInt(mCursor
+	if (cursor != null) {
+		cursor.moveToFirst();
+		count = cursor.getInt(cursor
 				.getColumnIndex(TableConstantName.ID));
-		mCursor.close();
+		cursor.close();
 	}
 	return count;
 }
@@ -421,26 +412,26 @@ public long insertChatMessage(final String SenderFbId, final String SenderName,f
 public ArrayList<MessageBean> getAllChatMessageInfo(){
 	ArrayList<MessageBean> mChatMessage = new  ArrayList<MessageBean>();
 	
-	Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_MESSAGE +" order by "+ TableConstantName.ID  +" desc", null);		
-	if(mCursor.getCount()>0){
+	Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_MESSAGE +" order by "+ TableConstantName.ID  +" desc", null);		
+	if(cursor.getCount()>0){
 		Log.e("reach here", "reach here");
-		mCursor.moveToFirst();
-		while(!mCursor.isAfterLast()){
-			int id = mCursor.getInt(0);
+		cursor.moveToFirst();
+		while(!cursor.isAfterLast()){
+			int id = cursor.getInt(0);
 			
-			String mFacebookId = mCursor.getString(1);
+			String mFacebookId = cursor.getString(1);
 			
 			Log.e("id", mFacebookId);
-			String mName = mCursor.getString(2);
-			Log.e("mName", mName);
-			String staus = mCursor.getString(3);
-			String mMessage = mCursor.getString(4);
+			String mName = cursor.getString(2);
+			Log.e("name", mName);
+			String staus = cursor.getString(3);
+			String mMessage = cursor.getString(4);
 			Log.e("mMessage", mMessage);
 			mChatMessage.add(new MessageBean(id,mFacebookId,mName,staus,mMessage));
-			mCursor.moveToNext();
+			cursor.moveToNext();
 		}
 	}
-	mCursor.close();
+	cursor.close();
 	return mChatMessage;
 }
 
@@ -482,8 +473,8 @@ try {
 public boolean isUserMessageExist(final String fbId) {
 	boolean flag = false;
 
-	Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_MESSAGE+ " where " + TableConstantName.SENDER_FB_ID + "='"+fbId+"'", null);
-	if (mCursor.getCount()>0) {
+	Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_MESSAGE+ " where " + TableConstantName.SENDER_FB_ID + "='"+fbId+"'", null);
+	if (cursor.getCount()>0) {
 		flag = true;
 	}
 	return flag;
@@ -497,14 +488,14 @@ public boolean isUserMessageExist(final String fbId) {
 public int getMassageNotificationCount() {
 	int count = -1;
 
-	final Cursor mCursor = sDb.rawQuery("select * from message where isread = '1'",null);
-	if (mCursor != null) {
-		/*mCursor.moveToFirst();
-		count = mCursor.getInt(mCursor
+	final Cursor cursor = sDb.rawQuery("select * from message where isread = '1'",null);
+	if (cursor != null) {
+		/*cursor.moveToFirst();
+		count = cursor.getInt(cursor
 				.getColumnIndex(TableConstantName.ID));*/
-		count=mCursor.getCount();
+		count=cursor.getCount();
 		Log.e("count", ""+count);
-		mCursor.close();
+		cursor.close();
 	}
 	return count;
 }
@@ -512,14 +503,14 @@ public int getMassageNotificationCount() {
 public int getTotalMessageCount() {
 	int count = -1;
 
-	final Cursor mCursor = sDb.rawQuery("select * from message",null);
-	if (mCursor != null) {
-		/*mCursor.moveToFirst();
-		count = mCursor.getInt(mCursor
+	final Cursor cursor = sDb.rawQuery("select * from message",null);
+	if (cursor != null) {
+		/*cursor.moveToFirst();
+		count = cursor.getInt(cursor
 				.getColumnIndex(TableConstantName.ID));*/
-		count=mCursor.getCount();
+		count=cursor.getCount();
 		Log.e("count", ""+count);
-		mCursor.close();
+		cursor.close();
 	}
 	return count;
 }
@@ -547,30 +538,30 @@ public long insertfacebookFriends(final String fbid, final String name) {
 public ArrayList<FacebookFriendBean> getFacebookFriends() {
 	
 	ArrayList<FacebookFriendBean> arr = new ArrayList<FacebookFriendBean>();
-	Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_FB_FRIENDS, null);		
-	if(mCursor.getCount()>0){
-		mCursor.moveToFirst();
-		while(!mCursor.isAfterLast()){			
-			String facebookid = mCursor.getString(1);
-			String name = mCursor.getString(2);
+	Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_FB_FRIENDS, null);		
+	if(cursor.getCount()>0){
+		cursor.moveToFirst();
+		while(!cursor.isAfterLast()){			
+			String facebookid = cursor.getString(1);
+			String name = cursor.getString(2);
 			arr.add(new FacebookFriendBean(facebookid,name));
-			mCursor.moveToNext();
+			cursor.moveToNext();
 		}
 	}
-	mCursor.close();
+	cursor.close();
 	return arr;
 }
 
 public int getFbFriendCount() {
 	int count = -1;
 
-	final Cursor mCursor = sDb.query(TableConstantName.TABLE_FB_FRIENDS,new String[] { "count(*) " + TableConstantName.FB_ID },
+	final Cursor cursor = sDb.query(TableConstantName.TABLE_FB_FRIENDS,new String[] { "count(*) " + TableConstantName.FB_ID },
 			null, null, null, null, null);
-	if (mCursor != null) {
-		mCursor.moveToFirst();
-		count = mCursor.getInt(mCursor
+	if (cursor != null) {
+		cursor.moveToFirst();
+		count = cursor.getInt(cursor
 				.getColumnIndex(TableConstantName.FB_ID));
-		mCursor.close();
+		cursor.close();
 	}
 	return count;
 }
@@ -600,13 +591,13 @@ public void emptyFriendTable(){
 /*public int getSessionValueRowCount() {
 	int count = -1;
 
-	final Cursor mCursor = sDb.query(TableConstantName.TABLE_SESSION,new String[] { "count(*) " + TableConstantName.IS_SESSION_VALID },
+	final Cursor cursor = sDb.query(TableConstantName.TABLE_SESSION,new String[] { "count(*) " + TableConstantName.IS_SESSION_VALID },
 			null, null, null, null, null);
-	if (mCursor != null) {
-		mCursor.moveToFirst();
-		count = mCursor.getInt(mCursor
+	if (cursor != null) {
+		cursor.moveToFirst();
+		count = cursor.getInt(cursor
 				.getColumnIndex(TableConstantName.IS_SESSION_VALID));
-		mCursor.close();
+		cursor.close();
 	}
 	return count;
 }*/
@@ -614,15 +605,15 @@ public void emptyFriendTable(){
 /*public boolean isSessionvalid() {
 	boolean flag = false;
 	String value = "0";
-	Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_SESSION, null);		
-	if(mCursor.getCount()>0){
-		mCursor.moveToFirst();
-		while(!mCursor.isAfterLast()){			
-			value = mCursor.getString(1);
-			mCursor.moveToNext();
+	Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_SESSION, null);		
+	if(cursor.getCount()>0){
+		cursor.moveToFirst();
+		while(!cursor.isAfterLast()){			
+			value = cursor.getString(1);
+			cursor.moveToNext();
 		}
 	}
-	mCursor.close();
+	cursor.close();
 	if(value.equalsIgnoreCase("1")){
 		flag = true;
 	}
@@ -807,47 +798,47 @@ public void emptyFriendTable(){
 	public boolean IsWebServiceCallForTrandingNowCoupons(String retailerName){
 		boolean IsExists = true;
 		String catagory = "S";
-		Cursor mCursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND "+ TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'", null, null,
+		Cursor cursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND "+ TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'", null, null,
 				null, null);
-		if(mCursor.getCount()>0){
+		if(cursor.getCount()>0){
 			IsExists = false;
 		}
-		mCursor.close();
+		cursor.close();
 		return IsExists;
 	}
 	public boolean IsWebServiceCallForDealsForYouCoupons(String retailerName){
 		boolean IsExists = true;
 		String catagory = "Y";
 		String category_Common ="C";
-		Cursor mCursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND ("+TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'"+" OR "+TableConstantName.COUPON_CATAGORY + "=" + "'"+category_Common+"'"+")", null, null,
+		Cursor cursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND ("+TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'"+" OR "+TableConstantName.COUPON_CATAGORY + "=" + "'"+category_Common+"'"+")", null, null,
 				null, null);
-		if(mCursor.getCount()>0){
+		if(cursor.getCount()>0){
 			IsExists = false;
 		}
-		mCursor.close();
+		cursor.close();
 		return IsExists;
 	}
 	
 	public boolean isRetailerExistInCouponTable(String retailerName){
 		boolean IsExists = false;
-		Cursor mCursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'", null, null,
+		Cursor cursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'", null, null,
 				null, null);
-		if(mCursor.getCount()>0){
+		if(cursor.getCount()>0){
 			IsExists = true;
 		}
-		mCursor.close();
+		cursor.close();
 		return IsExists;
 	}
 	
 	public boolean isTreadingNowRetailerExist(String retailerName){
 		String catagory = "S";
 		boolean IsExists = false;
-		Cursor mCursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND "+ TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'", null, null,
+		Cursor cursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND "+ TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'", null, null,
 				null, null);
-		if(mCursor.getCount()>0){
+		if(cursor.getCount()>0){
 			IsExists = true;
 		}
-		mCursor.close();
+		cursor.close();
 		return IsExists;
 	}
 	
@@ -856,47 +847,47 @@ public void emptyFriendTable(){
 		String category_treadingNow = "S";
 		String category_Common = "C";
 		int val = 0;
-		Cursor mCursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND ("+TableConstantName.COUPON_CATAGORY + "=" + "'"+category_treadingNow+"'"+" OR "+TableConstantName.COUPON_CATAGORY + "=" + "'"+category_Common+"'"+")", null, null,
+		Cursor cursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND ("+TableConstantName.COUPON_CATAGORY + "=" + "'"+category_treadingNow+"'"+" OR "+TableConstantName.COUPON_CATAGORY + "=" + "'"+category_Common+"'"+")", null, null,
 				null, null);
-		if(mCursor.getCount()>0){
-			val = mCursor.getCount();
+		if(cursor.getCount()>0){
+			val = cursor.getCount();
 		}
-		mCursor.close();
+		cursor.close();
 		return val;
 	}
 	
 	public boolean isDealsForYouRetailerExist(String retailerName){
 		String catagory = "Y";
 		boolean IsExists = false;
-		Cursor mCursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND "+ TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'", null, null,
+		Cursor cursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND "+ TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'", null, null,
 				null, null);
-		if(mCursor.getCount()>0){
+		if(cursor.getCount()>0){
 			IsExists = true;
 		}
-		mCursor.close();
+		cursor.close();
 		return IsExists;
 	}
 	public boolean IsRetailerExistsfromDealsForYou(String retailerName){
 		boolean IsExists = false;
 		String catagory = "Y";
-		Cursor mCursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND "+ TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'", null, null,
+		Cursor cursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND "+ TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'", null, null,
 				null, null);
-		if(mCursor.getCount()>0){
+		if(cursor.getCount()>0){
 			IsExists = true;
 		}
-		mCursor.close();
+		cursor.close();
 		return IsExists;
 	}
 	
 	public boolean IsRetailerExistsfromTreadingNow(String retailerName){
 		boolean IsExists = false;
 		String catagory = "S";
-		Cursor mCursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND "+ TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'", null, null,
+		Cursor cursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND "+ TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'", null, null,
 				null, null);
-		if(mCursor.getCount()>0){
+		if(cursor.getCount()>0){
 			IsExists = true;
 		}
-		mCursor.close();
+		cursor.close();
 		return IsExists;
 	}
 	
@@ -936,30 +927,30 @@ public void emptyFriendTable(){
 	
 	public boolean IsCouponIdAlreadyExistIntoCouponTable(String retailerName, String couponId){
 		boolean IsExists = false;
-		Cursor mCursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND "+ TableConstantName.COUPON_ID + "=" + "'"+couponId+"'", null, null,
+		Cursor cursor =  sDb.query(TableConstantName.COUPON_TABLE,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND "+ TableConstantName.COUPON_ID + "=" + "'"+couponId+"'", null, null,
 				null, null);
-		if(mCursor.getCount()>0){
+		if(cursor.getCount()>0){
 			IsExists = true;
 		}
-		mCursor.close();
+		cursor.close();
 		return IsExists;
 	}
 	
 	
 	
 	public void getRetailerValue(String retailerName){
-		Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.COUPON_TABLE+ " where " +TableConstantName.COUPON_RETAILER_NAME+ " = '"+retailerName+"'", null);
-		//Log.e("mCursor.getCount()", ""+mCursor.getCount());
-		if(mCursor.getCount()>0){
-			mCursor.moveToFirst();
-			while(mCursor.moveToNext()){
-				String coupon = mCursor.getString(2);				
-				int CouponStatus = mCursor.getInt(3);			
+		Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.COUPON_TABLE+ " where " +TableConstantName.COUPON_RETAILER_NAME+ " = '"+retailerName+"'", null);
+		//Log.e("cursor.getCount()", ""+cursor.getCount());
+		if(cursor.getCount()>0){
+			cursor.moveToFirst();
+			while(cursor.moveToNext()){
+				String coupon = cursor.getString(2);				
+				int CouponStatus = cursor.getInt(3);			
 				
 			}
 				
 		}
-		mCursor.close();
+		cursor.close();
 	}
 	
 	public void deleteRetalerName(String retailerName){		
@@ -971,18 +962,18 @@ public void emptyFriendTable(){
 	
 	public String getRetailerImage(String retailerName){
 		String image = null;
-		Cursor mCursor = sDb.rawQuery("select image from " +TableConstantName.COUPON_TABLE+ " where " +TableConstantName.COUPON_RETAILER_NAME+ " = '"+retailerName+"'"+" limit 0,1", null);
-		//Log.e("mCursor.getCount()", ""+mCursor.getCount());
-		if(mCursor.getCount()>0){
-			mCursor.moveToFirst();
-			while(mCursor.moveToNext()){
-				image = mCursor.getString(0);
+		Cursor cursor = sDb.rawQuery("select image from " +TableConstantName.COUPON_TABLE+ " where " +TableConstantName.COUPON_RETAILER_NAME+ " = '"+retailerName+"'"+" limit 0,1", null);
+		//Log.e("cursor.getCount()", ""+cursor.getCount());
+		if(cursor.getCount()>0){
+			cursor.moveToFirst();
+			while(cursor.moveToNext()){
+				image = cursor.getString(0);
 				Log.e("Image", ""+image);
-				Log.e("Image1", ""+mCursor.getString(1));
+				Log.e("Image1", ""+cursor.getString(1));
 			}
 				
 		}
-		mCursor.close();
+		cursor.close();
 		return image;
 	}
        *//**
@@ -996,36 +987,36 @@ public void emptyFriendTable(){
 		ArrayList<StoreDealsBean> mCheckBeans = new ArrayList<StoreDealsBean>();
 		String category_treadingNow = "S";
 		String category_Common = "C";
-		Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.COUPON_TABLE+ " where " +TableConstantName.COUPON_RETAILER_NAME+ " = '"+retailerName+"'"+ " AND ("+TableConstantName.COUPON_CATAGORY + "=" + "'"+category_treadingNow+"'"+" OR "+TableConstantName.COUPON_CATAGORY + "=" + "'"+category_Common+"'"+")", null);		
-		if(mCursor.getCount()>0){
-			mCursor.moveToFirst();
-			while(!mCursor.isAfterLast()){
-				String mCouponDescription = mCursor.getString(1);
-				String mRetailerId = mCursor.getString(2);
-				String mRetailerName = mCursor.getString(3);
-				String mRetailerType = mCursor.getString(4);
-				String mCouponProductUpcCode = mCursor.getString(5);
-				String mCouponPriceOff = mCursor.getString(6);
-				String mCouponProductSkuId = mCursor.getString(7);
-				String mCouponType = mCursor.getString(8);
-				String mCouponProductname = mCursor.getString(9);
-				String mImage = mCursor.getString(10);
-				String mCouponId = mCursor.getString(11);
-				String mCouponfreeProductId = mCursor.getString(12);
-				String mCouponProductId = mCursor.getString(13);
-				String mCouponCode = mCursor.getString(14);
-				String mCouponFreeProductQty = mCursor.getString(15);
-				int CouponStatus = mCursor.getInt(16);	
-				int CouponOnlyStatus = mCursor.getInt(17);
-				String Couponcatagory = mCursor.getString(18);
+		Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.COUPON_TABLE+ " where " +TableConstantName.COUPON_RETAILER_NAME+ " = '"+retailerName+"'"+ " AND ("+TableConstantName.COUPON_CATAGORY + "=" + "'"+category_treadingNow+"'"+" OR "+TableConstantName.COUPON_CATAGORY + "=" + "'"+category_Common+"'"+")", null);		
+		if(cursor.getCount()>0){
+			cursor.moveToFirst();
+			while(!cursor.isAfterLast()){
+				String mCouponDescription = cursor.getString(1);
+				String mRetailerId = cursor.getString(2);
+				String mRetailerName = cursor.getString(3);
+				String mRetailerType = cursor.getString(4);
+				String mCouponProductUpcCode = cursor.getString(5);
+				String mCouponPriceOff = cursor.getString(6);
+				String mCouponProductSkuId = cursor.getString(7);
+				String mCouponType = cursor.getString(8);
+				String mCouponProductname = cursor.getString(9);
+				String image = cursor.getString(10);
+				String mCouponId = cursor.getString(11);
+				String mCouponfreeProductId = cursor.getString(12);
+				String mCouponProductId = cursor.getString(13);
+				String mCouponCode = cursor.getString(14);
+				String mCouponFreeProductQty = cursor.getString(15);
+				int CouponStatus = cursor.getInt(16);	
+				int CouponOnlyStatus = cursor.getInt(17);
+				String Couponcatagory = cursor.getString(18);
 				//mCheckBeans.add(new CouponCheckBean(coupon, CouponStatus== 1?true:false));
-				mCheckBeans.add(new StoreDealsBean(mCouponDescription, mRetailerId, mRetailerName, mRetailerType, mCouponProductUpcCode, mCouponPriceOff, mCouponProductSkuId, mCouponType, mCouponProductname, mImage, mCouponId, mCouponfreeProductId, mCouponProductId, mCouponCode, mCouponFreeProductQty, CouponStatus== 1?true:false, CouponOnlyStatus ==1?true:false,Couponcatagory ));
-				mCursor.moveToNext();
+				mCheckBeans.add(new StoreDealsBean(mCouponDescription, mRetailerId, mRetailerName, mRetailerType, mCouponProductUpcCode, mCouponPriceOff, mCouponProductSkuId, mCouponType, mCouponProductname, image, mCouponId, mCouponfreeProductId, mCouponProductId, mCouponCode, mCouponFreeProductQty, CouponStatus== 1?true:false, CouponOnlyStatus ==1?true:false,Couponcatagory ));
+				cursor.moveToNext();
 				
 			}
 				
 		}
-		mCursor.close();
+		cursor.close();
 		return mCheckBeans;
 	}
 	
@@ -1034,36 +1025,36 @@ public void emptyFriendTable(){
 		String catagory = "Y";
 		String category_Common = "C";
 		
-		Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.COUPON_TABLE+ " where " +TableConstantName.COUPON_RETAILER_NAME+ " = '"+retailerName+"'"+ " AND ("+TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'"+" OR "+TableConstantName.COUPON_CATAGORY + "=" + "'"+category_Common+"'"+")", null);		
-		if(mCursor.getCount()>0){
-			mCursor.moveToFirst();
-			while(!mCursor.isAfterLast()){
-				String mCouponDescription = mCursor.getString(1);
-				String mRetailerId = mCursor.getString(2);
-				String mRetailerName = mCursor.getString(3);
-				String mRetailerType = mCursor.getString(4);
-				String mCouponProductUpcCode = mCursor.getString(5);
-				String mCouponPriceOff = mCursor.getString(6);
-				String mCouponProductSkuId = mCursor.getString(7);
-				String mCouponType = mCursor.getString(8);
-				String mCouponProductname = mCursor.getString(9);
-				String mImage = mCursor.getString(10);
-				String mCouponId = mCursor.getString(11);
-				String mCouponfreeProductId = mCursor.getString(12);
-				String mCouponProductId = mCursor.getString(13);
-				String mCouponCode = mCursor.getString(14);
-				String mCouponFreeProductQty = mCursor.getString(15);
-				int CouponStatus = mCursor.getInt(16);	
-				int CouponOnlyStatus = mCursor.getInt(17);
-				String Couponcatagory = mCursor.getString(18);
+		Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.COUPON_TABLE+ " where " +TableConstantName.COUPON_RETAILER_NAME+ " = '"+retailerName+"'"+ " AND ("+TableConstantName.COUPON_CATAGORY + "=" + "'"+catagory+"'"+" OR "+TableConstantName.COUPON_CATAGORY + "=" + "'"+category_Common+"'"+")", null);		
+		if(cursor.getCount()>0){
+			cursor.moveToFirst();
+			while(!cursor.isAfterLast()){
+				String mCouponDescription = cursor.getString(1);
+				String mRetailerId = cursor.getString(2);
+				String mRetailerName = cursor.getString(3);
+				String mRetailerType = cursor.getString(4);
+				String mCouponProductUpcCode = cursor.getString(5);
+				String mCouponPriceOff = cursor.getString(6);
+				String mCouponProductSkuId = cursor.getString(7);
+				String mCouponType = cursor.getString(8);
+				String mCouponProductname = cursor.getString(9);
+				String image = cursor.getString(10);
+				String mCouponId = cursor.getString(11);
+				String mCouponfreeProductId = cursor.getString(12);
+				String mCouponProductId = cursor.getString(13);
+				String mCouponCode = cursor.getString(14);
+				String mCouponFreeProductQty = cursor.getString(15);
+				int CouponStatus = cursor.getInt(16);	
+				int CouponOnlyStatus = cursor.getInt(17);
+				String Couponcatagory = cursor.getString(18);
 				//mCheckBeans.add(new CouponCheckBean(coupon, CouponStatus== 1?true:false));
-				mCheckBeans.add(new CustomerCouponBean(mCouponDescription, mRetailerId, mRetailerName, mRetailerType, mCouponProductUpcCode, mCouponPriceOff, mCouponProductSkuId, mCouponType, mCouponProductname, mImage, mCouponId, mCouponfreeProductId, mCouponProductId, mCouponCode, mCouponFreeProductQty, CouponStatus== 1?true:false, CouponOnlyStatus ==1?true:false,Couponcatagory ));
-				mCursor.moveToNext();
+				mCheckBeans.add(new CustomerCouponBean(mCouponDescription, mRetailerId, mRetailerName, mRetailerType, mCouponProductUpcCode, mCouponPriceOff, mCouponProductSkuId, mCouponType, mCouponProductname, image, mCouponId, mCouponfreeProductId, mCouponProductId, mCouponCode, mCouponFreeProductQty, CouponStatus== 1?true:false, CouponOnlyStatus ==1?true:false,Couponcatagory ));
+				cursor.moveToNext();
 				
 			}
 				
 		}
-		mCursor.close();
+		cursor.close();
 		return mCheckBeans;
 	}
 	
@@ -1090,16 +1081,16 @@ public void emptyFriendTable(){
 	public boolean updateCommonCouponStatus(String retailerName, String mCouponId){
 		int status = -1;
 		final ContentValues values = new ContentValues();
-		Cursor mCursor = sDb.rawQuery("select "+TableConstantName.COUPON_ONLY_STATUS+" from " +TableConstantName.COUPON_TABLE+ " where " +TableConstantName.COUPON_ID+ " = '"+mCouponId+"'", null);
-		Log.e("Coupon Status", ""+mCursor.getCount());
-		if(mCursor.getCount()>0){
-			mCursor.moveToFirst();
-			while(!mCursor.isAfterLast()){
-				status = mCursor.getInt(0);
-				mCursor.moveToNext();
+		Cursor cursor = sDb.rawQuery("select "+TableConstantName.COUPON_ONLY_STATUS+" from " +TableConstantName.COUPON_TABLE+ " where " +TableConstantName.COUPON_ID+ " = '"+mCouponId+"'", null);
+		Log.e("Coupon Status", ""+cursor.getCount());
+		if(cursor.getCount()>0){
+			cursor.moveToFirst();
+			while(!cursor.isAfterLast()){
+				status = cursor.getInt(0);
+				cursor.moveToNext();
 			}
 		}
-		mCursor.close();
+		cursor.close();
 		values.put(TableConstantName.COUPON_SRORE_DEALS_STATUS, status);
 		try {
 			sDb.beginTransaction();
@@ -1110,7 +1101,7 @@ public void emptyFriendTable(){
 			throw e;
 		} finally {
 			sDb.endTransaction();
-			mCursor.close();
+			cursor.close();
 		}
 	}
 	
@@ -1119,16 +1110,16 @@ public void emptyFriendTable(){
 	public boolean updateCommonCouponOnlyStatus(String retailerName, String mCouponId){
 		int status = -1;
 		final ContentValues values = new ContentValues();
-		Cursor mCursor = sDb.rawQuery("select "+TableConstantName.COUPON_SRORE_DEALS_STATUS+" from " +TableConstantName.COUPON_TABLE+ " where " +TableConstantName.COUPON_ID+ " = '"+mCouponId+"'", null);
-		Log.e("Coupon Status", ""+mCursor.getCount());
-		if(mCursor.getCount()>0){
-			mCursor.moveToFirst();
-			while(!mCursor.isAfterLast()){
-				status = mCursor.getInt(0);
-				mCursor.moveToNext();
+		Cursor cursor = sDb.rawQuery("select "+TableConstantName.COUPON_SRORE_DEALS_STATUS+" from " +TableConstantName.COUPON_TABLE+ " where " +TableConstantName.COUPON_ID+ " = '"+mCouponId+"'", null);
+		Log.e("Coupon Status", ""+cursor.getCount());
+		if(cursor.getCount()>0){
+			cursor.moveToFirst();
+			while(!cursor.isAfterLast()){
+				status = cursor.getInt(0);
+				cursor.moveToNext();
 			}
 		}
-		mCursor.close();
+		cursor.close();
 		values.put(TableConstantName.COUPON_ONLY_STATUS, status);
 		
 		try {
@@ -1140,7 +1131,7 @@ public void emptyFriendTable(){
 			throw e;
 		} finally {
 			sDb.endTransaction();
-			mCursor.close();
+			cursor.close();
 		}
 	}
 	
@@ -1154,42 +1145,42 @@ public void emptyFriendTable(){
 	public boolean IsCartValueExists(String retailerName){
 		boolean IsExists = true;
 		//String catagory = "S";
-		Cursor mCursor =  sDb.query(TableConstantName.CART_TABLE_NAME,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'", null, null,
+		Cursor cursor =  sDb.query(TableConstantName.CART_TABLE_NAME,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'", null, null,
 				null, null);
-		Cursor mCursor = sDb.rawQuery("select Id from cart where Retailer_Name = '"+retailerName+"' AND ("+TableConstantName.CART_COUPON_CATAGORY+" = 'S' OR " +TableConstantName.CART_COUPON_CATAGORY+ " = 'C')", null);
-		if(mCursor.getCount()>0){
+		Cursor cursor = sDb.rawQuery("select Id from cart where Retailer_Name = '"+retailerName+"' AND ("+TableConstantName.CART_COUPON_CATAGORY+" = 'S' OR " +TableConstantName.CART_COUPON_CATAGORY+ " = 'C')", null);
+		if(cursor.getCount()>0){
 			IsExists = false;
 		}
-		mCursor.close();
+		cursor.close();
 		return IsExists;
 	}
 	
 	public boolean IsCartValueExists1(String retailerName){
 		boolean IsExists = true;
 		//String catagory = "S";
-		Cursor mCursor =  sDb.query(TableConstantName.CART_TABLE_NAME,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'", null, null,
+		Cursor cursor =  sDb.query(TableConstantName.CART_TABLE_NAME,new String[] {TableConstantName.TABLE_ID}, TableConstantName.COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'", null, null,
 				null, null);
-		Cursor mCursor = sDb.rawQuery("select Id from cart where Retailer_Name = '"+retailerName+"' AND ("+TableConstantName.CART_COUPON_CATAGORY+" = 'Y' OR " +TableConstantName.CART_COUPON_CATAGORY+ " = 'C')", null);
-		if(mCursor.getCount()>0){
+		Cursor cursor = sDb.rawQuery("select Id from cart where Retailer_Name = '"+retailerName+"' AND ("+TableConstantName.CART_COUPON_CATAGORY+" = 'Y' OR " +TableConstantName.CART_COUPON_CATAGORY+ " = 'C')", null);
+		if(cursor.getCount()>0){
 			IsExists = false;
 		}
-		mCursor.close();
+		cursor.close();
 		return IsExists;
 	}
 	
 public void getRetailerValueFromCart(String retailerName){
 		
-		Cursor mCursor = sDb.rawQuery("select * from " +TableConstantName.CART_TABLE_NAME+ " where " +TableConstantName.CART_COUPON_RETAILER_NAME+ " = '"+retailerName+"'", null);
-		if(mCursor.getCount()>0){
-			mCursor.moveToFirst();
-			while(mCursor.moveToNext()){
-				String coupon = mCursor.getString(2);				
-				int CouponStatus = mCursor.getInt(3);				
+		Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.CART_TABLE_NAME+ " where " +TableConstantName.CART_COUPON_RETAILER_NAME+ " = '"+retailerName+"'", null);
+		if(cursor.getCount()>0){
+			cursor.moveToFirst();
+			while(cursor.moveToNext()){
+				String coupon = cursor.getString(2);				
+				int CouponStatus = cursor.getInt(3);				
 				
 			}
 				
 		}
-		mCursor.close();
+		cursor.close();
 	}
 	
 	public void deleteRetalerNameFromCart(String retailerName){	
@@ -1219,36 +1210,36 @@ public void getRetailerValueFromCart(String retailerName){
 
 public ArrayList<CartDetailsCouponBean> fetchDetailsCartValue(String retailerName, ArrayList<CartDetailsCouponBean> mCartDetailsCouponBeans1){
 	
-	Cursor mCursor = sDb.rawQuery("select * from "+TableConstantName.CART_TABLE_NAME+" where "+TableConstantName.CART_COUPON_RETAILER_NAME+" = '"+retailerName+"'", null);
+	Cursor cursor = sDb.rawQuery("select * from "+TableConstantName.CART_TABLE_NAME+" where "+TableConstantName.CART_COUPON_RETAILER_NAME+" = '"+retailerName+"'", null);
 	
-	if(mCursor.getCount()>0){
-		mCursor.moveToFirst();
-		while(!mCursor.isAfterLast()){
-			String mCouponDescription = mCursor.getString(1);
-			String mRetailerId = mCursor.getString(2);
-			String mRetailerName = mCursor.getString(3);
-			String mRetailerType = mCursor.getString(4);
-			String mCouponProductUpcCode = mCursor.getString(5);
-			String mCouponPriceOff = mCursor.getString(6);
-			String mCouponProductSkuId = mCursor.getString(7);
-			String mCouponType = mCursor.getString(8);
-			String mCouponProductname = mCursor.getString(9);
-			String mImage = mCursor.getString(10);
-			String mCouponId = mCursor.getString(11);
-			String mCouponfreeProductId = mCursor.getString(12);
-			String mCouponProductId = mCursor.getString(13);
-			String mCouponCode = mCursor.getString(14);
-			String mCouponFreeProductQty = mCursor.getString(15);
-			int CouponStatus = mCursor.getInt(16);
+	if(cursor.getCount()>0){
+		cursor.moveToFirst();
+		while(!cursor.isAfterLast()){
+			String mCouponDescription = cursor.getString(1);
+			String mRetailerId = cursor.getString(2);
+			String mRetailerName = cursor.getString(3);
+			String mRetailerType = cursor.getString(4);
+			String mCouponProductUpcCode = cursor.getString(5);
+			String mCouponPriceOff = cursor.getString(6);
+			String mCouponProductSkuId = cursor.getString(7);
+			String mCouponType = cursor.getString(8);
+			String mCouponProductname = cursor.getString(9);
+			String image = cursor.getString(10);
+			String mCouponId = cursor.getString(11);
+			String mCouponfreeProductId = cursor.getString(12);
+			String mCouponProductId = cursor.getString(13);
+			String mCouponCode = cursor.getString(14);
+			String mCouponFreeProductQty = cursor.getString(15);
+			int CouponStatus = cursor.getInt(16);
 			
 			
-			mCartDetailsCouponBeans1.add(new CartDetailsCouponBean(mCouponDescription, mRetailerId, mRetailerName, mRetailerType, mCouponProductUpcCode, mCouponPriceOff, mCouponProductSkuId, mCouponType, mCouponProductname, mImage, mCouponId, mCouponfreeProductId, mCouponProductId, mCouponCode, mCouponFreeProductQty, CouponStatus== 1?true:false));
-			mCursor.moveToNext();
+			mCartDetailsCouponBeans1.add(new CartDetailsCouponBean(mCouponDescription, mRetailerId, mRetailerName, mRetailerType, mCouponProductUpcCode, mCouponPriceOff, mCouponProductSkuId, mCouponType, mCouponProductname, image, mCouponId, mCouponfreeProductId, mCouponProductId, mCouponCode, mCouponFreeProductQty, CouponStatus== 1?true:false));
+			cursor.moveToNext();
 			
 		}
 			
 	}
-	mCursor.close();
+	cursor.close();
 	return mCartDetailsCouponBeans1;
 }
 
@@ -1265,14 +1256,14 @@ public void deleteRowFromCart(String retailerName, String mCouponId){
 public int getNumberOfCouponsFromcarttable() {
 	int count = -1;
 
-	final Cursor mCursor = sDb.query(TableConstantName.CART_TABLE_NAME,
+	final Cursor cursor = sDb.query(TableConstantName.CART_TABLE_NAME,
 			new String[] { "count(*) " + TableConstantName.CART_ID },
 			null, null, null, null, null);
-	if (mCursor != null) {
-		mCursor.moveToFirst();
-		count = mCursor.getInt(mCursor
+	if (cursor != null) {
+		cursor.moveToFirst();
+		count = cursor.getInt(cursor
 				.getColumnIndex(TableConstantName.CART_ID));
-		mCursor.close();
+		cursor.close();
 	}
 
 	return count;
@@ -1282,20 +1273,20 @@ public ArrayList<CartDetailsRetailerBean> getDistinctRetailerFromCart(){
 	
 	ArrayList<CartDetailsRetailerBean> mCartDetailsRetailerBean = new ArrayList<CartDetailsRetailerBean>();
 	
-	Cursor mCursor = sDb.rawQuery("select distinct Retailer_name,image from cart", null);
+	Cursor cursor = sDb.rawQuery("select distinct Retailer_name,image from cart", null);
 	
-	if(mCursor.getCount()>0){
-		mCursor.moveToLast();
-		while(!mCursor.isBeforeFirst()){
-			String mRetailer = mCursor.getString(0);
-			String mImage = mCursor.getString(1);
+	if(cursor.getCount()>0){
+		cursor.moveToLast();
+		while(!cursor.isBeforeFirst()){
+			String mRetailer = cursor.getString(0);
+			String image = cursor.getString(1);
 			
-			mCartDetailsRetailerBean.add(new CartDetailsRetailerBean(mRetailer,mImage));
-			mCursor.moveToPrevious();
+			mCartDetailsRetailerBean.add(new CartDetailsRetailerBean(mRetailer,image));
+			cursor.moveToPrevious();
 		}
 			
 	}
-	mCursor.close();
+	cursor.close();
 	return mCartDetailsRetailerBean;
 }
 
@@ -1303,57 +1294,57 @@ public ArrayList<CartDetailsRetailerBean> getDistinctRetailerFromCart(){
 public ArrayList<CartDetailsCouponBean> getCouponsFromCart(String retailerName, ArrayList<CartDetailsCouponBean> mCartDetailsCouponBeans){
 	
 	ArrayList<CartDetailsCouponBean> mCartDetailsCouponBeans = new ArrayList<CartDetailsCouponBean>();
-	Cursor mCursor = sDb.rawQuery("select *  from cart where Retailer_name = '"+retailerName+"'", null);
-	//Log.e("mCursor.getCount()", ""+mCursor.getCount());
-	if(mCursor.getCount()>0){
-		mCursor.moveToLast();
-		while(!mCursor.isBeforeFirst()){
-			String mCouponDescription = mCursor.getString(1);
-			String mRetailerId = mCursor.getString(2);
-			String mRetailerName = mCursor.getString(3);
-			String mRetailerType = mCursor.getString(4);
-			String mCouponProductUpcCode = mCursor.getString(5);
-			String mCouponPriceOff = mCursor.getString(6);
-			String mCouponProductSkuId = mCursor.getString(7);
-			String mCouponType = mCursor.getString(8);
-			String mCouponProductname = mCursor.getString(9);
-			String mImage = mCursor.getString(10);
-			String mCouponId = mCursor.getString(11);
-			String mCouponfreeProductId = mCursor.getString(12);
-			String mCouponProductId = mCursor.getString(13);
-			String mCouponCode = mCursor.getString(14);
-			String mCouponFreeProductQty = mCursor.getString(15);
-			int CouponStatus = mCursor.getInt(16);
+	Cursor cursor = sDb.rawQuery("select *  from cart where Retailer_name = '"+retailerName+"'", null);
+	//Log.e("cursor.getCount()", ""+cursor.getCount());
+	if(cursor.getCount()>0){
+		cursor.moveToLast();
+		while(!cursor.isBeforeFirst()){
+			String mCouponDescription = cursor.getString(1);
+			String mRetailerId = cursor.getString(2);
+			String mRetailerName = cursor.getString(3);
+			String mRetailerType = cursor.getString(4);
+			String mCouponProductUpcCode = cursor.getString(5);
+			String mCouponPriceOff = cursor.getString(6);
+			String mCouponProductSkuId = cursor.getString(7);
+			String mCouponType = cursor.getString(8);
+			String mCouponProductname = cursor.getString(9);
+			String image = cursor.getString(10);
+			String mCouponId = cursor.getString(11);
+			String mCouponfreeProductId = cursor.getString(12);
+			String mCouponProductId = cursor.getString(13);
+			String mCouponCode = cursor.getString(14);
+			String mCouponFreeProductQty = cursor.getString(15);
+			int CouponStatus = cursor.getInt(16);
 		
-			mCartDetailsCouponBeans.add(new CartDetailsCouponBean(mCouponDescription, mRetailerId, mRetailerName, mRetailerType, mCouponProductUpcCode, mCouponPriceOff, mCouponProductSkuId, mCouponType, mCouponProductname, mImage, mCouponId, mCouponfreeProductId, mCouponProductId, mCouponCode, mCouponFreeProductQty, CouponStatus== 1?true:false));
-			mCursor.moveToPrevious();
+			mCartDetailsCouponBeans.add(new CartDetailsCouponBean(mCouponDescription, mRetailerId, mRetailerName, mRetailerType, mCouponProductUpcCode, mCouponPriceOff, mCouponProductSkuId, mCouponType, mCouponProductname, image, mCouponId, mCouponfreeProductId, mCouponProductId, mCouponCode, mCouponFreeProductQty, CouponStatus== 1?true:false));
+			cursor.moveToPrevious();
 		}
 			
 	}
-	mCursor.close();
+	cursor.close();
 	return mCartDetailsCouponBeans;
 }
 
 public boolean isCartPreviousSaved(String retailerName , String mCouponId){
 	boolean IsExists = false;
-	Cursor mCursor =  sDb.query(TableConstantName.CART_TABLE_NAME,new String[] {TableConstantName.CART_ID}, TableConstantName.CART_COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND "+ TableConstantName.CART_COUPON_ID + "=" + "'"+mCouponId+"'", null, null,
+	Cursor cursor =  sDb.query(TableConstantName.CART_TABLE_NAME,new String[] {TableConstantName.CART_ID}, TableConstantName.CART_COUPON_RETAILER_NAME + "=" + "'"+retailerName+"'"+ " AND "+ TableConstantName.CART_COUPON_ID + "=" + "'"+mCouponId+"'", null, null,
 			null, null);
-	if(mCursor.getCount()>0){
+	if(cursor.getCount()>0){
 		IsExists = true;
 	}
-	mCursor.close();
+	cursor.close();
 	return IsExists;
 }
 
 public ArrayList<CouponIdBean> getCouponIdFromCart(String retailer){
 	ArrayList<CouponIdBean> arr = new ArrayList<CouponIdBean>();
-	Cursor mCursor = sDb.rawQuery("select COUPON_ID from cart where Retailer_name = '"+retailer+"'", null);
-	if(mCursor.getCount()>0){
+	Cursor cursor = sDb.rawQuery("select COUPON_ID from cart where Retailer_name = '"+retailer+"'", null);
+	if(cursor.getCount()>0){
 		
-		mCursor.moveToFirst();
-		while(!mCursor.isAfterLast()){
-			arr.add(new CouponIdBean(mCursor.getString(0)));
-			mCursor.moveToNext();
+		cursor.moveToFirst();
+		while(!cursor.isAfterLast()){
+			arr.add(new CouponIdBean(cursor.getString(0)));
+			cursor.moveToNext();
 		}
 
 	}
@@ -1366,12 +1357,12 @@ public boolean isCouponIdExist(String couponid) {
 	boolean flag = false;
 	int count = -1;
 	
-	final Cursor mCursor = sDb.rawQuery("select count(*) from cart where COUPON_ID='"+couponid+"'", null);
-	Log.e("Count", ""+mCursor.getCount());
-	if (mCursor != null) {
-		mCursor.moveToFirst();
-		count = mCursor.getInt(0);
-		mCursor.close();
+	final Cursor cursor = sDb.rawQuery("select count(*) from cart where COUPON_ID='"+couponid+"'", null);
+	Log.e("Count", ""+cursor.getCount());
+	if (cursor != null) {
+		cursor.moveToFirst();
+		count = cursor.getInt(0);
+		cursor.close();
 	}
 	
 	if(count>0){
@@ -1432,13 +1423,13 @@ public boolean isCouponIdExist(String couponid) {
 	
 	public boolean isCouponSubmitted(String retailerName, String mCouponId){
 		
-		Cursor mCursor = sDb.rawQuery("select *  from submit where Retailer_name = '"+retailerName+"'"+ " AND "+TableConstantName.SUBMIT_CART_COUPON_ID + "=" + "'"+mCouponId+"'", null);
-		//Log.e("mCursor.getCount()", ""+mCursor.getCount());
-		if(mCursor.getCount()>0){
-			mCursor.close();
+		Cursor cursor = sDb.rawQuery("select *  from submit where Retailer_name = '"+retailerName+"'"+ " AND "+TableConstantName.SUBMIT_CART_COUPON_ID + "=" + "'"+mCouponId+"'", null);
+		//Log.e("cursor.getCount()", ""+cursor.getCount());
+		if(cursor.getCount()>0){
+			cursor.close();
 			return false;
 		}
-		mCursor.close();
+		cursor.close();
 		return true;
 	}
 	
@@ -1452,19 +1443,19 @@ public boolean isCouponIdExist(String couponid) {
 	
 	public ArrayList<HistotyRetailerbean> getRetailerNameforHistory(){
 		ArrayList<HistotyRetailerbean> mList = new ArrayList<HistotyRetailerbean>();
-		Cursor mCursor = sDb.rawQuery("select distinct Retailer_name from submit order by Id", null);
+		Cursor cursor = sDb.rawQuery("select distinct Retailer_name from submit order by Id", null);
 		
-		if(mCursor.getCount()>0){
-			mCursor.moveToLast();
-			while(!mCursor.isBeforeFirst()){
-				String mRetailer = mCursor.getString(0);
+		if(cursor.getCount()>0){
+			cursor.moveToLast();
+			while(!cursor.isBeforeFirst()){
+				String mRetailer = cursor.getString(0);
 				
 				mList.add(new HistotyRetailerbean(mRetailer));
-				mCursor.moveToPrevious();
+				cursor.moveToPrevious();
 			}
 				
 		}
-		mCursor.close();
+		cursor.close();
 		return mList;
 		
 	}
@@ -1472,34 +1463,34 @@ public boolean isCouponIdExist(String couponid) {
 	public ArrayList<HistoryCartBean> getCouponDetaileForHistory(String retailerName, ArrayList<CartDetailsCouponBean> mCartDetailsCouponBeans){
 		
 		ArrayList<HistoryCartBean> mCartDetailsCouponBeans = new ArrayList<HistoryCartBean>();
-		Cursor mCursor = sDb.rawQuery("select *  from submit where Retailer_name = '"+retailerName+"'", null);
-		//Log.e("mCursor.getCount()", ""+mCursor.getCount());
-		if(mCursor.getCount()>0){
-			mCursor.moveToLast();
-			while(!mCursor.isBeforeFirst()){
-				String mCouponDescription = mCursor.getString(1);
+		Cursor cursor = sDb.rawQuery("select *  from submit where Retailer_name = '"+retailerName+"'", null);
+		//Log.e("cursor.getCount()", ""+cursor.getCount());
+		if(cursor.getCount()>0){
+			cursor.moveToLast();
+			while(!cursor.isBeforeFirst()){
+				String mCouponDescription = cursor.getString(1);
 				
 			
 				mCartDetailsCouponBeans.add(new HistoryCartBean(mCouponDescription));
-				mCursor.moveToPrevious();
+				cursor.moveToPrevious();
 			}
 				
 		}
-		mCursor.close();
+		cursor.close();
 		return mCartDetailsCouponBeans;
 	}
 	
 	public int getNumberOfCouponsFromSubmittable() {
 		int count = -1;
 
-		final Cursor mCursor = sDb.query(TableConstantName.SUBMIT_TABLE_NAME,
+		final Cursor cursor = sDb.query(TableConstantName.SUBMIT_TABLE_NAME,
 				new String[] { "count(*) " + TableConstantName.CART_ID },
 				null, null, null, null, null);
-		if (mCursor != null) {
-			mCursor.moveToFirst();
-			count = mCursor.getInt(mCursor
+		if (cursor != null) {
+			cursor.moveToFirst();
+			count = cursor.getInt(cursor
 					.getColumnIndex(TableConstantName.CART_ID));
-			mCursor.close();
+			cursor.close();
 		}
 
 		return count;
@@ -1513,14 +1504,14 @@ public boolean isCouponIdExist(String couponid) {
 	public int getRowNumberFromGlobal() {
 		int count = -1;
 
-		final Cursor mCursor = sDb.query(TableConstantName.GLOBAL_TABLE,
+		final Cursor cursor = sDb.query(TableConstantName.GLOBAL_TABLE,
 				new String[] { "count(*) " + TableConstantName.GLOBAL_STATUS },
 				null, null, null, null, null);
-		if (mCursor != null) {
-			mCursor.moveToFirst();
-			count = mCursor.getInt(mCursor
+		if (cursor != null) {
+			cursor.moveToFirst();
+			count = cursor.getInt(cursor
 					.getColumnIndex(TableConstantName.GLOBAL_STATUS));
-			mCursor.close();
+			cursor.close();
 		}
 
 		return count;
@@ -1569,16 +1560,16 @@ public int getGlobalValue(){
 	
 	int value = -1;
 		
-		Cursor mCursor = sDb.rawQuery("select * from global where Id = 1", null);
-		if(mCursor.getCount()>0){
-			if(mCursor.moveToFirst()){
-				value = mCursor.getInt(mCursor.getColumnIndex(TableConstantName.GLOBAL_STATUS));
+		Cursor cursor = sDb.rawQuery("select * from global where Id = 1", null);
+		if(cursor.getCount()>0){
+			if(cursor.moveToFirst()){
+				value = cursor.getInt(cursor.getColumnIndex(TableConstantName.GLOBAL_STATUS));
 			}
 			
-			mCursor.close();
+			cursor.close();
 			return value;
 		}
-		mCursor.close();
+		cursor.close();
 		return value;
 	}
 
@@ -1607,14 +1598,14 @@ public long insertIntoUsertable(String username) {
 public int getNumberOfUserName() {
 	int count = 0;
 
-	final Cursor mCursor = sDb.query(TableConstantName.USER_TABLE,
+	final Cursor cursor = sDb.query(TableConstantName.USER_TABLE,
 			new String[] { "count(*) " + TableConstantName.USER_NAME },
 			null, null, null, null, null);
-	if (mCursor != null) {
-		mCursor.moveToFirst();
-		count = mCursor.getInt(mCursor
+	if (cursor != null) {
+		cursor.moveToFirst();
+		count = cursor.getInt(cursor
 				.getColumnIndex(TableConstantName.USER_NAME));
-		mCursor.close();
+		cursor.close();
 	}
 
 	return count;
@@ -1623,12 +1614,12 @@ public int getNumberOfUserName() {
 
 public boolean isUserNameExist(String UserName){
 	boolean IsExists = false;
-	Cursor mCursor =  sDb.query(TableConstantName.USER_TABLE,new String[] {TableConstantName.USER_ID}, TableConstantName.USER_NAME + "=" + "'"+UserName+"'", null, null,
+	Cursor cursor =  sDb.query(TableConstantName.USER_TABLE,new String[] {TableConstantName.USER_ID}, TableConstantName.USER_NAME + "=" + "'"+UserName+"'", null, null,
 			null, null);
-	if(mCursor.getCount()>0){
+	if(cursor.getCount()>0){
 		IsExists = true;
 	}
-	mCursor.close();
+	cursor.close();
 	return IsExists;
 }
 
@@ -1636,18 +1627,18 @@ public ArrayList<UserBean> getUserName(){
 	
 	ArrayList<UserBean> mUserBeans = new ArrayList<UserBean>();
 	
-	Cursor mCursor = sDb.rawQuery("select * from user ", null);
+	Cursor cursor = sDb.rawQuery("select * from user ", null);
 	
-	if(mCursor.getCount()>0){
-		mCursor.moveToLast();
-		while(!mCursor.isBeforeFirst()){
-			String mUser = mCursor.getString(1);			
+	if(cursor.getCount()>0){
+		cursor.moveToLast();
+		while(!cursor.isBeforeFirst()){
+			String mUser = cursor.getString(1);			
 			mUserBeans.add(new UserBean(mUser));
-			mCursor.moveToPrevious();
+			cursor.moveToPrevious();
 		}
 			
 	}
-	mCursor.close();
+	cursor.close();
 	return mUserBeans;
 }
 
@@ -1676,25 +1667,25 @@ public long insertConfInfo(String Confid, String reatiler) {
 
 public boolean isReatilerExistIntoConfTable(String retailer1){
 	boolean IsExists = false;
-	Cursor mCursor =  sDb.rawQuery("select * from "+TableConstantName.CONF_TABLE+" where "+TableConstantName.CONF_RETAILERNAME+" = '"+retailer1+"'",null);
-	if(mCursor.getCount()>0){
+	Cursor cursor =  sDb.rawQuery("select * from "+TableConstantName.CONF_TABLE+" where "+TableConstantName.CONF_RETAILERNAME+" = '"+retailer1+"'",null);
+	if(cursor.getCount()>0){
 		IsExists = true;
 	}
-	mCursor.close();
+	cursor.close();
 	return IsExists;
 }
 
 public String getConformationNo(String retailer){
 	String mConf = "";
-	Cursor mCursor =  sDb.rawQuery("select "+TableConstantName.CONF_ID+" from "+TableConstantName.CONF_TABLE+" where "+TableConstantName.CONF_RETAILERNAME+"  = '"+retailer+"'",null);
-	if(mCursor.getCount()>0){
-		mCursor.moveToFirst();
-		while(!mCursor.isAfterLast()){
-		mConf = mCursor.getString(0);
-		mCursor.moveToNext();
+	Cursor cursor =  sDb.rawQuery("select "+TableConstantName.CONF_ID+" from "+TableConstantName.CONF_TABLE+" where "+TableConstantName.CONF_RETAILERNAME+"  = '"+retailer+"'",null);
+	if(cursor.getCount()>0){
+		cursor.moveToFirst();
+		while(!cursor.isAfterLast()){
+		mConf = cursor.getString(0);
+		cursor.moveToNext();
 		}
 	}
-	mCursor.close();
+	cursor.close();
 	return mConf;
 }
 
@@ -1708,14 +1699,14 @@ public void emptyConfTable(){
 public int getRowNumberFromSign() {
 	int count = -1;
 
-	final Cursor mCursor = sDb.query(TableConstantName.SIGN_TABLE,
+	final Cursor cursor = sDb.query(TableConstantName.SIGN_TABLE,
 			new String[] { "count(*) " + TableConstantName.SIGN_STATUS },
 			null, null, null, null, null);
-	if (mCursor != null) {
-		mCursor.moveToFirst();
-		count = mCursor.getInt(mCursor
+	if (cursor != null) {
+		cursor.moveToFirst();
+		count = cursor.getInt(cursor
 				.getColumnIndex(TableConstantName.SIGN_STATUS));
-		mCursor.close();
+		cursor.close();
 	}
 
 	return count;
@@ -1725,7 +1716,7 @@ public int getRowNumberFromSign() {
 *//**
  * 
  * @param status
- * @param firstname
+ * @param patrolerFirstName
  * @param lastname
  * @param cid
  * @return
@@ -1734,10 +1725,10 @@ public int getRowNumberFromSign() {
  *   Status->0 : Directly go to the Dashboard
  *   Status->1: Go to the sign in Page.
  *//*
-public long insertIntoSigninTable(String status,String firstname, String lastname, String cid ) {
+public long insertIntoSigninTable(String status,String patrolerFirstName, String lastname, String cid ) {
 	final ContentValues values = new ContentValues();
 	values.put(TableConstantName.SIGN_STATUS, status);
-	values.put(TableConstantName.SIGN_FIRSTNAME, firstname);
+	values.put(TableConstantName.SIGN_FIRSTNAME, patrolerFirstName);
 	values.put(TableConstantName.SIGN_LASTNAME, lastname);
 	values.put(TableConstantName.SIGN_CID, cid);
 	
@@ -1774,10 +1765,10 @@ public boolean updateSigninStatus(String status){
 }
 
 
-public boolean updateSigninValue(String firstname, String lastname, String cid ){
+public boolean updateSigninValue(String patrolerFirstName, String lastname, String cid ){
 	int Id = 1;
 	final ContentValues values = new ContentValues();
-	values.put(TableConstantName.SIGN_FIRSTNAME, firstname);
+	values.put(TableConstantName.SIGN_FIRSTNAME, patrolerFirstName);
 	values.put(TableConstantName.SIGN_LASTNAME, lastname);
 	values.put(TableConstantName.SIGN_CID, cid);
 
@@ -1800,16 +1791,16 @@ public String getSigninStatus(){
 
 String value = "";
 	
-	Cursor mCursor = sDb.rawQuery("select * from signin where Id = 1", null);
-	if(mCursor.getCount()>0){
-		if(mCursor.moveToFirst()){
-			value = mCursor.getString(mCursor.getColumnIndex(TableConstantName.SIGN_STATUS));
+	Cursor cursor = sDb.rawQuery("select * from signin where Id = 1", null);
+	if(cursor.getCount()>0){
+		if(cursor.moveToFirst()){
+			value = cursor.getString(cursor.getColumnIndex(TableConstantName.SIGN_STATUS));
 		}
 		
-		mCursor.close();
+		cursor.close();
 		return value;
 	}
-	mCursor.close();
+	cursor.close();
 	return value;
 }
 
@@ -1817,16 +1808,16 @@ public String getSigninFirstName(){
 
 String value = "";
 	
-	Cursor mCursor = sDb.rawQuery("select * from signin where Id = 1", null);
-	if(mCursor.getCount()>0){
-		if(mCursor.moveToFirst()){
-			value = mCursor.getString(mCursor.getColumnIndex(TableConstantName.SIGN_FIRSTNAME));
+	Cursor cursor = sDb.rawQuery("select * from signin where Id = 1", null);
+	if(cursor.getCount()>0){
+		if(cursor.moveToFirst()){
+			value = cursor.getString(cursor.getColumnIndex(TableConstantName.SIGN_FIRSTNAME));
 		}
 		
-		mCursor.close();
+		cursor.close();
 		return value;
 	}
-	mCursor.close();
+	cursor.close();
 	return value;
 }
 
@@ -1834,16 +1825,16 @@ public String getSigninLastname(){
 
 String value = "";
 	
-	Cursor mCursor = sDb.rawQuery("select * from signin where Id = 1", null);
-	if(mCursor.getCount()>0){
-		if(mCursor.moveToFirst()){
-			value = mCursor.getString(mCursor.getColumnIndex(TableConstantName.SIGN_LASTNAME));
+	Cursor cursor = sDb.rawQuery("select * from signin where Id = 1", null);
+	if(cursor.getCount()>0){
+		if(cursor.moveToFirst()){
+			value = cursor.getString(cursor.getColumnIndex(TableConstantName.SIGN_LASTNAME));
 		}
 		
-		mCursor.close();
+		cursor.close();
 		return value;
 	}
-	mCursor.close();
+	cursor.close();
 	return value;
 }
 
@@ -1851,16 +1842,16 @@ public String getSigninCid(){
 
 String value = "";
 	
-	Cursor mCursor = sDb.rawQuery("select * from signin where Id = 1", null);
-	if(mCursor.getCount()>0){
-		if(mCursor.moveToFirst()){
-			value = mCursor.getString(mCursor.getColumnIndex(TableConstantName.SIGN_CID));
+	Cursor cursor = sDb.rawQuery("select * from signin where Id = 1", null);
+	if(cursor.getCount()>0){
+		if(cursor.moveToFirst()){
+			value = cursor.getString(cursor.getColumnIndex(TableConstantName.SIGN_CID));
 		}
 		
-		mCursor.close();
+		cursor.close();
 		return value;
 	}
-	mCursor.close();
+	cursor.close();
 	return value;
 }
 *//** Sign in Table End ............................*//*

@@ -1,8 +1,8 @@
 package snowmada.main.view;
 
-import static snowmada.main.view.CommonUtilities.DISPLAY_MESSAGE_ACTION;
-import static snowmada.main.view.CommonUtilities.EXTRA_MESSAGE;
-import static snowmada.main.view.CommonUtilities.SENDER_ID;
+import static com.strapin.common.CommonUtilities.DISPLAY_MESSAGE_ACTION;
+import static com.strapin.common.CommonUtilities.EXTRA_MESSAGE;
+import static com.strapin.common.CommonUtilities.SENDER_ID;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -80,6 +80,12 @@ import com.strapin.bean.FacebookFriendBean;
 import com.strapin.bean.InviteFriendBean;
 import com.strapin.bean.MeetUpBean;
 import com.strapin.bean.NewMessage;
+import com.strapin.bean.Patrol;
+import com.strapin.common.AlertDialogManager;
+import com.strapin.common.ConnectionDetector;
+import com.strapin.common.ServerUtilities;
+import com.strapin.common.WakeLocker;
+import com.strapin.global.Constants;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
 import com.strapin.presenter.HomePresenter;
@@ -119,12 +125,12 @@ public class HomeView extends BaseView implements IHome {
 	
 	public GoogleMap map;
 	
-	private LinearLayout mIconMeetup;
-	private LinearLayout mIconChatLive;
-	private LinearLayout mIconGoodDeals;
-	private LinearLayout mIconTrack;
-	private LinearLayout mIconAdd;
-	private LinearLayout mIconProfile;
+	public LinearLayout ll_meetup;
+	public LinearLayout ll_chat;
+	public LinearLayout ll_gooddeals;
+	public LinearLayout ll_track;
+	public LinearLayout ll_addfriend;
+	public LinearLayout ll_viewprofile;
 	
 	private LinearLayout mGreenBarMeetUplocation;
 	private LinearLayout mGreenBarChatLive;
@@ -152,7 +158,7 @@ public class HomeView extends BaseView implements IHome {
 	private ImageView mIvSkyPatrol;
 	private ImageView mTabSElectImage;	
 	
-	private  Dialog dialog,meetupUserDlg;	
+	private  Dialog menu_dialog,meetupUserDlg;	
 	
 	private ArrayList<DealsBean> mDealsArr = new ArrayList<DealsBean>();
 	private ArrayList<AddFriendBean> mAddFriendArr = new ArrayList<AddFriendBean>();
@@ -219,7 +225,7 @@ public class HomeView extends BaseView implements IHome {
 			super.handleMessage(msg);
 			switch (msg.what) {
 			case 1:
-				meetupinfoarr.get(updatepos).setName(db.getUserFirstName()+" "+db.getUserLastName());
+				meetupinfoarr.get(updatepos).setName(myApp.getAppInfo().userFirstName+" "+myApp.getAppInfo().userLastName);
 				meetupinfoarr.get(updatepos).setLocation(markersst[2]);
 				meetupinfoarr.get(updatepos).setDescription(markersst[3]);
 				meetupinfoarr.get(updatepos).setDate1(markersst[7]);
@@ -304,8 +310,6 @@ public class HomeView extends BaseView implements IHome {
 		mProfileImage = (ImageView)findViewById(R.id.profile_page_image);
 		
 		mReqTab = (LinearLayout)findViewById(R.id.tab_request);
-		//mMassageBox = (LinearLayout)findViewById(R.id.massagebox_layout);
-		//mMassageBoxWithIcon = (LinearLayout)findViewById(R.id.massagenotification_layout);
 		mMassageLayout = (LinearLayout)findViewById(R.id.massage_layout);
 		mLayoutMessageNotificationList = (LinearLayout)findViewById(R.id.layout_message_notification);
 		mChatSendButton = (LinearLayout)findViewById(R.id.chat_send_button);
@@ -325,7 +329,7 @@ public class HomeView extends BaseView implements IHome {
 		map.setInfoWindowAdapter(new CustomInfoWindowAdapter());
 		Global.setMap(map);
 		
-		presenter = new HomePresenter(this);
+		//
 		
 		mBtnSlider.setOnClickListener(this);
 		mUserImage.setOnClickListener(this);
@@ -356,11 +360,11 @@ public class HomeView extends BaseView implements IHome {
 						String retailerName = mAddFriendArr.get(i).getName();
 						if (textLength <= retailerName.length()) {
 							if (searchString.equalsIgnoreCase(retailerName.substring(0, textLength))) {
-								mAddFriendSearchArr.add(new AddFriendBean(mAddFriendArr.get(i).getFacebookId(), mAddFriendArr.get(i).getName()));
+								mAddFriendSearchArr.add(new AddFriendBean(mAddFriendArr.get(i).getFriendId(), mAddFriendArr.get(i).getName()));
 							}
 						}
 					}						
-					mAddFriendAdapter = new AddFriendAdapter(db,HomeView.this, R.layout.add_friend_row, mAddFriendSearchArr);
+					mAddFriendAdapter = new AddFriendAdapter(HomeView.this, R.layout.add_friend_row, mAddFriendSearchArr);
 					mAddFriendList.setAdapter(mAddFriendAdapter);
 				
 			}
@@ -381,7 +385,7 @@ public class HomeView extends BaseView implements IHome {
 							}
 						}
 					}						
-					mInviteFriendAdapter = new InviteFriendAdapter(db,HomeView.this, R.layout.add_friend_row, mInviteFriendSearchArr);
+					mInviteFriendAdapter = new InviteFriendAdapter(HomeView.this, R.layout.add_friend_row, mInviteFriendSearchArr);
 					mLvInviteFriendList.setAdapter(mInviteFriendAdapter);
 		
 			}
@@ -415,25 +419,30 @@ public class HomeView extends BaseView implements IHome {
 	
 	@Override
 	public void init() {
-		 createMenuDialog();
+		presenter = new HomePresenter(this);
+		//Toast.makeText(getApplicationContext(), "Test  "+myApp.getAppInfo().userId, Toast.LENGTH_LONG).show();
+		createMenuDialog();
 		setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,false,false,false,TRACK_FRIENDS);
-		setFriendTab(1,View.VISIBLE,View.GONE,View.GONE,View.VISIBLE,View.GONE,R.drawable.tab_select,R.drawable.tab_unselect,R.drawable.tab_unselect,"#00ccff","#ffffff","#ffffff",R.drawable.add_friend_text);
-		
+		setFriendTab(1,View.VISIBLE,View.GONE,View.GONE,View.VISIBLE,View.GONE,R.drawable.tab_select,R.drawable.tab_unselect,R.drawable.tab_unselect,"#00ccff","#ffffff","#ffffff",R.drawable.add_friend_text);		
 		myApp.isWebServiceCallForRefreshFriendList = false;
-		Global.isZoomAtUSerLocationFirstTime = true;	
+		myApp.isZoom = true;	
 		doSetUp();
 		getPushNotificationDeviceID();		
-		isSkyPetrolShow();	    
-	   
 		defaultChatWindoOpenFromNotificationList();
-		TrackLocation.databaseHelperInstance(getApplicationContext());
-		imageLoader.DisplayImage("https://graph.facebook.com/"+db.getUserFbID()+"/picture",mUserImage);
-		mUserName.setText(db.getUserFirstName());
+		TrackLocation.createInstance(getApplicationContext(),myApp);
+		imageLoader.DisplayImage("https://graph.facebook.com/"+myApp.getAppInfo().userId+"/picture",mUserImage);
+		mUserName.setText(myApp.getAppInfo().userFirstName);
 		
 	}
 	
-	private void doSetUp() {
-		Intent  i2  = new Intent(getApplicationContext(),ServerStatus.class);
+	/**
+	 *  1. Start Service for update online status
+	 *  2. Fetch Meet up location from server
+	 *  3. get the Message from server.
+	 *  4. Check - if any friend request come
+	 */
+	public  void doSetUp() {
+		Intent  i2  = new Intent(HomeView.this,ServerStatus.class);
 		startService(i2);
 		new GetMeetUplocation().execute();
 		new MessageWeb().execute();
@@ -496,7 +505,7 @@ public class HomeView extends BaseView implements IHome {
 			mHighlightPos = 8;
 			mProfileLayout.setVisibility(View.VISIBLE);
 			mDealsLayout.setVisibility(View.GONE);
-			imageLoader.DisplayImage("https://graph.facebook.com/"+db.getUserFbID()+"/picture",mProfileImage);
+			imageLoader.DisplayImage("https://graph.facebook.com/"+myApp.getAppInfo().userId+"/picture",mProfileImage);
 			mBtnSlider.setVisibility(View.GONE);
 		    mViewSlider.setVisibility(View.GONE);
 		   
@@ -511,7 +520,7 @@ public class HomeView extends BaseView implements IHome {
 					mLayoutMessageNotificationList.setVisibility(View.GONE);
 				}else{
 					mLayoutMessageNotificationList.setVisibility(View.VISIBLE);
-					mMassageAdapter = new OfflineMessageAdapter(presenter,HomeView.this, R.layout.message_notification_row, msg);
+					mMassageAdapter = new OfflineMessageAdapter(HomeView.this, R.layout.message_notification_row, msg);
 					mLvMessageList.setAdapter(mMassageAdapter);
 				}
 				
@@ -536,12 +545,12 @@ public class HomeView extends BaseView implements IHome {
 			if(!mTvActiveChatFriend.getText().toString().equalsIgnoreCase("Please Select A Friend To Chat With")){
 				String msg = mEtInputChatMsg.getText().toString().trim();
 				if(msg.length()>0){
-					 Global.mChatArr.add(new ChatBean(db.getUserFirstName(), msg));
+					 Global.mChatArr.add(new ChatBean(myApp.getAppInfo().userFirstName, msg));
 					 mChatAdapter = new ChatAdapter(HomeView.this, R.layout.chat_row, Global.mChatArr);
 					 mChatList.setAdapter(mChatAdapter);
 					 mChatList.setSelection(Global.mChatArr.size()-1);
 					 mEtInputChatMsg.setText("");
-					 new ChatWeb().execute(db.getUserFbID(),myApp.getAppInfo().senderIdChat,msg);
+					 new ChatWeb().execute(myApp.getAppInfo().userId,myApp.getAppInfo().senderIdChat,msg);
 				}
 			}else{
 				Toast.makeText(getApplicationContext(), "Please select a friend", Toast.LENGTH_LONG).show();
@@ -550,51 +559,51 @@ public class HomeView extends BaseView implements IHome {
 //******************************* Add  Click listener End*************************************************************	
 //******************************* Footer part Click listener Start****************************************************
 		if(v == mBottonMenu){
-			mIconMeetup.setOnClickListener(new OnClickListener() {					
+			ll_meetup.setOnClickListener(new OnClickListener() {					
 					@Override
 					public void onClick(View v) {
-						dialog.dismiss();
+						menu_dialog.dismiss();
 						myApp.doTrackFriendLocation = false;
 						setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,false,true,false,MEET_UP_LOCATION);						
 					}
 				});				
-				mIconChatLive.setOnClickListener(new OnClickListener() {					
+				ll_chat.setOnClickListener(new OnClickListener() {					
 					@Override
 					public void onClick(View v) {
-						dialog.dismiss();
+						menu_dialog.dismiss();
 						setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.INVISIBLE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,false,false,true,CHAT_LIVE);						
 					}
 				});				
-				mIconGoodDeals.setOnClickListener(new OnClickListener() {					
+				ll_gooddeals.setOnClickListener(new OnClickListener() {					
 					@Override
 					public void onClick(View v) {
-						dialog.dismiss();
+						menu_dialog.dismiss();
 						setLayoutVisibility(View.GONE, View.VISIBLE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.INVISIBLE,View.INVISIBLE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,false,false,false,GOOD_DEALS);						
 					}
 				});				
-				mIconTrack.setOnClickListener(new OnClickListener() {					
+				ll_track.setOnClickListener(new OnClickListener() {					
 					@Override
 					public void onClick(View v) {
-						dialog.dismiss();
+						menu_dialog.dismiss();
 						setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.VISIBLE,View.INVISIBLE,View.INVISIBLE,false,false,false,TRACK_FRIENDS);						
 					}
 				});				
-				mIconAdd.setOnClickListener(new OnClickListener() {				
+				ll_addfriend.setOnClickListener(new OnClickListener() {				
 					@Override
 					public void onClick(View v) {
-						dialog.dismiss();
+						menu_dialog.dismiss();
 						setLayoutVisibility(View.GONE, View.GONE, View.VISIBLE, View.GONE, View.GONE, View.GONE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.VISIBLE,View.INVISIBLE,false,false,false,ADD_FRIENDS);
 						if(!(mAddFriendArr.size()>0)){
 							new AppUsers().execute();							
 						}						
 					}
 				});				
-				mIconProfile.setOnClickListener(new OnClickListener() {					
+				ll_viewprofile.setOnClickListener(new OnClickListener() {					
 					@Override
 					public void onClick(View v) {
-						dialog.dismiss();
+						menu_dialog.dismiss();
 						setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.VISIBLE, View.VISIBLE, View.GONE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.INVISIBLE,View.VISIBLE,false,false,false,VIEW_PROFILE);
-						imageLoader.DisplayImage("https://graph.facebook.com/"+db.getUserFbID()+"/picture",mProfileImage);						
+						imageLoader.DisplayImage("https://graph.facebook.com/"+myApp.getAppInfo().userId+"/picture",mProfileImage);						
 					}
 				});				
 				
@@ -603,18 +612,18 @@ public class HomeView extends BaseView implements IHome {
 				int height = displaymetrics.heightPixels;
 				int width = displaymetrics.widthPixels;
 				if(width > 320 && height > 480){
-					Window sleepWindow = dialog.getWindow();
+					Window sleepWindow = menu_dialog.getWindow();
 			        WindowManager.LayoutParams lp = sleepWindow.getAttributes();
 			       lp.gravity = Gravity.BOTTOM;
 			        sleepWindow.setAttributes(lp);					
 				}else{
-					Window sleepWindow = dialog.getWindow();
+					Window sleepWindow = menu_dialog.getWindow();
 			        WindowManager.LayoutParams lp = sleepWindow.getAttributes();
 			        lp.gravity = Gravity.BOTTOM;
 			        sleepWindow.setAttributes(lp);
 					
 				}
-				dialog.show();
+				menu_dialog.show();
 				 
 				
 			}
@@ -672,16 +681,17 @@ public class HomeView extends BaseView implements IHome {
 		public void onReceive(Context context, Intent intent) {
 			String newMessage = intent.getExtras().getString(EXTRA_MESSAGE);
 			WakeLocker.acquire(getApplicationContext());
-			if(newMessage!=null){
+			if(newMessage!=null && newMessage.startsWith("{") && newMessage.endsWith("}")){
 				  try {
 				 JSONObject json = new JSONObject(newMessage);
-				 if(json.getString("status").equalsIgnoreCase("3")){
+				 int status = Integer.parseInt(json.getString("status"));
+				 if(status==Constants.ONLINE_STATUS_PUSH_NOTIFICATION){
 					 String onlinestatus = json.getString("onlinestatus");
 					 String onlinefbid = json.getString("fbid");
 					 presenter.findListPosition(onlinestatus, onlinefbid);
-				 }else if(json.getString("status").equalsIgnoreCase("4")){
+				 }else if(status==Constants.CHAT_PUSH_NOTIFICATION){
 					 new MessageWeb().execute();
-					 if(Global.mChatUserName.equalsIgnoreCase(json.getString("name"))){
+					 if(myApp.IMname.equalsIgnoreCase(json.getString("name"))){
 						 String msg = json.getString("chatmessage");
 						 String name = json.getString("name");
 						 Global.mChatArr.add(new ChatBean(name, msg));
@@ -689,16 +699,16 @@ public class HomeView extends BaseView implements IHome {
 						 mChatList.setAdapter(mChatAdapter);
 						 mChatList.setSelection(Global.mChatArr.size()-1);
 					 }
-				 }else if(json.getString("status").equalsIgnoreCase("5")){//Status five for current friend request receive
+				 }else if(status==Constants.FRIEND_REQUEST_COME_PUSH_NOTIFICATION){//Status five for current friend request receive
 					 String sender_id = json.getString("senderid");
 					 String sender_name = json.getString("sendername");
 					 String receiver_fbid = json.getString("receiver_fb_id");
 					 String record_id = json.getString("recordid");
-					 String track_status = json.getString("trackstatus");
+					 int track_status = Integer.parseInt(json.getString("trackstatus"));
 					 
 					 presenter.updatePendingFriendList(sender_id,sender_name,receiver_fbid,record_id,track_status);
 					 
-				 }else if(json.getString("status").equalsIgnoreCase("6")){//Request acknowledgment
+				 }else if(status==Constants.FRIEND_REQUEST_ACCEPT_PUSH_NOTIFICATION){//Request acknowledgment
 					 myApp.isWebServiceCallForRefreshFriendList = true;
 				 }
 				  
@@ -758,6 +768,13 @@ public ListView getRequestList() {
 @Override
 public void defaultChatWindoOpenFromNotificationList() {
 	Bundle bundle = getIntent().getExtras();
+	if(myApp.getAppInfo().isAlertForSKIPatrol){
+		myApp.isZoom = false;
+		myApp.getAppInfo().setIsAlertForSKIPatrol(false);
+		Patrol p = db.getSkiPetrolInfo();
+		presenter.trackSKIPatrol(p.getPatrolerId(), p.getPatrolerFirstName(),p.getPatrolerLastName());
+		
+	}
 	if(bundle!=null){
 		if(bundle.getString("event").equalsIgnoreCase("chat")){
 			myApp.getAppInfo().isAppForeground = true;
@@ -766,65 +783,59 @@ public void defaultChatWindoOpenFromNotificationList() {
 			String sender_name = getIntent().getExtras().getString("sender_name");
 			String sender_fb_id = getIntent().getExtras().getString("sender_fb_id");
 			String[] splitStr = sender_name.split("\\s+");
-			Global.mChatUserName = splitStr[0];
+			myApp.IMname = splitStr[0];
 			myApp.getAppInfo().setSenderIDChat(getIntent().getExtras().getString("sender_fb_id"));
 			presenter.functionChat(sender_fb_id, sender_name);
 			mTvActiveChatFriend.setText(sender_name);
-		}else{
-			Global.isZoomAtUSerLocationFirstTime = false;
+		}else if(bundle.getString("event").equalsIgnoreCase("meetup")){
+			myApp.isZoom = false;
 			myApp.getAppInfo().setIsAlertForSKIPatrol(false);
 			db.getMeetUpLocation1();
 			String st[] = db.getMeetUpLocation();
 			db.updateMeetUpStatus(Integer.parseInt(st[0]));
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.valueOf(st[1]), Double.valueOf(st[2])), 16));
-			
-			
-		}
 		
-	
+		}	
 	}
-
 	
 }
 
 
-
+/**
+ *  Menu Dialog open from footer.
+ *  3. Meet-UP location
+ *  4. Chat
+ *  5. Good Deals
+ *  6. Location Track
+ *  7. Add friends
+ *  8. View profile
+ */
 @Override
 public void createMenuDialog() {
-
-	dialog = new Dialog(HomeView.this);				
-	dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-	dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-	dialog.setContentView(R.layout.dialog);
-	mIconMeetup = (LinearLayout)dialog.findViewById(R.id.submenu_3);
-	mIconChatLive = (LinearLayout)dialog.findViewById(R.id.submenu_4);
-	mIconGoodDeals = (LinearLayout)dialog.findViewById(R.id.submenu_5);
-	mIconTrack = (LinearLayout)dialog.findViewById(R.id.submenu_6);
-	mIconAdd = (LinearLayout)dialog.findViewById(R.id.submenu_7);
-	mIconProfile = (LinearLayout)dialog.findViewById(R.id.submenu_8);
+	menu_dialog = new Dialog(HomeView.this);				
+	menu_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	menu_dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+	menu_dialog.setContentView(R.layout.dialog);
+	ll_meetup = (LinearLayout)menu_dialog.findViewById(R.id.submenu_3);
+	ll_chat = (LinearLayout)menu_dialog.findViewById(R.id.submenu_4);
+	ll_gooddeals = (LinearLayout)menu_dialog.findViewById(R.id.submenu_5);
+	ll_track = (LinearLayout)menu_dialog.findViewById(R.id.submenu_6);
+	ll_addfriend = (LinearLayout)menu_dialog.findViewById(R.id.submenu_7);
+	ll_viewprofile = (LinearLayout)menu_dialog.findViewById(R.id.submenu_8);
 	
-	mGreenBarMeetUplocation = (LinearLayout)dialog.findViewById(R.id.bar_3);
-	mGreenBarChatLive = (LinearLayout)dialog.findViewById(R.id.bar_4);
-	mGreenBarGoodDeals = (LinearLayout)dialog.findViewById(R.id.bar_5);
-	mGreenBarTrack = (LinearLayout)dialog.findViewById(R.id.bar_6);
-	mGreenBarAdd = (LinearLayout)dialog.findViewById(R.id.bar_7);
-	mGreenBarViewProfile = (LinearLayout)dialog.findViewById(R.id.bar_8);
-	dialog.setCanceledOnTouchOutside(true);
-	
-}
-
-@Override
-public void isSkyPetrolShow() {
-	if(myApp.getAppInfo().isAlertForSKIPatrol){
-		Global.isZoomAtUSerLocationFirstTime = false;
-		myApp.getAppInfo().setIsAlertForSKIPatrol(false);
-		String st[] = db.getSkiPetrolInfo();
-		presenter.trackSKIPatrol(st[0], st[1]+" "+st[2]);
-		
-	}
+	mGreenBarMeetUplocation = (LinearLayout)menu_dialog.findViewById(R.id.bar_3);
+	mGreenBarChatLive = (LinearLayout)menu_dialog.findViewById(R.id.bar_4);
+	mGreenBarGoodDeals = (LinearLayout)menu_dialog.findViewById(R.id.bar_5);
+	mGreenBarTrack = (LinearLayout)menu_dialog.findViewById(R.id.bar_6);
+	mGreenBarAdd = (LinearLayout)menu_dialog.findViewById(R.id.bar_7);
+	mGreenBarViewProfile = (LinearLayout)menu_dialog.findViewById(R.id.bar_8);
+	menu_dialog.setCanceledOnTouchOutside(true);
 	
 }
 
+/**
+ *  GET THE DEVICE ID FOR PUSH NOTIFICATION
+ */
 @Override
 public void getPushNotificationDeviceID() {
 	cd = new ConnectionDetector(getApplicationContext());
@@ -833,7 +844,6 @@ public void getPushNotificationDeviceID() {
 		return;
 	}		
 
-	Intent i = getIntent();
 	GCMRegistrar.checkDevice(this);
 	GCMRegistrar.checkManifest(this);	
 	registerReceiver(mHandleMessageReceiver, new IntentFilter(DISPLAY_MESSAGE_ACTION));
@@ -851,7 +861,7 @@ public void getPushNotificationDeviceID() {
 			mRegisterTask = new AsyncTask<Void, Void, Void>() {
 				@Override
 				protected Void doInBackground(Void... params) {
-					 ServerUtilities.register(context, regId,""+db.getUserFbID());
+					 ServerUtilities.register(context, regId,""+myApp.getAppInfo().userId);
 					return null;
 				}
 
@@ -933,7 +943,7 @@ public void onMapLongClick(final LatLng point) {
                          
                          m =  map.addMarker(new MarkerOptions()
                    	    .position(point) 
-                   	    .title(""+db.getUserFirstName()+" "+db.getUserLastName())
+                   	    .title(myApp.getAppInfo().userFirstName+" "+myApp.getAppInfo().userLastName)
                         .snippet("Update your information")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));   
                         m.setDraggable(true);
@@ -1006,7 +1016,7 @@ public void setMeetuplocationDialog(final Marker marker,final String current_sel
 		tvDisplayTime = (TextView)meetupUserDlg.findViewById(R.id.tvDisplayTime1);
 		tvDisplayTime.setText(meetuptime);
 		final TextView name = (TextView)meetupUserDlg.findViewById(R.id.ed_name);
-		name.setText(db.getUserFirstName()+" "+db.getUserLastName());
+		name.setText(myApp.getAppInfo().userFirstName+" "+myApp.getAppInfo().userLastName);
 		name.setClickable(myApp.isMeetuplocationEditTextEditable);
 		final EditText location = (EditText)meetupUserDlg.findViewById(R.id.ed_location);
 		location.setText(meetuplocation);
@@ -1070,15 +1080,6 @@ public void setMeetuplocationDialog(final Marker marker,final String current_sel
 							if(scheduledate.compareTo(currentdate)<0){
 								Toast.makeText(getApplicationContext(), "Plesase insert a valid Date&TIme", Toast.LENGTH_LONG).show();
 							}else{							
-							Log.e("_name", _name);
-							Log.e("_loc_name", _loc_name);
-							Log.e("_desc", _desc);
-							Log.e("_desc", _desc);
-							Log.e("_date", _date);
-							Log.e("_time", _time);
-							Log.e("_id", ""+_id);
-							Log.e("lat", ""+_lat);
-							Log.e("lng", ""+_lng);
 							new SubmitMeetUplocation().execute(""+current_selected_marker_id,_name,_loc_name,_desc,_time,""+_lat,""+_lng,_date);
 							}
 							} catch (ParseException e) {
@@ -1149,7 +1150,7 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 					JSONObject json  = new JSONObject();
 					json.put("deleted_ids", st);
 					Log.e("IDS", st);
-					KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/del_meet_up.php", json);
+					KlHttpClient.SendHttpPost(URL.MEET_UP_DETELE.getUrl(), json);
 					
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -1233,9 +1234,9 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 				mJsonObject.put("sender_fb_id", params[0]);
 				mJsonObject.put("receiver_fb_id", params[1]);
 				mJsonObject.put("message", params[2]);
-				mJsonObject.put("sender_name", db.getUserFirstName());
+				mJsonObject.put("sender_name", myApp.getAppInfo().userFirstName);
 				
-				JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/chat.php", mJsonObject);
+				JSONObject json = KlHttpClient.SendHttpPost(URL.CHAT.getUrl(), mJsonObject);
 				if(json!=null){
 					return json.getBoolean("status");	
 				}else{
@@ -1265,8 +1266,8 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		  	try {
 		  		
 		  		JSONObject jsonObject = new JSONObject();
-		  		jsonObject.put("fbid", db.getUserFbID());
-		  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/list_meetup.php", jsonObject);
+		  		jsonObject.put("fbid", myApp.getAppInfo().userId);
+		  		JSONObject json = KlHttpClient.SendHttpPost(URL.MEET_UP_MERKER_LIST.getUrl(), jsonObject);
 		  		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");				
 				Date date = new Date();
 				String _currentdate= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
@@ -1355,8 +1356,8 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 			boolean flag = false;
 			try {		  		
 		  		JSONObject jsonObject = new JSONObject();
-		  		jsonObject.put("fbid", db.getUserFbID());
-		  		jsonObject.put("fname", db.getUserFirstName());
+		  		jsonObject.put("fbid", myApp.getAppInfo().userId);
+		  		jsonObject.put("fname", myApp.getAppInfo().userFirstName);
 		  		jsonObject.put("marker_id", params[0]);
 		  		jsonObject.put("person_name", params[1]);
 		  		jsonObject.put("loc_name", params[2]);
@@ -1366,7 +1367,7 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		  		jsonObject.put("lng", params[6]);
 		  		jsonObject.put("meet_date", params[7]);
 		  		jsonObject.put("actn", "add");
-		  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/add_meet_up.php", jsonObject);
+		  		JSONObject json = KlHttpClient.SendHttpPost(URL.ADD_MEET_UP_LOCATION.getUrl(), jsonObject);
 		  		if(json!=null){
 		  			flag = json.getBoolean("status");
 		  			if(flag){
@@ -1416,7 +1417,7 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 			int count = 0;			
 		  	try {
 				JSONObject req = new JSONObject();
-				req.put("fbid",db.getUserFbID());
+				req.put("fbid",myApp.getAppInfo().userId);
 				JSONObject res = KlHttpClient.SendHttpPost(URL.COUNT_PENDING_FRIEND.getUrl(), req);
 				if(res!=null){
 					count = Integer.parseInt(res.getString("totalpendingfriend"));
@@ -1451,8 +1452,8 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 		protected ArrayList<String> doInBackground(String... params) {			
 		  	try {
 		  		JSONObject request = new JSONObject();
-		  		request.put("fbid", db.getUserFbID());
-		  		JSONObject response = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/app_user.php", request);
+		  		request.put("fbid", myApp.getAppInfo().userId);
+		  		JSONObject response = KlHttpClient.SendHttpPost(URL.ACTIVE_APP_USERS.getUrl(), request);
 		        if(response.getBoolean("status")){
 		        	JSONArray  jsonArray = response.getJSONArray("app_users");
 		        	for(int i=0; i<jsonArray.length(); i++){
@@ -1495,10 +1496,10 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 					e.printStackTrace();
 				} 
 				
-				mAddFriendAdapter = new AddFriendAdapter(db,HomeView.this, R.layout.add_friend_row, mAddFriendArr);
+				mAddFriendAdapter = new AddFriendAdapter(HomeView.this, R.layout.add_friend_row, mAddFriendArr);
 				mAddFriendList.setAdapter(mAddFriendAdapter);
 				
-				mInviteFriendAdapter = new InviteFriendAdapter(db,HomeView.this, R.layout.add_friend_row, mInviteFriendArr);
+				mInviteFriendAdapter = new InviteFriendAdapter(HomeView.this, R.layout.add_friend_row, mInviteFriendArr);
 				mLvInviteFriendList.setAdapter(mInviteFriendAdapter);
 			}
 			
@@ -1513,8 +1514,8 @@ private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDi
 			
 			try {
 				JSONObject request  = new JSONObject();
-				request.put("receiver_fb_id", db.getUserFbID());
-				JSONObject response  = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/new_chat_history.php", request);
+				request.put("receiver_fb_id", myApp.getAppInfo().userId);
+				JSONObject response  = KlHttpClient.SendHttpPost(URL.MESSAGE.getUrl(), request);
 		        if(response!=null){
 		        	msg.clear();
 		        	JSONArray  jsonArray = response.getJSONArray("newReply");

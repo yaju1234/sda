@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.strapin.Enum.URL;
 import com.strapin.Interface.IHome;
 import com.strapin.Util.ImageLoader;
 import com.strapin.Util.Utility;
@@ -49,10 +50,8 @@ public class HomePresenter implements IHome.Presenter{
 	private ProgressDialog mDialog;
 	private Double mLat;
 	private Double mLng;
-	private String mName;
-	public ImageLoader imageLoader;
+	public  String trackingpersionname;
 	private Marker marker;
-	private SnowmadaDbAdapter mDbAdapter;
 	private boolean TrackDurationControllFlag = false;
 	private  Handler handler = new Handler();
 	private  Runnable runnable;
@@ -69,8 +68,6 @@ public class HomePresenter implements IHome.Presenter{
 	
 	public HomePresenter(HomeView mHomeView){
 		this.mHomeView = mHomeView;
-		mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(mHomeView);
-		imageLoader=new ImageLoader(mHomeView);
 		callAdapter();
 		
 	}
@@ -82,13 +79,12 @@ public class HomePresenter implements IHome.Presenter{
 		}
 	}
 	
-	public void trackSKIPatrol(String id,String name){	
+	public void trackSKIPatrol(String id,String fname, String lname){	
 			
 				TrackDurationControllFlag = true;
 				mHomeView.hideSlide().setVisibility(View.GONE);
 				mHomeView.myApp.friendId = id;
-				mName = name;
-				Global.sFriendName = mName;
+				trackingpersionname = fname+" "+lname;
 				Global.isZoom = true;
 				COUNT = 0;
 				isTracking = false;
@@ -121,7 +117,7 @@ public class HomePresenter implements IHome.Presenter{
 		track_friend.setText(Html.fromHtml("<font color=\"#ffffff\">TRA</font><font color=\"#28b6ff\">CK</font>"));
 		Button delete = (Button)dialog.findViewById(R.id.btn_delete_friend);
 		delete.setText(Html.fromHtml("<font color=\"#ffffff\">DEL</font><font color=\"#28b6ff\">ETE</font>"));
-		imageLoader.DisplayImage("https://graph.facebook.com/"+mFriendArr.get(pos).getFbId()+"/picture",friend_image);
+		mHomeView.imageLoader.DisplayImage("https://graph.facebook.com/"+mFriendArr.get(pos).getFbId()+"/picture",friend_image);
 		TextView online_status = (TextView)dialog.findViewById(R.id.tv_friend_online_status);
 		if(mFriendArr.get(pos).getOnlineStatus().equalsIgnoreCase("1")){
 			online_status.setText("Online");
@@ -158,8 +154,7 @@ public class HomePresenter implements IHome.Presenter{
 					if(mFriendArr.get(pos).getOnlineStatus().equalsIgnoreCase("1")){	
 						TrackDurationControllFlag = true;
 						mHomeView.hideSlide().setVisibility(View.GONE);
-						mName = mFriendArr.get(pos).getName();
-						Global.sFriendName = mName;
+						trackingpersionname = mFriendArr.get(pos).getName();
 						mHomeView.myApp.friendId = mFriendArr.get(pos).getFbId();
 						Global.isZoom = true;
 						if(Utility.isNetworkConnected(mHomeView)){
@@ -224,20 +219,16 @@ public class HomePresenter implements IHome.Presenter{
 		runnable = new Runnable() {
 			public void run() {
 				handler.postDelayed(runnable, 3000);
-
 				idle = System.currentTimeMillis() - lastUsed;
 				Log.i("idle", "" + idle);
-
 				if (idle >= 60000) {
 					mHomeView.myApp.doTrackFriendLocation = false;
 					COUNT = 0;
 					isTracking = true;
 					if(marker!=null){
 						marker.remove();
-					}
-					
-					handler.removeCallbacks(runnable);
-					
+					}					
+					handler.removeCallbacks(runnable);					
 					}
 			}
 		};
@@ -249,22 +240,20 @@ public class HomePresenter implements IHome.Presenter{
 
 	@Override
 	public void findListPosition(String sataus, String fbid) {
-		int pos = -1;
-		
+		int pos = -1;		
 		for(int i=0; i<mFriendArr.size(); i++){
 			if(mFriendArr.get(i).getFbId().equalsIgnoreCase(fbid)){
 				pos = i;
 				break;
 			}
 		}
-		Log.e("position", ""+pos);
-		
+		Log.e("position", ""+pos);		
 		updateItemAtPosition(pos, sataus);
 	}
 	
 	private void updateItemAtPosition(int position, String status) {
 		mFriendArr.get(position).setOnlineStatus(status);
-		mAdapter = new FriendAdapter(HomePresenter.this,mHomeView, R.layout.friend_row1, mFriendArr);
+		mAdapter = new FriendAdapter(mHomeView, R.layout.friend_row1, mFriendArr);
 		mHomeView.getList().setAdapter(mAdapter);
 		//mHomeView.getList().setOnTouchListener(mTouchListener);
 		}
@@ -288,7 +277,7 @@ public class SKIEmergencyButtonPressWeb extends AsyncTask<String, Void, Boolean>
 		  	try {
 				JSONObject request = new JSONObject();
 				request.put("fbid", params[0]);
-				JSONObject response = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/ski_patrol.php", request);
+				JSONObject response = KlHttpClient.SendHttpPost(URL.SKI_PATROL.getUrl(), request);
 				return response.getBoolean("status");
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -334,8 +323,7 @@ public class GetFriendListWeb extends AsyncTask<String, Void, Boolean>{
 		mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		mDialog.setIndeterminate(true);
 		mDialog.setCancelable(false);
-		mDialog.show();		
-		Log.e("GetFriendListWeb", "GetFriendListWeb");
+		mDialog.show();	
 		
 	}
 	@Override
@@ -344,11 +332,8 @@ public class GetFriendListWeb extends AsyncTask<String, Void, Boolean>{
 	  	try {
 	  		boolean flag = false;
 	  		JSONObject jsonObject = new JSONObject();
-	  		jsonObject.put("fbid", mDbAdapter.getUserFbID());
-	  		
-	  		Log.e("JSON", jsonObject.toString());
-	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/snowmada_friend.php", jsonObject);
-	  		Log.e("Friend list Response JSON", json.toString());
+	  		jsonObject.put("fbid", mHomeView.myApp.getAppInfo().userId);
+	  		JSONObject json = KlHttpClient.SendHttpPost(URL.FRIEND_LIST.getUrl(), jsonObject);
 	  		flag = json.getBoolean("status");
 	  		if(flag){
 	  			mFriendArr.clear();
@@ -376,13 +361,11 @@ public class GetFriendListWeb extends AsyncTask<String, Void, Boolean>{
 	@Override
 	protected void onPostExecute(Boolean status) {
 		mDialog.dismiss();
-		Log.e("GetFriendListWeb onPostExecute", "GetFriendListWeb onPostExecute");
 		if(status){
-			mAdapter = new FriendAdapter(HomePresenter.this,mHomeView, R.layout.friend_row1, mFriendArr);
-			
+			mAdapter = new FriendAdapter(mHomeView, R.layout.friend_row1, mFriendArr);			
 			mHomeView.getList().setAdapter(mAdapter);
 			
-		}				
+		}
 	}	
 }
 
@@ -394,9 +377,9 @@ public class LocationTrack extends AsyncTask<String, Void, Boolean>{
 	protected Boolean doInBackground(String... params) {			
 	  	try {
 	  		JSONObject jsonObject = new JSONObject();
-	  		jsonObject.put("fbid", mHomeView.myApp.friendId);
+	  		jsonObject.put("user_id", mHomeView.myApp.friendId);
 	  		
-	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/getlocation.php", jsonObject);
+	  		JSONObject json = KlHttpClient.SendHttpPost(URL.GET_LOCATION.getUrl(), jsonObject);
 	  		Log.e("Received friend location JSOn", json.toString());
 	  		Double lat =  Double.valueOf(json.getString("lat"));
 	  		mLat = lat;
@@ -419,7 +402,7 @@ public class LocationTrack extends AsyncTask<String, Void, Boolean>{
 			marker.remove();
 		}
 		if(mHomeView.myApp.doTrackFriendLocation){
-			marker = mHomeView.getMap().addMarker(new MarkerOptions().position(new LatLng(mLat, mLng)).title("Name:"+mName/*+" "+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()+"Distance:"+distance+" meter"*/).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds())  .icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
+			marker = mHomeView.getMap().addMarker(new MarkerOptions().position(new LatLng(mLat, mLng)).title("Name:"+trackingpersionname/*+" "+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()+"Distance:"+distance+" meter"*/).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds())  .icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
 			marker.showInfoWindow();
 			if(Global.isZoom){
 				Global.isZoom = false;
@@ -444,10 +427,10 @@ public class SendTrackNotification extends AsyncTask<String, Void, Boolean>{
 	protected Boolean doInBackground(String... params) {			
 	  	try {
 	  		JSONObject jsonObject = new JSONObject();
-	  		jsonObject.put("fbid", mDbAdapter.getUserFbID());
+	  		jsonObject.put("fbid", mHomeView.myApp.getAppInfo().userId);
 	  		jsonObject.put("friend_fb_id", mHomeView.myApp.friendId);	
 	  		Log.e("SendTrackNotification", jsonObject.toString());
-	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/send_message.php", jsonObject);
+	  		JSONObject json = KlHttpClient.SendHttpPost(URL.SEND_MESSAGE.getUrl(), jsonObject);
 			
 		} catch (Exception e) {
 			//prsDlg.dismiss();
@@ -461,7 +444,7 @@ public class SendTrackNotification extends AsyncTask<String, Void, Boolean>{
 
 @Override
 public void doSkiPatrolFunction() {
-	new SKIEmergencyButtonPressWeb().execute(mDbAdapter.getUserFbID());
+	new SKIEmergencyButtonPressWeb().execute(mHomeView.myApp.getAppInfo().userId);
 	
 }
 
@@ -472,7 +455,7 @@ public void functionChat(String facebookid, String name) {
 	String fname = name;
 	String[] splitStr = fname.split("\\s+");
 	mHomeView.myApp.getAppInfo().setSenderIDChat(facebookid);
-	Global.mChatUserName = splitStr[0];
+	mHomeView.myApp.IMname = splitStr[0];
 	new getChatHistory().execute(facebookid,splitStr[0]);
 }
 public void closeSlider(){
@@ -486,12 +469,12 @@ public class getChatHistory extends AsyncTask<String, Void, ArrayList<ChatBean>>
 	protected ArrayList<ChatBean> doInBackground(String... params) {			
 	  	try {
 	  		JSONObject jsonObject = new JSONObject();
-	  		jsonObject.put("sender_fb_id", mDbAdapter.getUserFbID());
+	  		jsonObject.put("sender_fb_id", mHomeView.myApp.getAppInfo().userId);
 	  		jsonObject.put("receiver_fb_id",params[0]);
-	  		jsonObject.put("sender_name", mDbAdapter.getUserFirstName());
+	  		jsonObject.put("sender_name", mHomeView.myApp.getAppInfo().userFirstName);
 	  		jsonObject.put("receiver_name", params[1]);
 	  		
-	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/chat_history.php", jsonObject);
+	  		JSONObject json = KlHttpClient.SendHttpPost(URL.CHAT_HISTORY.getUrl(), jsonObject);
 	  		Log.e("Received Chat history", json.toString());
 	  		if(json != null){
 				Global.mChatArr.clear();
@@ -550,8 +533,8 @@ public class GetAllFriendRequest extends AsyncTask<String, Void, Boolean>{
 		boolean flag = false;
 	  	try {
 			JSONObject mJsonObject = new JSONObject();
-			mJsonObject.put("fbid", mDbAdapter.getUserFbID());
-			json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/pending_friend.php", mJsonObject);
+			mJsonObject.put("fbid", mHomeView.myApp.getAppInfo().userId);
+			json = KlHttpClient.SendHttpPost(URL.PENDING_FRIEND_REQUEST.getUrl(), mJsonObject);
 			if(json!=null){
 				flag = json.getBoolean("status");
 				if(flag){
@@ -563,11 +546,11 @@ public class GetAllFriendRequest extends AsyncTask<String, Void, Boolean>{
 						String sender_fbid = obj.getString("sender_facebook_profile_id");
 						String sender_fname = obj.getString("first_name");
 						String sender_lname = obj.getString("last_name");
-						String trackstatus = obj.getString("trackstatus");
+						int trackstatus = Integer.parseInt(obj.getString("trackstatus"));
 						String sender_name = sender_fname +" "+sender_lname;
 						Log.e("name", sender_name);
 					
-						mRequestArr.add(new FriendRequestBean(sender_fbid, mDbAdapter.getUserFbID(), sender_name, record_id,trackstatus));
+						mRequestArr.add(new FriendRequestBean(sender_fbid, mHomeView.myApp.getAppInfo().userId, sender_name, record_id,trackstatus));
 						
 					}
 				}else{
@@ -591,8 +574,8 @@ public class GetAllFriendRequest extends AsyncTask<String, Void, Boolean>{
 	}
 
 public void updatePendingFriendList(String sender_id, String sender_name,
-		String receiver_fbid, String record_id, String track_status) {
-		mRequestArr.add(new FriendRequestBean(sender_id, mDbAdapter.getUserFbID(), sender_name, record_id,track_status));
+		String receiver_fbid, String record_id, int track_status) {
+		mRequestArr.add(new FriendRequestBean(sender_id, mHomeView.myApp.getAppInfo().userId, sender_name, record_id,track_status));
 		mRequestAdapter = new FriendRequestAdapter(mHomeView,R.layout.request_notification_row, mRequestArr);
 		mHomeView.getRequestList().setAdapter(mRequestAdapter);	
 	}
@@ -618,9 +601,9 @@ public class DeleteFriendWeb extends AsyncTask<String, Void, Boolean>{
 		boolean flag = false;
 	  	try {
 			JSONObject mJsonObject = new JSONObject();
-			mJsonObject.put("fbid", mDbAdapter.getUserFbID());
+			mJsonObject.put("fbid", mHomeView.myApp.getAppInfo().userId);
 			mJsonObject.put("friend_id", params[0]);
-			json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/delete_friend.php", mJsonObject);
+			json = KlHttpClient.SendHttpPost(URL.FRIEND_DELETE.getUrl(), mJsonObject);
 			if(json!=null){
 				flag = json.getBoolean("del_status");
 				
@@ -637,7 +620,7 @@ public class DeleteFriendWeb extends AsyncTask<String, Void, Boolean>{
 			if(result){
 				mFriendArr.remove(deletedPos);
 				
-				mAdapter = new FriendAdapter(HomePresenter.this,mHomeView, R.layout.friend_row1, mFriendArr);				
+				mAdapter = new FriendAdapter(mHomeView, R.layout.friend_row1, mFriendArr);				
 				mHomeView.getList().setAdapter(mAdapter);
 			}							
 		}

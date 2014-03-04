@@ -15,6 +15,7 @@ import com.facebook.model.GraphObject;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.*;
 import com.strapin.Enum.URL;
+import com.strapin.global.Constants;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
 
@@ -32,6 +33,10 @@ public class SigninView extends BaseView {
     private Button mSignup;
     private EditText et_username,et_password;
     private Button btn_login;
+    private String logintype;
+    private String fb_fname;
+    private String fb_lname;
+    private String fb_id;
    
     private enum PendingAction {
         NONE,
@@ -89,7 +94,9 @@ public class SigninView extends BaseView {
 			@Override
 			public void onClick(View v) {
 				if(fieldValidation()){
-					new SigninWeb().execute();
+					logintype = Constants.NORMAL_LOGIN;
+					showProgressDailog();
+					new SignInWeb().execute();
 				}
 				
 			}
@@ -192,16 +199,13 @@ public class SigninView extends BaseView {
     	     
     	        if (enableButtons && user != null) {
     	        	showProgressDailog();
-    	        	myApp.getAppInfo().setUserInfo(user.getFirstName(), user.getLastName(), user.getId());
-    	        	if(db.getRowCount()>0){
-    					db.updateUserInfo(user.getId(),user.getFirstName(),user.getLastName());
-    				}else{
-    					db.insertUserInfo(user.getId(),user.getFirstName(),user.getLastName());
-    				}
-    	        	myApp.getAppInfo().setSession(true);
-    	        	Global.mDob = user.getBirthday();
-    				myApp.getAppInfo().setSession(true);
-    				getFriendList();
+    	        	fb_fname = user.getFirstName();
+    	        	fb_lname = user.getLastName();
+    	        	fb_id = user.getId();
+    	        	/*myApp.getAppInfo().setUserInfo(user.getFirstName(), user.getLastName(), user.getId());
+    	        	myApp.getAppInfo().setSession(true);*/
+    	        	getFriendList();
+    	        	logintype = Constants.FACEBOOK_LOGIN;
     				new SignInWeb().execute();
     	        	
     	        } else {
@@ -229,13 +233,25 @@ public class SigninView extends BaseView {
 		protected Boolean doInBackground(String... params) {	
 			boolean flg = false;
 		  	try {
-		  		JSONObject jsonObject = new JSONObject();
-		  		jsonObject.put("fbid", db.getUserFbID());
-		  		jsonObject.put("fname", db.getUserFirstName());
-		  		jsonObject.put("lname", db.getUserLastName());
-		  		JSONObject json = KlHttpClient.SendHttpPost(URL.LOGIN.getUrl(), jsonObject);
-		  		if(json!=null){
-		  			flg =  json.getBoolean("status");
+		  		JSONObject request = new JSONObject();
+		  	if(logintype.equalsIgnoreCase("F")){		  		
+		  		request.put("fbid", fb_id);
+		  		request.put("fname", fb_fname);
+		  		request.put("lname", fb_lname);
+		  		request.put("usertype", "F");
+		  	}else{
+		  		request.put("email", et_username.getText().toString().trim());
+				request.put("password", et_password.getText().toString().trim());
+				request.put("usertype", "N");
+		  	}
+		  		JSONObject response = KlHttpClient.SendHttpPost(URL.LOGIN.getUrl(), request);
+		  		if(response!=null){
+		  			flg =  response.getBoolean("status");
+		  			if(flg){
+		  				myApp.getAppInfo().setUserInfo(response.getString("first_name"),response.getString("last_name"), response.getString("user_id"),response.getString("image"));
+	    	        	myApp.getAppInfo().setSession(true);
+		  			}
+		  			
 		  		}	   
 				
 			} catch (Exception e) {
@@ -246,16 +262,13 @@ public class SigninView extends BaseView {
 		}
 		@Override
 		protected void onPostExecute(Boolean status) {
-			if(status){
 			dismissProgressDialog();
+			if(status){			
 			startActivity(new Intent(SigninView.this, HomeView.class));
 			SigninView.this.finish();
 			}
 			
-		}	
-		
-		 
-
+		}
 	}
     public void getFriendList(){
     	String fqlQuery = "SELECT uid,name,pic_square FROM user WHERE uid IN " +
@@ -312,43 +325,5 @@ public class SigninView extends BaseView {
     	return flg;
     }
     
-    class SigninWeb extends AsyncTask<String, Void, Boolean>{
-    	
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			showProgressDailog();
-		}
-
-		@Override
-		protected Boolean doInBackground(String... params) {
-			boolean flag  = false;
-			
-			try {
-				JSONObject request = new JSONObject();
-				
-				request.put("email", et_username.getText().toString().trim());
-				request.put("password", et_password.getText().toString().trim());
-				request.put("usertype", "N");
-				Log.e("request", ""+request);
-				JSONObject response = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/new_login.php", request);
-				if(response!=null){
-					flag = response.getBoolean("status");
-				}
-			} catch (JSONException e) {
-				showProgressDailog();
-				e.printStackTrace();
-			}
-			return flag;
-		}
-
-		@Override
-		protected void onPostExecute(Boolean result) {
-			super.onPostExecute(result);
-			dismissProgressDialog();
-		}
-
-    	
-    }
+   
 }

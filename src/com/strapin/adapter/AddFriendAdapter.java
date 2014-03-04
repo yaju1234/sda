@@ -8,12 +8,10 @@ import snowmada.main.view.HomeView;
 import snowmada.main.view.R;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -23,32 +21,24 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.strapin.Util.ImageLoader;
+
+import com.strapin.Enum.URL;
 import com.strapin.bean.AddFriendBean;
-import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.network.KlHttpClient;
 
 public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
 	
 	private ArrayList<AddFriendBean> mItems = new ArrayList<AddFriendBean>();
 	private ViewHolder mHolder;
-	int size = 0;
-	public ImageLoader imageLoader;
 	private HomeView activity;
-	private ProgressDialog mDialog;
-	private SnowmadaDbAdapter mSdb;
 	
-	public AddFriendAdapter(SnowmadaDbAdapter sdb,HomeView activity, int textViewResourceId,	ArrayList<AddFriendBean> items) {
+	public AddFriendAdapter(HomeView activity, int textViewResourceId,	ArrayList<AddFriendBean> items) {
 		super(activity, textViewResourceId, items);
-		mSdb = sdb;
 		this.mItems = items;
-		size = mItems.size();
 		this.activity =activity;		
-		imageLoader=new ImageLoader(activity);
-		
 	}		  
 	@Override
 	public int getCount() {
@@ -68,28 +58,28 @@ public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
 			v = vi.inflate(R.layout.add_friend_row, null);
 			mHolder = new ViewHolder();
 			v.setTag(mHolder);	
-			mHolder.mImage = (ImageView)v.findViewById(R.id.user_friend_image);
-			mHolder.mName = (TextView)v.findViewById(R.id.facebook_friend_name);
-			mHolder.mMain = (RelativeLayout)v.findViewById(R.id.main);
+			mHolder.image = (ImageView)v.findViewById(R.id.iv_img_friend);
+			mHolder.name = (TextView)v.findViewById(R.id.tv_friend_name);
+			mHolder.main = (LinearLayout)v.findViewById(R.id.ll_main_layout);
 				
 		}
 		else {
 			mHolder =  (ViewHolder) v.getTag();
 		}	
 		
-		mHolder.mMain.setOnClickListener(new OnClickListener() {
+		mHolder.main.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				
 				if(activity.myApp.selectedTab == 1){
-final Dialog dialog = new Dialog(activity);				
+					final Dialog dialog = new Dialog(activity);				
 					dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 					dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-					dialog.setContentView(R.layout.friend_add_dialog);
+					dialog.setContentView(R.layout.dialog_add_friend);
 					//dialog.set
-					TextView name = (TextView)dialog.findViewById(R.id.friend_name);
-					ImageView image = (ImageView)dialog.findViewById(R.id.image_user_friend_dialog);
+					TextView name = (TextView)dialog.findViewById(R.id.tv_req_friend_name);
+					ImageView image = (ImageView)dialog.findViewById(R.id.iv_req_friend_img);
 					final CheckBox isTrack = (CheckBox)dialog.findViewById(R.id.check_track);
 					Button yes = (Button)dialog.findViewById(R.id.btn_yes);
 					yes.setText(Html.fromHtml("<font color=\"#ffffff\">YE</font><font color=\"#28b6ff\">S</font>"));
@@ -98,7 +88,7 @@ final Dialog dialog = new Dialog(activity);
 					
 					name.setText(mItems.get(position).getName());
 					isTrack.setChecked(true);
-					imageLoader.DisplayImage("https://graph.facebook.com/"+mItems.get(position).getFacebookId()+"/picture",image);
+					activity.imageLoader.DisplayImage("https://graph.facebook.com/"+mItems.get(position).getFriendId()+"/picture",image);
 						
 					yes.setOnClickListener(new OnClickListener() {
 						
@@ -110,7 +100,7 @@ final Dialog dialog = new Dialog(activity);
 							}else{
 								status = 0;
 							}
-							new AddSnowmadaFriend().execute(mItems.get(position).getFacebookId(),mItems.get(position).getName(),""+status);
+							new AddSnowmadaFriend().execute(mItems.get(position).getFriendId(),mItems.get(position).getName(),""+status);
 							dialog.dismiss();
 						}
 					});
@@ -126,7 +116,7 @@ final Dialog dialog = new Dialog(activity);
 					dialog.show();				
 				
 				}else{
-					//Global.getFacebookStrapIn().sendChallenge(activity,mItems.get(position).getFacebookId());
+					
 				
 				}
 			}
@@ -134,55 +124,52 @@ final Dialog dialog = new Dialog(activity);
 			
 		final AddFriendBean bean = mItems.get(position);
 		if(bean != null){
-			//mHolder.mImage.setBackgroundResource(bean.getImage());
-			imageLoader.DisplayImage("https://graph.facebook.com/"+bean.getFacebookId()+"/picture",mHolder.mImage);
-			mHolder.mName.setText(bean.getName());
+			activity.imageLoader.DisplayImage("https://graph.facebook.com/"+bean.getFriendId()+"/picture",mHolder.image);
+			mHolder.name.setText(bean.getName());
 			
 		}		
 		return v;
 	}
 	class ViewHolder {	
-		public ImageView mImage;
-		public TextView mName;
+		public ImageView image;
+		public TextView name;
 		public TextView mGnar;	
-		public RelativeLayout mMain;			
+		public LinearLayout main;			
 	}
 	 public class AddSnowmadaFriend extends AsyncTask<String, Void, Boolean>{		
 			protected void onPreExecute() {
-				mDialog = new ProgressDialog(activity);
-				mDialog.setMessage("Please wait...");
-				mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-				mDialog.setIndeterminate(true);
-				mDialog.setCancelable(false);
-				mDialog.show();
+				activity.showProgressDailog();
 				
 			}
 			@Override
-			protected Boolean doInBackground(String... params) {			
+			protected Boolean doInBackground(String... params) {	
+				boolean flg = false;
 			  	try {
-			  		JSONObject jsonObject = new JSONObject();
-			  		jsonObject.put("fbid", mSdb.getUserFbID());
-			  		jsonObject.put("friend_fb_id", params[0]);
-			  		jsonObject.put("friend_name", params[1]);
-			  		jsonObject.put("track_status", params[2]);
-			  		jsonObject.put("sendername",mSdb.getUserFirstName()+" "+mSdb.getUserLastName() );
-			  		Log.e("JSON", jsonObject.toString());
-			  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/add_friend_request.php", jsonObject);
-			        return json.getBoolean("status");
-			        	
+			  		JSONObject request = new JSONObject();
+			  		request.put("fbid", activity.myApp.getAppInfo().userId);
+			  		request.put("friend_fb_id", params[0]);
+			  		request.put("friend_name", params[1]);
+			  		request.put("track_status", params[2]);
+			  		request.put("sendername",activity.myApp.getAppInfo().userFirstName+" "+activity.myApp.getAppInfo().userLastName);
+			  		JSONObject response = KlHttpClient.SendHttpPost(URL.ADD_FRIEND.getUrl(), request);
+			       if(response!=null){
+			    	   flg = response.getBoolean("status");
+			       }
+			  	   	
 					
 				} catch (Exception e) {
-					mDialog.dismiss();
+					activity.dismissProgressDialog();
+					flg = false;
 					e.printStackTrace();
 				}
-				return null;
+				return flg;
 			}
 			@Override
 			protected void onPostExecute(Boolean status) {
-				mDialog.dismiss();
+				activity.dismissProgressDialog();
 				if(status){
 					Toast.makeText(activity, "Friend added successfully", Toast.LENGTH_LONG).show();
-					//Global.isWebServiceCallForRefreshFriendList = true;
+				
 				}
 				
 			}	
