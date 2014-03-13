@@ -10,16 +10,15 @@ import android.widget.TextView;
 
 public interface IHome {
 	public interface Presenter{
-		public void callAdapter();
+		public void getFriendList();
 		public void setOnFriendClick(int pos);
 		public void getFriendCurrentLocation();
-		public void findListPosition(String sataus, String fbid);
+		public void findListPosition(boolean sataus, String fbid);
 		public void doSkiPatrolFunction();
 		public void functionChat(String facebookid,String name);
 		public void CallChatWindow(String friendName,String fbid);
 		
 	}
-	public ListView getList();
 	public GoogleMap getMap();
 	public Sliding hideSlide();
 	public TextView getChatFriend();
@@ -29,8 +28,6 @@ public interface IHome {
 	public void defaultChatWindoOpenFromNotificationList();
 	public void createMenuDialog();
 	public void getPushNotificationDeviceID();
-	public void doCallasyncWeb();
-	public void callService();
 	public RelativeLayout getProgressBarLayout();
 
 }

@@ -7,14 +7,16 @@ public class FriendRequestBean {
 	private String senderName;
 	private String recordId;
 	private int trackStatus;
+	private String image;
 	
-	public FriendRequestBean(String senderfbId, String receiverfbId,String senderName, String recordId,int trackStatus) {
+	public FriendRequestBean(String senderfbId, String receiverfbId,String senderName, String recordId,int trackStatus,String image) {
 		super();
 		this.senderfbId = senderfbId;
 		this.receiverfbId = receiverfbId;
 		this.senderName = senderName;
 		this.recordId = recordId;
 		this.trackStatus = trackStatus;
+		this.image = image;
 	}
 
 	public String getSenderfbId() {
@@ -55,6 +57,14 @@ public class FriendRequestBean {
 
 	public void setTrackStatus(int trackStatus) {
 		this.trackStatus = trackStatus;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 	
 	

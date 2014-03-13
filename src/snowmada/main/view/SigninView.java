@@ -37,6 +37,7 @@ public class SigninView extends BaseView {
     private String fb_fname;
     private String fb_lname;
     private String fb_id;
+    private String TAG = "snomada";
    
     private enum PendingAction {
         NONE,
@@ -245,10 +246,17 @@ public class SigninView extends BaseView {
 				request.put("usertype", "N");
 		  	}
 		  		JSONObject response = KlHttpClient.SendHttpPost(URL.LOGIN.getUrl(), request);
+		  		Log.e(TAG, "Sign in response=====>>"+response.toString());
 		  		if(response!=null){
 		  			flg =  response.getBoolean("status");
 		  			if(flg){
-		  				myApp.getAppInfo().setUserInfo(response.getString("first_name"),response.getString("last_name"), response.getString("user_id"),response.getString("image"));
+		  				String imgurl;
+		  				if(!response.isNull("image")){
+		  					imgurl = URL.IMAGE_PATH.getUrl()+response.getString("image");		  					
+		  				}else{
+		  					imgurl = "https://graph.facebook.com/" + response.getString("user_id")	+ "/picture";
+		  				}
+		  				myApp.getAppInfo().setUserInfo(response.getString("first_name"),response.getString("last_name"), response.getString("user_id"),imgurl);
 	    	        	myApp.getAppInfo().setSession(true);
 		  			}
 		  			

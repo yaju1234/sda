@@ -10,6 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,6 +35,7 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 	private HomeView activity;
 	private String changeTrackStatus;
 	private int pos;
+	public String TAG = "snomada";
 	
 	
 	public FriendAdapter(HomeView activity, int textViewResourceId,	ArrayList<FriendListBean> items) {
@@ -68,6 +70,7 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 			@Override
 			public void onClick(View v) {					
 					String fname = mItems.get(position).getName();
+					// When chating 
 					if(activity.myApp.isChatActive){
 						activity.myApp.getAppInfo().setSenderIDChat( mItems.get(position).getFbId());
 							String[] splitStr = fname.split("\\s+");
@@ -75,7 +78,7 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 							Global.mChatArr.clear();
 							activity.presenter.functionChat(mItems.get(position).getFbId(), mItems.get(position).getName());
 						
-					}else{
+					}else{// When Tracking  
 						activity.myApp.isTrackingSKIPatrol = false;
 						activity.presenter.setOnFriendClick(position);
 					}				
@@ -110,9 +113,10 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 				mHolder.mAllowText.setVisibility(View.INVISIBLE);
 				mHolder.mTrackStatus.setVisibility(View.INVISIBLE);
 			}
-			activity.imageLoader.DisplayImage("https://graph.facebook.com/"+bean.getFbId()+"/picture",mHolder.mImage);
+			Log.e(TAG, "Image===>>>"+bean.getImage());
+			activity.imageLoader.DisplayImage(bean.getImage(),mHolder.mImage);
 			mHolder.mName.setText(bean.getName());
-			if(bean.getOnlineStatus().equalsIgnoreCase("1")){
+			if(bean.isOnline()){
 				mHolder.mOnlineStatus.setText("Online");
 				mHolder.mOnlineStatus.setTextColor(Color.parseColor("#0be423"));
 			}else{

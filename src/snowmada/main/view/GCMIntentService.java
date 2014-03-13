@@ -91,20 +91,27 @@ public class GCMIntentService extends GCMBaseIntentService {
 					showNotification(context, noti_msg,intent);
 				
 			}else if (status==Constants.SKI_PATROL_PUSH_NOTIFICATION) {
-				String patroler_id = json.getString("patroler_id");
-				String latitude = json.getString("lat");
-				String longitude = json.getString("lng");
-				String fname = json.getString("fname");
-				String lname = json.getString("lname");
-
-				SnowmadaDbAdapter mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(context);
-				if (mDbAdapter.getSkiPetrolRowCount() > 0) {
-					mDbAdapter.updateSkiPetrolInfo(patroler_id,fname, lname, latitude,	longitude);
-				} else {
-					mDbAdapter.insertSkiPetrolInfo(patroler_id,fname, lname, latitude,longitude);
+				if(!app.getAppInfo().isAppForeground){
+					String patroler_id = json.getString("patroler_id");
+					String latitude = json.getString("lat");
+					String longitude = json.getString("lng");
+					String fname = json.getString("fname");
+					String lname = json.getString("lname");
+					
+					
+						SnowmadaDbAdapter mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(context);
+						if (mDbAdapter.getSkiPetrolRowCount() > 0) {
+							mDbAdapter.updateSkiPetrolInfo(patroler_id,fname, lname, latitude,	longitude);
+						} else {
+							mDbAdapter.insertSkiPetrolInfo(patroler_id,fname, lname, latitude,longitude);
+						}
+						Intent intent = new Intent(	"SKI_PATROL_INTENT");				
+						context.sendBroadcast(intent);
 				}
-				Intent intent = new Intent(	"SKI_PATROL_INTENT");				
-				context.sendBroadcast(intent);
+				
+				
+
+				
 				
 			}else  if(status==Constants.CHAT_PUSH_NOTIFICATION) {
 				 String msg = json.getString("chatmessage");

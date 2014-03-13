@@ -88,7 +88,7 @@ public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
 					
 					name.setText(mItems.get(position).getName());
 					isTrack.setChecked(true);
-					activity.imageLoader.DisplayImage("https://graph.facebook.com/"+mItems.get(position).getFriendId()+"/picture",image);
+					activity.imageLoader.DisplayImage(mItems.get(position).getFriendId()+"/picture",image);
 						
 					yes.setOnClickListener(new OnClickListener() {
 						
@@ -150,6 +150,7 @@ public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
 			  		request.put("friend_fb_id", params[0]);
 			  		request.put("friend_name", params[1]);
 			  		request.put("track_status", params[2]);
+			  		request.put("image", activity.myApp.getAppInfo().image);
 			  		request.put("sendername",activity.myApp.getAppInfo().userFirstName+" "+activity.myApp.getAppInfo().userLastName);
 			  		JSONObject response = KlHttpClient.SendHttpPost(URL.ADD_FRIEND.getUrl(), request);
 			       if(response!=null){

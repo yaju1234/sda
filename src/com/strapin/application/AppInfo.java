@@ -22,7 +22,7 @@ public class AppInfo {
 		sharedPreferences = ctx.getSharedPreferences(Constants.Settings.GLOBAL_SETTINGS.name(), Context.MODE_PRIVATE);
 		userFirstName = sharedPreferences.getString(Constants.Settings.FACEBOOK_FIRST_NAME.name(), userFirstName);
 		userLastName = sharedPreferences.getString(Constants.Settings.FACEBOOK_LAST_NAME.name(), userLastName);
-		userId = sharedPreferences.getString(Constants.Settings.FACEBOOK_ID.name(), userId);
+		userId = sharedPreferences.getString(Constants.Settings.USER_ID.name(), userId);
 		image = sharedPreferences.getString(Constants.Settings.USER_IMAGE.name(), image);
 		session = sharedPreferences.getBoolean(Constants.Settings.IS_SESSION_AVAILABLE.name(), session);
 		senderIdChat = sharedPreferences.getString(Constants.Settings.SENDER_ID_CHAT.name(), senderIdChat);
@@ -38,7 +38,14 @@ public class AppInfo {
 		Editor edit = sharedPreferences.edit();
 		edit.putString(Constants.Settings.FACEBOOK_FIRST_NAME.name(), userFirstName);
 		edit.putString(Constants.Settings.FACEBOOK_LAST_NAME.name(), userLastName);
-		edit.putString(Constants.Settings.FACEBOOK_ID.name(), userId);
+		edit.putString(Constants.Settings.USER_ID.name(), userId);
+		edit.putString(Constants.Settings.USER_IMAGE.name(), image);
+		edit.commit();
+	}
+	
+	public void setImage(String img){
+		image = img;
+		Editor edit = sharedPreferences.edit();
 		edit.putString(Constants.Settings.USER_IMAGE.name(), image);
 		edit.commit();
 	}

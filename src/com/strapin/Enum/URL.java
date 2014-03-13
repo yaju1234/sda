@@ -19,7 +19,8 @@ public enum URL {
 	SEND_MESSAGE("http://clickfordevelopers.com/demo/snowmada/send_message.php"),
 	GET_LOCATION("http://clickfordevelopers.com/demo/snowmada/track.php"),
 	FRIEND_LIST("http://clickfordevelopers.com/demo/snowmada/snowmada_friend.php"),
-	SKI_PATROL("http://clickfordevelopers.com/demo/snowmada/ski_patrol.php");
+	SKI_PATROL("http://clickfordevelopers.com/demo/snowmada/ski_patrol.php"),
+	IMAGE_PATH("http://clickfordevelopers.com/demo/snowmada/uploads/");
 	
 	URL(String ob) {
 		this.url = ob;

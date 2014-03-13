@@ -120,7 +120,7 @@ public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
 			}else{
 				mHolder.mTrackStatus.setChecked(true);
 			}
-			imageLoader.DisplayImage("https://graph.facebook.com/"+mVendor.getSenderfbId()+"/picture",mHolder.mFriendImage);				
+			imageLoader.DisplayImage(mVendor.getImage(),mHolder.mFriendImage);				
 		}		
 		return v;
 	}

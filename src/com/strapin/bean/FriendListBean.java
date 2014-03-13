@@ -4,15 +4,17 @@ public class FriendListBean {
 	private String Name;
 	private String FbId;
 	private String Status;
-	private String mOnlineStatus;
+	private boolean isOnline;
 	private String mISUserExist;
+	private String image;
 	
-	public FriendListBean( String Name,String FbId,String Status,String mOnlineStatus,String mISUserExist){
+	public FriendListBean( String Name,String FbId,String Status,boolean mOnlineStatus,String mISUserExist,String image){
 		this.Name = Name;
 		this.FbId = FbId;
 		this.Status = Status;
-		this.mOnlineStatus = mOnlineStatus;
+		this.isOnline = mOnlineStatus;
 		this.mISUserExist = mISUserExist;
+		this.image = image;
 	}
 
 	public String getName() {
@@ -39,12 +41,14 @@ public class FriendListBean {
 		Status = status;
 	}
 
-	public String getOnlineStatus() {
-		return mOnlineStatus;
+	
+
+	public boolean isOnline() {
+		return isOnline;
 	}
 
-	public void setOnlineStatus(String mOnlineStatus) {
-		this.mOnlineStatus = mOnlineStatus;
+	public void setOnline(boolean isOnline) {
+		this.isOnline = isOnline;
 	}
 
 	public String getISUserExist() {
@@ -54,4 +58,14 @@ public class FriendListBean {
 	public void setISUserExist(String mISUserExist) {
 		this.mISUserExist = mISUserExist;
 	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+	
+	
 }

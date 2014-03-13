@@ -18,7 +18,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.strapin.Enum.URL;
 import com.strapin.Util.Utility;
 import com.strapin.application.SnomadaApp;
-import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
 
@@ -39,8 +38,7 @@ public class TrackLocation implements LocationListener, GooglePlayServicesClient
 	
 	private TrackLocation(final Context context) {
 		sContext = context;
-		
-		
+			
 	}
 	
 	public static TrackLocation createInstance(final Context context,SnomadaApp App) {
@@ -69,7 +67,6 @@ public class TrackLocation implements LocationListener, GooglePlayServicesClient
 			mLocationClient.requestLocationUpdates(mLocationRequest, sInstance);
 
 		}
-		
 	}
 	  
 	public void removeLocationUpdate(){
@@ -93,8 +90,8 @@ public class TrackLocation implements LocationListener, GooglePlayServicesClient
 
 	@Override
 	public void onLocationChanged(Location location) {
-			if(app.isZoom){
-				app.isZoom = false;
+			if(Global.isZoom){
+				Global.isZoom = false;
 			   Global.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
 			
 		}

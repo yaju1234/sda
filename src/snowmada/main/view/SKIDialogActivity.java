@@ -42,18 +42,12 @@ public class SKIDialogActivity extends BaseView{
 				vibrator.cancel();
 				skiPatrolAlertdialog.cancel();
 	        	myApp.getAppInfo().setIsAlertForSKIPatrol(true);
-	        	if(myApp.getAppInfo().isAppForeground){	        		
-	        		Intent i = new Intent(getApplicationContext(),HomeView.class);
-	        		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	        		startActivity(i);
-	        		SKIDialogActivity.this.finish(); 
-	        	
-	        		
-	        	}else{
+	               		
 	        		Intent i = new Intent(getApplicationContext(),SplashView.class);
+	        		i.putExtra("is_from_alarm_dialog", true);
+	        		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	        		startActivity(i);
 	        		SKIDialogActivity.this.finish();
-	        	}
 			}
 		});
 		skiPatrolAlertdialog.show();

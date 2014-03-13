@@ -2,6 +2,7 @@ package snowmada.main.view;
 
 
 import android.app.ProgressDialog;
+import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.text.Html;
@@ -28,8 +29,9 @@ public class BaseView extends FragmentActivity implements IBase,OnClickListener,
 	public boolean inIt  = false;
 	public ProgressDialog prsDlg;
 	public SnowmadaDbAdapter db;	
-	public ImageLoader imageLoader;
-    public DisplayImageOptions options;
+	 public DisplayImageOptions options;
+    protected ImageLoader imageLoader = ImageLoader.getInstance();
+    private boolean instanceStateSaved;
     
     
 
@@ -104,6 +106,7 @@ public class BaseView extends FragmentActivity implements IBase,OnClickListener,
 		}
 		
 	}
+
 	
 	
 	
