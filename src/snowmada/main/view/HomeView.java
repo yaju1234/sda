@@ -115,6 +115,7 @@ import com.strapin.common.AlertDialogManager;
 import com.strapin.common.ConnectionDetector;
 import com.strapin.common.ServerUtilities;
 import com.strapin.common.WakeLocker;
+import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.global.Constants;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
@@ -125,7 +126,7 @@ public class HomeView extends BaseView implements IHome {
 	private Sliding      mViewSlider;
 
 	private VerticalTextView mBtnSlider;
-
+	
 	public Button        btnaddFriend;
 	public Button        btnInviteFriend;
 	public Button        btnPendingReq;
@@ -172,7 +173,6 @@ public class HomeView extends BaseView implements IHome {
 
 	private LinearLayout  mMassageLayout;
 	private LinearLayout  mLayoutMsgNotiList;
-	private LinearLayout  mBottonMenu;
 	private LinearLayout  mChatSendButton;
 	private LinearLayout  mReqTab;
 
@@ -243,25 +243,25 @@ public class HomeView extends BaseView implements IHome {
 	public long current_time_in_millisecond                 = 0;
 
 	public Marker m;
-	public int pos = -1;
+	public int pos                                          = -1;
 
 	public String[] markersst;
-	public int updatepos = -1;
+	public int updatepos                                    = -1;
 
 	protected UiLifecycleHelper uiHelper;
 	
 	public static final int REQUEST_CODE_GALLERY           = 0x1;
 	public static final int REQUEST_CODE_TAKE_PICTURE      = 0x2;
-	private final int PIC_CROP = 0x3;
+	private final int PIC_CROP                             = 0x3;
 	
 	public HttpEntity resEntity;
     public Bitmap bitmap;
     public Bitmap scaleBitmap;
-    public String song_url = "";
-    public String filepath = "";
-    public String imagepath = null;
+    public String song_url                                = "";
+    public String filepath                                = "";
+    public String imagepath                               = null;
     public SnomadaApp myApp;
-    public String TAG = "snomada";
+    public String TAG                                     = "snomada";
 
 	public Handler handle = new Handler() {
 
@@ -365,8 +365,7 @@ public class HomeView extends BaseView implements IHome {
 		mMassageLayout          = (LinearLayout) findViewById(R.id.massage_layout);
 		mLayoutMsgNotiList      = (LinearLayout) findViewById(R.id.layout_message_notification);
 		mChatSendButton         = (LinearLayout) findViewById(R.id.chat_send_button);
-		mBottonMenu             = (LinearLayout) findViewById(R.id.bottom_menu);
-
+		
 		mAddFriendLayout        = (RelativeLayout) findViewById(R.id.add_friend_layout);
 		mChatLayout             = (RelativeLayout) findViewById(R.id.chat_outer_layout);
 		mDealsLayout            = (RelativeLayout) findViewById(R.id.local_deals_layout);
@@ -385,7 +384,7 @@ public class HomeView extends BaseView implements IHome {
 
 		mBtnSlider.setOnClickListener(this);
 		mUserImage.setOnClickListener(this);
-		mBottonMenu.setOnClickListener(this);
+		btnMenu.setOnClickListener(this);
 		mIvSkyPatrol.setOnClickListener(this);
 		btnaddFriend.setOnClickListener(this);
 		btnInviteFriend.setOnClickListener(this);
@@ -508,9 +507,7 @@ public class HomeView extends BaseView implements IHome {
 			presenter.isTracking = false;
 			HomePresenter.COUNT = 0;
 			presenter.TrackDurationControllFlag = true;
-			// presenter.trackSKIPatrol(p.getPatrolerId(),
-			// p.getPatrolerFirstName(),p.getPatrolerLastName());
-
+		
 		}
 
 		doSetUp();
@@ -542,7 +539,6 @@ public class HomeView extends BaseView implements IHome {
 					if (myApp.isNetworkConnected(HomeView.this)) {
 						new FriendRequestNotificationCount().execute();
 					}
-					Log.e("Runnable thread============================>>", "Runnable thread");
 					if (myApp.doTrackFriendLocation	&& presenter.isFriendListFetched) {
 						presenter.getFriendCurrentLocation();
 					}
@@ -681,7 +677,7 @@ public class HomeView extends BaseView implements IHome {
 		// End*************************************************************
 		// ******************************* Footer part Click listener
 		// Start****************************************************
-		if (v == mBottonMenu) {
+		if (v == btnMenu) {
 			ll_meetup.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -701,33 +697,21 @@ public class HomeView extends BaseView implements IHome {
 				@Override
 				public void onClick(View v) {
 					menu_dialog.dismiss();
-					setLayoutVisibility(View.GONE, View.VISIBLE, View.GONE,
-							View.GONE, View.VISIBLE, View.GONE, View.INVISIBLE,
-							View.INVISIBLE, View.VISIBLE, View.INVISIBLE,
-							View.INVISIBLE, View.INVISIBLE, false, false,
-							false, GOOD_DEALS);
+					setLayoutVisibility(View.GONE, View.VISIBLE, View.GONE,	View.GONE, View.VISIBLE, View.GONE, View.INVISIBLE,	View.INVISIBLE, View.VISIBLE, View.INVISIBLE,View.INVISIBLE, View.INVISIBLE, false, false,false, GOOD_DEALS);
 				}
 			});
 			ll_track.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					menu_dialog.dismiss();
-					setLayoutVisibility(View.GONE, View.GONE, View.GONE,
-							View.GONE, View.VISIBLE, View.GONE, View.INVISIBLE,
-							View.INVISIBLE, View.INVISIBLE, View.VISIBLE,
-							View.INVISIBLE, View.INVISIBLE, false, false,
-							false, TRACK_FRIENDS);
+					setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.GONE, View.VISIBLE, View.GONE, View.INVISIBLE,	View.INVISIBLE, View.INVISIBLE, View.VISIBLE,View.INVISIBLE, View.INVISIBLE, false, false,false, TRACK_FRIENDS);
 				}
 			});
 			ll_addfriend.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					menu_dialog.dismiss();
-					setLayoutVisibility(View.GONE, View.GONE, View.VISIBLE,
-							View.GONE, View.GONE, View.GONE, View.INVISIBLE,
-							View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
-							View.VISIBLE, View.INVISIBLE, false, false, false,
-							ADD_FRIENDS);
+					setLayoutVisibility(View.GONE, View.GONE, View.VISIBLE,	View.GONE, View.GONE, View.GONE, View.INVISIBLE,View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	View.VISIBLE, View.INVISIBLE, false, false, false,ADD_FRIENDS);
 					if (!(mAddFriendArr.size() > 0)) {
 						new AppUsers().execute();
 					}
@@ -737,20 +721,13 @@ public class HomeView extends BaseView implements IHome {
 				@Override
 				public void onClick(View v) {
 					menu_dialog.dismiss();
-					setLayoutVisibility(View.GONE, View.GONE, View.GONE,
-							View.VISIBLE, View.GONE, View.GONE,
-							View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
-							View.INVISIBLE, View.INVISIBLE, View.VISIBLE,
-							false, false, false, VIEW_PROFILE);
-					imageLoader.DisplayImage("https://graph.facebook.com/"
-							+ myApp.getAppInfo().userId + "/picture",
-							mProfileImage);
+					setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE, View.GONE, View.GONE,	View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	View.INVISIBLE, View.INVISIBLE, View.VISIBLE,false, false, false, VIEW_PROFILE);
+					imageLoader.DisplayImage("https://graph.facebook.com/"+ myApp.getAppInfo().userId + "/picture",mProfileImage);
 				}
 			});
 
 			DisplayMetrics displaymetrics = new DisplayMetrics();
-			HomeView.this.getWindowManager().getDefaultDisplay()
-					.getMetrics(displaymetrics);
+			HomeView.this.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
 			int height = displaymetrics.heightPixels;
 			int width = displaymetrics.widthPixels;
 			if (width > 320 && height > 480) {
@@ -768,11 +745,7 @@ public class HomeView extends BaseView implements IHome {
 			menu_dialog.show();
 
 		}
-		// ************************************ Footer part Click listener
-		// END*************************************************
-
-		// ************************************ Footer part Click listener
-		// END*********************************************************
+	
 
 	}
 
@@ -843,8 +816,7 @@ public class HomeView extends BaseView implements IHome {
 						presenter.findListPosition(onlinestatus, onlinefbid);
 					} else if (status == Constants.CHAT_PUSH_NOTIFICATION) {
 						new MessageWeb().execute();
-						if (myApp.IMname.equalsIgnoreCase(json
-								.getString("name"))) {
+						if (myApp.IMname.equalsIgnoreCase(json.getString("name"))) {
 							String msg = json.getString("chatmessage");
 							String name = json.getString("name");
 							Global.mChatArr.add(new ChatBean(name, msg));
@@ -1426,22 +1398,16 @@ public class HomeView extends BaseView implements IHome {
 
 				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("fbid", myApp.getAppInfo().userId);
-				JSONObject json = KlHttpClient.SendHttpPost(
-						URL.MEET_UP_MERKER_LIST.getUrl(), jsonObject);
-				SimpleDateFormat sdf = new SimpleDateFormat(
-						"yyyy-MM-dd hh:mm:ss");
+				JSONObject json = KlHttpClient.SendHttpPost(URL.MEET_UP_MERKER_LIST.getUrl(), jsonObject);
+				Log.e(TAG, json.toString());
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 				Date date = new Date();
-				String _currentdate = new SimpleDateFormat(
-						"yyyy-MM-dd hh:mm:ss").format(date);
+				String _currentdate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
 				Date currentdate = sdf.parse(_currentdate);
-
-				// if(json.getBoolean("status")){
-				Log.e("Reach here", "Reach here");
 				meetupinfoarr.clear();
 				invalidMarkerIDs.clear();
 				deletedPos.clear();
 				JSONArray jArr = json.getJSONArray("MeetList");
-				Log.e("JSON Array Length", "" + jArr.length());
 				for (int i = 0; i < jArr.length(); i++) {
 					JSONObject c = jArr.getJSONObject(i);
 					String _marker_id = c.getString("marker_id");

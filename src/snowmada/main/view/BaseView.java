@@ -25,15 +25,23 @@ import com.strapin.application.SnomadaApp;
 import com.strapin.db.SnowmadaDbAdapter;
 
 public class BaseView extends FragmentActivity implements IBase,OnClickListener,OnMarkerClickListener,OnMapLongClickListener,OnMarkerDragListener,OnInfoWindowClickListener{
-	public SnomadaApp myApp;
-	public boolean inIt  = false;
+	public SnomadaApp                myApp;
+	public boolean inIt              = false;
 	public ProgressDialog prsDlg;
 	public SnowmadaDbAdapter db;	
-	 public DisplayImageOptions options;
+	public DisplayImageOptions options;
     protected ImageLoader imageLoader = ImageLoader.getInstance();
-    private boolean instanceStateSaved;
+   
     
     
+    
+    
+
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		db = SnowmadaDbAdapter.databaseHelperInstance(this);
+	}
 
 	@Override
 	protected void onStart() {
@@ -45,7 +53,7 @@ public class BaseView extends FragmentActivity implements IBase,OnClickListener,
 		    StrictMode.setThreadPolicy(policy);
 		}
 		myApp = (SnomadaApp) getApplication();
-		db = SnowmadaDbAdapter.databaseHelperInstance(this);
+		
 		if(!myApp.inIt){
 			myApp.inIt = true;
 			myApp.setAppInfo(new AppInfo(this));

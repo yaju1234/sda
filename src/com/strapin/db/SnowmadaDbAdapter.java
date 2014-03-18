@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
 
 public class SnowmadaDbAdapter {
 	
@@ -337,15 +338,19 @@ public long insertSkiPetrolInfo(final String patrolerid,final String FirstName,f
 }
 
 public Patrol getSkiPetrolInfo(){
+	Log.e("Reach", "Reach");
+	Toast.makeText(sContext, "Reach", 1000).show();
 	Patrol p = null;
 	Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_SKIPETROL, null);		
 	if(cursor.getCount()>0){
+		Log.e("Cursor greater than 0", "Cursor greater than 0");
 		cursor.moveToFirst();
 		while(!cursor.isAfterLast()){
 			p = new Patrol(cursor.getString(1), cursor.getString(2), cursor.getString(3));
 			cursor.moveToNext();
 		}
 	}
+	Log.e("Cursor greater than 0", "!!!!!Cursor greater than 0");
 	cursor.close();
 	return p;
 }

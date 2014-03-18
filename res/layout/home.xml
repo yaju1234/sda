@@ -96,7 +96,6 @@
         android:background="@drawable/menu_bg" >
 
         <LinearLayout
-            android:id="@+id/bottom_menu"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_centerHorizontal="true"
@@ -109,6 +108,7 @@
                 android:layout_height="fill_parent"
                android:textSize="18sp" 
                android:gravity="center"
+               android:background="@null"
                android:textStyle="bold"
                />
         </LinearLayout>
