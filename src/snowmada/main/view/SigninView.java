@@ -1,7 +1,9 @@
 package snowmada.main.view;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.facebook.*;
 import com.facebook.model.GraphObject;
@@ -16,7 +19,6 @@ import com.facebook.model.GraphUser;
 import com.facebook.widget.*;
 import com.strapin.Enum.URL;
 import com.strapin.global.Constants;
-import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
 
 import org.json.JSONArray;
@@ -332,6 +334,8 @@ public class SigninView extends BaseView {
     	}
     	return flg;
     }
+    
+  
     
    
 }
