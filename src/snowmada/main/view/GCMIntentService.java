@@ -10,6 +10,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.util.Log;
 import com.google.android.gcm.GCMBaseIntentService;
@@ -24,6 +25,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 	private static LocationManager locationManager;
 	public static SnomadaApp app = null;
 	 public static String weiw_message = null;
+	 public static SharedPreferences sharedPreferences;
+	 public static boolean isAppForeground = false;
 
     public GCMIntentService() {
         super(SENDER_ID);
@@ -32,7 +35,9 @@ public class GCMIntentService extends GCMBaseIntentService {
   @Override
     protected void onRegistered(Context context, String registrationId) {
     	app = (SnomadaApp) getApplication();
-        Log.i(TAG, "Device registered: regId = " + registrationId);
+    	sharedPreferences = context.getSharedPreferences(Constants.Settings.GLOBAL_SETTINGS.name(), Context.MODE_PRIVATE);
+    	isAppForeground = sharedPreferences.getBoolean(Constants.Settings.APP_FOREGROUND.name(), isAppForeground);
+    	Log.i(TAG, "Device registered: regId = " + registrationId);
         displayMessage(context, "Your device registred with GCM");
         ServerUtilities.register(context, registrationId,app.getAppInfo().userId);
     }
@@ -83,27 +88,27 @@ public class GCMIntentService extends GCMBaseIntentService {
 			
 			if (status==Constants.TRACKING_PUSH_NOTIFICATION) {
 				TrackLocation.createInstance(context,app);
-				String noti_msg = json.getString("message");
-				locationManager = (LocationManager) context	.getSystemService(Context.LOCATION_SERVICE);
-					Intent notificationIntent = new Intent(context,	HomeView.class);
+				String noti_msg                         = json.getString("message");
+				locationManager                         = (LocationManager) context	.getSystemService(Context.LOCATION_SERVICE);
+					Intent notificationIntent           = new Intent(context,	HomeView.class);
 					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-					PendingIntent intent = PendingIntent.getActivity(context,0, new Intent(), 0);
+					PendingIntent intent                = PendingIntent.getActivity(context,0, new Intent(), 0);
 					showNotification(context, noti_msg,intent);
 				
 			}else if (status==Constants.SKI_PATROL_PUSH_NOTIFICATION) {
-				if(!app.getAppInfo().isAppForeground){
-					String patroler_id = json.getString("patroler_id");
-					String latitude = json.getString("lat");
-					String longitude = json.getString("lng");
-					String fname = json.getString("fname");
-					String lname = json.getString("lname");
+				isAppForeground = sharedPreferences.getBoolean(Constants.Settings.APP_FOREGROUND.name(), isAppForeground);
+				if(!isAppForeground){
+					String patroler_id                  = json.getString("patroler_id");
+					String latitude                     = json.getString("lat");
+					String longitude                    = json.getString("lng");
+					String fname                        = json.getString("fname");
+					String lname                        = json.getString("lname"); 					
 					
-					
-						SnowmadaDbAdapter mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(context);
+					SnowmadaDbAdapter mDbAdapter        = SnowmadaDbAdapter.databaseHelperInstance(context);
 						if (mDbAdapter.getSkiPetrolRowCount() > 0) {
-							mDbAdapter.updateSkiPetrolInfo(patroler_id,fname, lname, latitude,	longitude);
+							    mDbAdapter.updateSkiPetrolInfo(patroler_id,fname, lname, latitude,	longitude);
 						} else {
-							mDbAdapter.insertSkiPetrolInfo(patroler_id,fname, lname, latitude,longitude);
+							   mDbAdapter.insertSkiPetrolInfo(patroler_id,fname, lname, latitude,longitude);
 						}
 						Intent intent = new Intent(	"SKI_PATROL_INTENT");				
 						context.sendBroadcast(intent);
@@ -114,10 +119,10 @@ public class GCMIntentService extends GCMBaseIntentService {
 				
 				
 			}else  if(status==Constants.CHAT_PUSH_NOTIFICATION) {
-				 String msg = json.getString("chatmessage");
-				 String name = json.getString("name");
+				 String msg          = json.getString("chatmessage");
+				 String name         = json.getString("name");
 				 String sender_fb_id = json.getString("sender_fb_id");				 
-				 weiw_message = name+":"+msg;				 
+				 weiw_message        = name+":"+msg;				 
 				if(app.getAppInfo().isAppForeground){					
 					if(app.isChatActive){
 						if(!name.equalsIgnoreCase(app.IMname)){// Third person ping							
@@ -152,12 +157,12 @@ public class GCMIntentService extends GCMBaseIntentService {
 						
 				}
 			}else if(status==Constants.FRIEND_REQUEST_COME_PUSH_NOTIFICATION){//Status five for current friend request receive
-				 String sender_id = json.getString("senderid");
-				 String sender_name = json.getString("sendername");
-				 String msg = "send friend request";				 
-				 weiw_message = sender_name+" "+msg;				 
-				    PendingIntent intent = PendingIntent.getActivity(context,0, new Intent() , 0);					
-				   showNotification(context, weiw_message,intent);				 
+				 String sender_id          = json.getString("senderid");
+				 String sender_name        = json.getString("sendername");
+				 String msg                = "send friend request";				 
+				 weiw_message              = sender_name+" "+msg;				 
+				 PendingIntent intent      = PendingIntent.getActivity(context,0, new Intent() , 0);					
+				    showNotification(context, weiw_message,intent);				 
 			 }else if(status==Constants.FRIEND_REQUEST_ACCEPT_PUSH_NOTIFICATION){//Request acknowledgment				
 				 app.isWebServiceCallForRefreshFriendList = true;
 				 String friend_name = json.getString("friend_name");
@@ -173,7 +178,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 				 String lat = json.getString("lat");
 				 String lng = json.getString("lng");
 				 weiw_message = msg+" "+name;
-				 if(!app.getAppInfo().isAppForeground){
+				 isAppForeground = sharedPreferences.getBoolean(Constants.Settings.APP_FOREGROUND.name(), isAppForeground);
+				 if(!isAppForeground){
 					 SnowmadaDbAdapter mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(context);
 					 mDbAdapter.insertMeetUpInfo(lat, lng, "1");
 				 }				

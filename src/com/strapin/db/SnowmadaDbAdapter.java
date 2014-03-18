@@ -339,7 +339,6 @@ public long insertSkiPetrolInfo(final String patrolerid,final String FirstName,f
 
 public Patrol getSkiPetrolInfo(){
 	Log.e("Reach", "Reach");
-	Toast.makeText(sContext, "Reach", 1000).show();
 	Patrol p = null;
 	Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_SKIPETROL, null);		
 	if(cursor.getCount()>0){

@@ -247,6 +247,7 @@ public class SigninView extends BaseView {
 				request.put("password", et_password.getText().toString().trim());
 				request.put("usertype", "N");
 		  	}
+		  	Log.e("REQUEST=========>>>", request.toString());
 		  		JSONObject response = KlHttpClient.SendHttpPost(URL.LOGIN.getUrl(), request);
 		  		Log.e(TAG, "Sign in response=====>>"+response.toString());
 		  		if(response!=null){

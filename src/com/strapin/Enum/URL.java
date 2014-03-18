@@ -6,7 +6,7 @@ public enum URL {
 	COUNT_PENDING_FRIEND("http://clickfordevelopers.com/demo/snowmada/count_pending_friend.php"),
 	ADD_FRIEND("http://clickfordevelopers.com/demo/snowmada/add_friend_request.php"),
 	STATUS_TRACK_TOOGLE("http://clickfordevelopers.com/demo/snowmada/change_track.php"),
-	ACCEPT_FRIEND_REQ("http://clickfordevelopers.com/demo/snowmada/change_track.php"),
+	ACCEPT_FRIEND_REQ("http://clickfordevelopers.com/demo/snowmada/accept_friend.php"),
 	MESSAGE("http://clickfordevelopers.com/demo/snowmada/new_chat_history.php"),
 	ACTIVE_APP_USERS("http://clickfordevelopers.com/demo/snowmada/app_user.php"),
 	ADD_MEET_UP_LOCATION("http://clickfordevelopers.com/demo/snowmada/add_meet_up.php"),

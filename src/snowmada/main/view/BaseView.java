@@ -30,11 +30,7 @@ public class BaseView extends FragmentActivity implements IBase,OnClickListener,
 	public ProgressDialog prsDlg;
 	public SnowmadaDbAdapter db;	
 	public DisplayImageOptions options;
-    protected ImageLoader imageLoader = ImageLoader.getInstance();
-   
-    
-    
-    
+    protected ImageLoader imageLoader = ImageLoader.getInstance();  
     
 
 	@Override

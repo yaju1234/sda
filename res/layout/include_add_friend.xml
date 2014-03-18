@@ -110,9 +110,9 @@
                                         android:background="@drawable/request_notify"
                                         android:gravity="center|top"
                                         android:paddingTop="3dp"
-                                        android:text="12"
+                                        android:text="0"
                                         android:textColor="@color/white"
-                                        android:visibility="gone"
+                                        android:visibility="visible"
                                         android:textSize="12sp" />
 
                                     <Button
