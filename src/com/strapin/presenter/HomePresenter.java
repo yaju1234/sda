@@ -46,19 +46,19 @@ public class HomePresenter implements IHome.Presenter {
 	private FriendAdapter friendlistAdapter;
 	private Double mLat;
 	private Double mLng;
-	public String trackingpersionname;
+	public  String trackingpersionname;
 	private Marker marker;
-	public boolean TrackDurationControllFlag = false;
+	public  boolean TrackDurationControllFlag = false;
 	private Handler handler = new Handler();
 	private Runnable runnable;
 	private long lastUsed;
 	private long idle = 0;
 	private ChatAdapter mChatAdapter;
 	private FriendRequestAdapter mRequestAdapter;
-	public static int COUNT = 0;
-	public int deletedPos = -1;
-	public boolean isTracking = true;
-	public boolean isFriendListFetched = false;
+	public  static int COUNT = 0;
+	public  int deletedPos = -1;
+	public  boolean isTracking = true;
+	public  boolean isFriendListFetched = false;
 	private String TAG = "SNOMADA";
 
 	private ArrayList<FriendRequestBean> mRequestArr = new ArrayList<FriendRequestBean>();
@@ -325,9 +325,7 @@ public class HomePresenter implements IHome.Presenter {
 	public class GetFriendListWeb extends AsyncTask<String, Void, Boolean> {
 		protected void onPreExecute() {
 			 mHomeView.showProgressDailog();
-			//Toast.makeText(mHomeView, "Call friend List", 1000).show();
-			Log.i("Friend List web service call Strat=====>",
-					"Friend List web service call Strat");
+			
 		}
 
 		@Override

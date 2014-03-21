@@ -102,11 +102,10 @@ import com.strapin.adapter.DealsAdapter;
 import com.strapin.adapter.InviteFriendAdapter;
 import com.strapin.adapter.OfflineMessageAdapter;
 import com.strapin.application.SnomadaApp;
-import com.strapin.bean.AddFriendBean;
+import com.strapin.bean.AppUserInfoBean;
 import com.strapin.bean.ChatBean;
 import com.strapin.bean.DealsBean;
-import com.strapin.bean.FacebookFriendBean;
-import com.strapin.bean.InviteFriendBean;
+import com.strapin.bean.AppusersBean;
 import com.strapin.bean.MeetUpBean;
 import com.strapin.bean.NewMessage;
 import com.strapin.bean.Patrol;
@@ -136,6 +135,9 @@ public class HomeView extends BaseView implements IHome {
 	public TextView      lblDlgDisplayTime;
 	public TextView      tvDisplayDate;
 	public TextView      tv_profile_title;
+	public TextView      tvTitleLocalDeals;
+	
+	private TextView     tvTitleTab;
 
 	private EditText      mSearchAddFriend;
 	private EditText      et_search_invite_friend;
@@ -185,19 +187,19 @@ public class HomeView extends BaseView implements IHome {
 	private ImageView mUserImage;
 	private ImageView mProfileImage;
 	private ImageView mIvSkyPatrol;
-	private ImageView mTabSElectImage;
+	
 
 	private Dialog menu_dialog, meetupUserDlg;
 
 	private ArrayList<DealsBean> mDealsArr                     = new ArrayList<DealsBean>();
-	private ArrayList<AddFriendBean> mAddFriendArr             = new ArrayList<AddFriendBean>();
-	private ArrayList<AddFriendBean> mAddFriendSearchArr       = new ArrayList<AddFriendBean>();
+	private ArrayList<AppUserInfoBean> mAddFriendArr             = new ArrayList<AppUserInfoBean>();
+	private ArrayList<AppUserInfoBean> mAddFriendSearchArr       = new ArrayList<AppUserInfoBean>();
 
-	private ArrayList<InviteFriendBean> mInviteFriendArr       = new ArrayList<InviteFriendBean>();
-	private ArrayList<InviteFriendBean> mInviteFriendSearchArr = new ArrayList<InviteFriendBean>();
-	private ArrayList<FacebookFriendBean> facebookfriend       = new ArrayList<FacebookFriendBean>();
-	private ArrayList<String> mAppUserFriend                   = new ArrayList<String>();
-	private ArrayList<NewMessage> msg                          = new ArrayList<NewMessage>();
+	private ArrayList<AppUserInfoBean> mInviteFriendArr       = new ArrayList<AppUserInfoBean>();
+	private ArrayList<AppUserInfoBean> mInviteFriendSearchArr = new ArrayList<AppUserInfoBean>();
+	private ArrayList<AppusersBean> mContactList           = new ArrayList<AppusersBean>();
+	private ArrayList<AppUserInfoBean> mAppUserList           = new ArrayList<AppUserInfoBean>();
+	private ArrayList<NewMessage> msg                         = new ArrayList<NewMessage>();
 
 	private DealsAdapter mAdapter;
 	private AddFriendAdapter mAddFriendAdapter;
@@ -338,6 +340,8 @@ public class HomeView extends BaseView implements IHome {
 		lblUserName             = (TextView) findViewById(R.id.tv_home_view_user_name);
 		lblActiveChatFriend     = (TextView) findViewById(R.id.tv_chat_friend);
 		lblCountPendingReq      = (TextView) findViewById(R.id.tv_pending_req_counter);
+		tvTitleLocalDeals       = (TextView) findViewById(R.id.text_local_deals);
+		tvTitleLocalDeals.setText(Html.fromHtml("<font color=\"#ffffff\">LOCAL&nbsp;&nbsp;</font><font color=\"#28b6ff\">DEALS</font>"));
 		btnMenu                 = (Button) findViewById(R.id.tv_menu_bottom);
 		btnMenu.setText(Html.fromHtml("<font color=\"#ffffff\">ME</font><font color=\"#28b6ff\">NU</font>"));
 		tv_profile_title        = (TextView)findViewById(R.id.tv_profile_title_text);
@@ -355,7 +359,7 @@ public class HomeView extends BaseView implements IHome {
 		mEtInputChatMsg         = (EditText) findViewById(R.id.et_input_chat_msg);
 
 		mUserImage              = (ImageView) findViewById(R.id.user_image);
-		mTabSElectImage         = (ImageView) findViewById(R.id.add_friend_text);
+		tvTitleTab              = (TextView) findViewById(R.id.add_friend_text);
 		mIvSkyPatrol            = (ImageView) findViewById(R.id.iv_ski_patrol);
 		mProfileImage           = (ImageView) findViewById(R.id.profile_page_image);
 
@@ -408,10 +412,10 @@ public class HomeView extends BaseView implements IHome {
 				int textLength = searchString.length();
 				mAddFriendSearchArr.clear();
 				for (int i = 0; i < mAddFriendArr.size(); i++) {
-					String retailerName = mAddFriendArr.get(i).getName();
+					String retailerName = mAddFriendArr.get(i).getFirstName()+" "+mAddFriendArr.get(i).getLastName();
 					if (textLength <= retailerName.length()) {
 						if (searchString.equalsIgnoreCase(retailerName.substring(0, textLength))) {
-							mAddFriendSearchArr.add(new AddFriendBean(mAddFriendArr.get(i).getFriendId(),mAddFriendArr.get(i).getName()));
+							mAddFriendSearchArr.add(new AppUserInfoBean(mAddFriendArr.get(i).getId(),mAddFriendArr.get(i).getEmail(),mAddFriendArr.get(i).getFirstName(),mAddFriendArr.get(i).getLastName(),mAddFriendArr.get(i).getImage(),mAddFriendArr.get(i).getUserType(),mAddFriendArr.get(i).getPhone()));
 						}
 					}
 				}
@@ -428,10 +432,10 @@ public class HomeView extends BaseView implements IHome {
 				int textLength = searchString.length();
 				mInviteFriendSearchArr.clear();
 				for (int i = 0; i < mInviteFriendArr.size(); i++) {
-					String retailerName = mInviteFriendArr.get(i).getName();
+					String retailerName = mInviteFriendArr.get(i).getFirstName()+" "+mInviteFriendArr.get(i).getLastName();
 					if (textLength <= retailerName.length()) {
 						if (searchString.equalsIgnoreCase(retailerName.substring(0, textLength))) {
-							mInviteFriendSearchArr.add(new InviteFriendBean(mInviteFriendArr.get(i).getFacebookId(),mInviteFriendArr.get(i).getName()));
+							mInviteFriendSearchArr.add(new AppUserInfoBean(mInviteFriendArr.get(i).getId(),mInviteFriendArr.get(i).getEmail(),mInviteFriendArr.get(i).getFirstName(),mInviteFriendArr.get(i).getLastName(),mInviteFriendArr.get(i).getImage(),mInviteFriendArr.get(i).getUserType(),mInviteFriendArr.get(i).getPhone()));
 						}
 					}
 				}
@@ -489,7 +493,7 @@ public class HomeView extends BaseView implements IHome {
 		presenter.getFriendList();
 		createMenuDialog();
 		setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE,	View.VISIBLE, View.GONE, View.INVISIBLE, View.INVISIBLE,View.INVISIBLE, View.VISIBLE, View.INVISIBLE, View.INVISIBLE,false, false, false, TRACK_FRIENDS);
-		setFriendTab(1, View.VISIBLE, View.GONE, View.GONE, View.VISIBLE,	View.GONE, R.drawable.tab_select, R.drawable.tab_unselect,	R.drawable.tab_unselect, "#00ccff", "#ffffff", "#ffffff",R.drawable.add_friend_text);
+		setFriendTab(1, View.VISIBLE, View.GONE, View.GONE, View.VISIBLE,	View.GONE, R.drawable.tab_select, R.drawable.tab_unselect,	R.drawable.tab_unselect, "#00ccff", "#ffffff", "#ffffff","ADD", "FRIENDS");
 		myApp.isWebServiceCallForRefreshFriendList = false;
 		Global.isZoom = true;
 
@@ -692,7 +696,7 @@ public class HomeView extends BaseView implements IHome {
 				@Override
 				public void onClick(View v) {
 					menu_dialog.dismiss();
-					setLayoutVisibility(View.GONE, View.VISIBLE, View.GONE,	View.GONE, View.VISIBLE, View.GONE, View.INVISIBLE,	View.INVISIBLE, View.VISIBLE, View.INVISIBLE,View.INVISIBLE, View.INVISIBLE, false, false,false, GOOD_DEALS);
+					setLayoutVisibility(View.GONE, View.VISIBLE, View.GONE,	View.GONE, View.GONE, View.GONE, View.INVISIBLE,	View.INVISIBLE, View.VISIBLE, View.INVISIBLE,View.INVISIBLE, View.INVISIBLE, false, false,false, GOOD_DEALS);
 				}
 			});
 			ll_track.setOnClickListener(new OnClickListener() {
@@ -725,7 +729,17 @@ public class HomeView extends BaseView implements IHome {
 			HomeView.this.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
 			int height = displaymetrics.heightPixels;
 			int width = displaymetrics.widthPixels;
-			if (width > 320 && height > 480) {
+			
+			
+	         WindowManager.LayoutParams wmlp = menu_dialog.getWindow().getAttributes();
+	         wmlp.gravity = Gravity.TOP | Gravity.LEFT;
+	         wmlp.x = (int)(width*0.142);   //x position
+	         wmlp.y = height;   //y position
+	         menu_dialog.show();
+			
+			
+			
+			/*if (width > 320 && height > 480) {
 				Window sleepWindow = menu_dialog.getWindow();
 				WindowManager.LayoutParams lp = sleepWindow.getAttributes();
 				lp.gravity = Gravity.BOTTOM;
@@ -736,8 +750,8 @@ public class HomeView extends BaseView implements IHome {
 				lp.gravity = Gravity.BOTTOM;
 				sleepWindow.setAttributes(lp);
 
-			}
-			menu_dialog.show();
+			}*/
+			//menu_dialog.show();
 
 		}
 	
@@ -751,13 +765,13 @@ public class HomeView extends BaseView implements IHome {
 	public void setFriendView(int i) {
 		switch (i) {
 		case BUTTON_ADD_FRIEND:
-			    setFriendTab(1, View.VISIBLE, View.GONE, View.GONE, View.VISIBLE,View.GONE, R.drawable.tab_select, R.drawable.tab_unselect,R.drawable.tab_unselect, "#00ccff", "#ffffff", "#ffffff",R.drawable.add_friend_text);
+			    setFriendTab(1, View.VISIBLE, View.GONE, View.GONE, View.VISIBLE,View.GONE, R.drawable.tab_select, R.drawable.tab_unselect,R.drawable.tab_unselect, "#00ccff", "#ffffff", "#ffffff","ADD", "FRIENDS");
 			break;
 		case BUTTON_INVITE_FRIEND:
-			    setFriendTab(2, View.GONE, View.VISIBLE, View.GONE, View.GONE,	View.VISIBLE, R.drawable.tab_unselect,R.drawable.tab_select, R.drawable.tab_unselect, "#ffffff",	"#00ccff", "#ffffff", R.drawable.add_friend_text);
+			    setFriendTab(2, View.GONE, View.VISIBLE, View.GONE, View.GONE,	View.VISIBLE, R.drawable.tab_unselect,R.drawable.tab_select, R.drawable.tab_unselect, "#ffffff",	"#00ccff", "#ffffff", "INVITE", "FRIENDS");
 			break;
 		case BUTTON_PENDING_REQUEST:
-			    setFriendTab(3, View.GONE, View.GONE, View.VISIBLE, View.GONE,	View.GONE, R.drawable.tab_unselect,	R.drawable.tab_unselect, R.drawable.tab_select, "#ffffff","#ffffff", "#00ccff", R.drawable.requests_friend_text);
+			    setFriendTab(3, View.GONE, View.GONE, View.VISIBLE, View.GONE,	View.GONE, R.drawable.tab_unselect,	R.drawable.tab_unselect, R.drawable.tab_select, "#ffffff","#ffffff", "#00ccff", "REQ", "ESTS");
 			presenter.getFriendRequest();
 			break;
 		}
@@ -1375,12 +1389,12 @@ public class HomeView extends BaseView implements IHome {
 
 				JSONObject jsonObject = new JSONObject();
 				jsonObject.put("fbid", myApp.getAppInfo().userId);
-				JSONObject json = KlHttpClient.SendHttpPost(URL.MEET_UP_MERKER_LIST.getUrl(), jsonObject);
+				JSONObject json          = KlHttpClient.SendHttpPost(URL.MEET_UP_MERKER_LIST.getUrl(), jsonObject);
 				Log.e(TAG, json.toString());
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+				SimpleDateFormat sdf     = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 				Date date = new Date();
-				String _currentdate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
-				Date currentdate = sdf.parse(_currentdate);
+				String _currentdate      = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
+				Date currentdate         = sdf.parse(_currentdate);
 				meetupinfoarr.clear();
 				invalidMarkerIDs.clear();
 				deletedPos.clear();
@@ -1551,35 +1565,49 @@ public class HomeView extends BaseView implements IHome {
 		protected void onPostExecute(Integer result) {
 			Log.e("Count", ""+result);
 			if (result > 0) {
-				Log.e("Count12", ""+result);
 				lblCountPendingReq.setVisibility(View.VISIBLE);
 				lblCountPendingReq.setText("" + result);
-			}/* else {
+				
+			} else {
 				lblCountPendingReq.setVisibility(View.GONE);
-			}*/
+			}
 		}
 	}
 
-	public class AppUsers extends AsyncTask<String, Void, ArrayList<String>> {
+	public class AppUsers extends AsyncTask<String, Void, ArrayList<AppUserInfoBean>> {
 		protected void onPreExecute() {
 			showProgressDailog();
 		}
 
 		@Override
-		protected ArrayList<String> doInBackground(String... params) {
+		protected ArrayList<AppUserInfoBean> doInBackground(String... params) {
 			try {
 				JSONObject request = new JSONObject();
 				request.put("fbid", myApp.getAppInfo().userId);
+				request.put("usertype", myApp.getAppInfo().loginType);
 				JSONObject response = KlHttpClient.SendHttpPost(URL.ACTIVE_APP_USERS.getUrl(), request);
 				if (response.getBoolean("status")) {
 					JSONArray jsonArray = response.getJSONArray("app_users");
 					for (int i = 0; i < jsonArray.length(); i++) {
-						JSONObject c = jsonArray.getJSONObject(i);
-						String ids = c.getString("id");
-						mAppUserFriend.add(ids);
+						JSONObject c      = jsonArray.getJSONObject(i);
+						String ids        = c.getString("id");
+						String email      =  !c.isNull("email") ? c.getString("email"): "";											
+						String first_name = c.getString("first_name");
+						String last_name  = c.getString("last_name");
+																	
+						String user_type  = c.getString("user_type");
+						String image;
+						if(user_type.equalsIgnoreCase("F")){
+							 image      = !c.isNull("image")? URL.IMAGE_PATH.getUrl()+c.getString("image"): "https://graph.facebook.com/"+ids+"/picture" ;	
+						}else{
+							image      = !c.isNull("image")? URL.IMAGE_PATH.getUrl()+c.getString("image"): URL.IMAGE_PATH.getUrl()+"noimage.jpg" ;
+						}
+						
+						String phone      = !c.isNull("phone1")? c.getString("phone1"): "";						
+						mAppUserList.add(new AppUserInfoBean(ids,email, first_name,last_name,image, user_type,phone));
 					}
 				}
-				return mAppUserFriend;
+				return mAppUserList;
 
 			} catch (Exception e) {
 				dismissProgressDialog();
@@ -1589,35 +1617,73 @@ public class HomeView extends BaseView implements IHome {
 		}
 
 		@Override
-		protected void onPostExecute(ArrayList<String> appusersArr) {
+		protected void onPostExecute(ArrayList<AppUserInfoBean> appusersArr) {
 			dismissProgressDialog();
 			boolean flag = false;
 			if (appusersArr != null) {
-				facebookfriend = db.getFacebookFriends();
-				try {
-					for (int i = 0; i < facebookfriend.size(); i++) {
-						flag = false;
-						for (int j = 0; j < appusersArr.size(); j++) {
-							if (facebookfriend.get(i).getId().equalsIgnoreCase(appusersArr.get(j))) {
-								mAddFriendArr.add(new AddFriendBean(facebookfriend.get(i).getId(),	facebookfriend.get(i).getName()));
-								flag = true;
-								break;
+				if(myApp.getAppInfo().loginType.equalsIgnoreCase("F")){					
+					mContactList = db.getFacebookFriends();				
+					
+					try {
+						for (int i = 0; i < mContactList.size(); i++) {
+							flag = false;
+							for (int j = 0; j < appusersArr.size(); j++) {
+								if (mContactList.get(i).getId().equalsIgnoreCase(appusersArr.get(j).getId())) {
+									mAddFriendArr.add(new AppUserInfoBean(appusersArr.get(j).getId(),""	,appusersArr.get(j).getFirstName(),appusersArr.get(j).getLastName(),appusersArr.get(j).getImage(),"F",""));
+									flag = true;
+									break;
+								}
 							}
-						}
-						if (!flag) {
-							mInviteFriendArr.add(new InviteFriendBean(	facebookfriend.get(i).getId(),	facebookfriend.get(i).getName()));
-						}
+							if (!flag) {
+								mInviteFriendArr.add(new AppUserInfoBean(	mContactList.get(i).getId(),	"",mContactList.get(i).getName(),"","https://graph.facebook.com/"+mContactList.get(i).getId()+"/picture","F",""));
+							}
 
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
+				
+
+					mAddFriendAdapter = new AddFriendAdapter(HomeView.this,	R.layout.add_friend_row, mAddFriendArr);
+					mAddFriendList.setAdapter(mAddFriendAdapter);
+
+					mInviteFriendAdapter = new InviteFriendAdapter(HomeView.this,	R.layout.add_friend_row, mInviteFriendArr);
+					mLvInviteFriendList.setAdapter(mInviteFriendAdapter);
+				
+				}else{
+					
+					mContactList = db.getContact();				
+					
+					try {
+						for (int i = 0; i < mContactList.size(); i++) {
+							flag = false;
+							for (int j = 0; j < appusersArr.size(); j++) {
+								if (mContactList.get(i).getId().equalsIgnoreCase(appusersArr.get(j).getPhone())) {
+									Log.e("Contact NO.", mContactList.get(i).getId());
+									Log.e("Contact Name.", mContactList.get(i).getName());
+									mAddFriendArr.add(new AppUserInfoBean(appusersArr.get(j).getId(),""	,mContactList.get(i).getName(),"",appusersArr.get(j).getImage(),"N",mContactList.get(i).getId()));
+									flag = true;
+									break;
+								}
+							}
+							if (!flag) {
+								mInviteFriendArr.add(new AppUserInfoBean(	"",	"",mContactList.get(i).getName(),"",URL.IMAGE_PATH.getUrl()+"noimage.jpg","N",mContactList.get(i).getId()));
+							}
+
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				
+
+					mAddFriendAdapter = new AddFriendAdapter(HomeView.this,	R.layout.add_friend_row, mAddFriendArr);
+					mAddFriendList.setAdapter(mAddFriendAdapter);
+
+					mInviteFriendAdapter = new InviteFriendAdapter(HomeView.this,	R.layout.add_friend_row, mInviteFriendArr);
+					mLvInviteFriendList.setAdapter(mInviteFriendAdapter);
+				
+				
 				}
-
-				mAddFriendAdapter = new AddFriendAdapter(HomeView.this,	R.layout.add_friend_row, mAddFriendArr);
-				mAddFriendList.setAdapter(mAddFriendAdapter);
-
-				mInviteFriendAdapter = new InviteFriendAdapter(HomeView.this,	R.layout.add_friend_row, mInviteFriendArr);
-				mLvInviteFriendList.setAdapter(mInviteFriendAdapter);
 			}
 
 		}
@@ -1658,7 +1724,7 @@ public class HomeView extends BaseView implements IHome {
 			int addsearcglayoutview, int invitesearchlayoutview,
 			int drawableaddfriend, int drawableinvitefriend, int requestfriend,
 			String addfriendtextcolor, String invitefriendtextcolor,
-			String pendingreqtextcolor, int tabselectImage) {
+			String pendingreqtextcolor, String blueTxt, String whiteTxt) {
 		myApp.selectedTab = selectedTab;
 		mAddFriendList.            setVisibility(addfriendlistview);
 		mLvInviteFriendList.       setVisibility(invitefriendlistview);
@@ -1674,8 +1740,12 @@ public class HomeView extends BaseView implements IHome {
 		btnaddFriend.              setTextColor(Color.parseColor(addfriendtextcolor));
 		btnInviteFriend.           setTextColor(Color.parseColor(invitefriendtextcolor));
 		btnPendingReq.             setTextColor(Color.parseColor(pendingreqtextcolor));
-
-		mTabSElectImage.setBackgroundResource(tabselectImage);
+		if(blueTxt.equalsIgnoreCase("REQ")){
+			tvTitleTab.setText(Html	.fromHtml("<font color=\"#ffffff\">"+blueTxt+"</font><font color=\"#28b6ff\">"+whiteTxt+"</font>"));	
+		}else{
+			tvTitleTab.setText(Html	.fromHtml("<font color=\"#ffffff\">"+blueTxt+"&nbsp;&nbsp;</font><font color=\"#28b6ff\">"+whiteTxt+"</font>"));
+		}
+		
 	}
 
 	@Override
@@ -1741,41 +1811,35 @@ public class HomeView extends BaseView implements IHome {
 		uiHelper.onSaveInstanceState(outState);
 	}
 	
-	 public void sendRequestDialog(final String userId) {
-         Bundle params = new Bundle();       
-         params.putString("title", "Invite Friend");
-       /*  params.putString("message", "has invite has you to try out " +
-                 " https://play.google.com/store/apps/details?id=snowmada.main.view&hl=en");
-         // comma seperated list of facebook IDs to preset the recipients. If left out, it will show a Friend Picker.
-*/         params.putString("to",  userId);  // your friend id
+	 public void sendRequestDialog(final String userId) { Bundle params = new Bundle();       
+     params.putString("title", "Invite Friend");
+     params.putString("message", "https://play.google.com/store/apps/details?id=snowmada.main.view&hl=en");
+     // comma seperated list of facebook IDs to preset the recipients. If left out, it will show a Friend Picker.
+     params.putString("to",  userId);  // your friend id
 
-         WebDialog requestsDialog = ( new WebDialog.RequestsDialogBuilder(HomeView.this,  Session.getActiveSession(), params)).setOnCompleteListener(new OnCompleteListener() {
-
-					@Override
-					public void onComplete(Bundle values,	FacebookException error) {
-		                //   Auto-generated method stub                     
-		                if (error != null) {
-		                    if (error instanceof FacebookOperationCanceledException) {
-		                        Toast.makeText(HomeView.this.getApplicationContext(), "Request cancelled", Toast.LENGTH_SHORT).show();
-		                    } else {
-		                        Toast.makeText(HomeView.this.getApplicationContext(), "Network Error",  Toast.LENGTH_SHORT).show();
-		                    }
-		                } else {
-		                    final String requestId = values.getString("request");
-		                    if (requestId != null) {
-		                        Toast.makeText(HomeView.this.getApplicationContext(), "Request sent",  Toast.LENGTH_SHORT).show();
-		                        Log.i("TAG", " onComplete req dia ");                                   
-		                    } else {
-		                        Toast.makeText(HomeView.this.getApplicationContext(),  "Request cancelled", Toast.LENGTH_SHORT).show();
-		                    }
-		                }                   
-		            
-						
-					}
-           
-         }).build();
-         requestsDialog.show();
-     }
+     WebDialog requestsDialog = ( new WebDialog.RequestsDialogBuilder(HomeView.this,
+             Session.getActiveSession(), params)).setOnCompleteListener(new OnCompleteListener() {
+        @Override
+        public void onComplete(Bundle values, FacebookException error) {
+            //   Auto-generated method stub                     
+            if (error != null) {
+                if (error instanceof FacebookOperationCanceledException) {
+                    Toast.makeText(HomeView.this.getApplicationContext(), "Request cancelled", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(HomeView.this.getApplicationContext(),"Network Error",  Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                final String requestId = values.getString("request");
+                if (requestId != null) {
+                    Toast.makeText(HomeView.this.getApplicationContext(), "Request sent",  Toast.LENGTH_SHORT).show();
+                    Log.i("TAG", " onComplete req dia ");                                   
+                } else {
+                    Toast.makeText(HomeView.this.getApplicationContext(),"Request cancelled", Toast.LENGTH_SHORT).show();
+                }
+            }                   
+        }
+     }).build();
+     requestsDialog.show();}
 	 
 	 public static Uri getImageContentUri(Context context, File imageFile) {
 	        String filePath = imageFile.getAbsolutePath();
@@ -1792,8 +1856,7 @@ public class HomeView extends BaseView implements IHome {
 	            if (imageFile.exists()) {
 	                ContentValues values = new ContentValues();
 	                values.put(MediaStore.Images.Media.DATA, filePath);
-	                return context.getContentResolver().insert(
-	                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+	                return context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 	            } else {
 	                return null;
 	            }
@@ -1808,7 +1871,7 @@ public class HomeView extends BaseView implements IHome {
 				try {
 					HttpClient httpClient = new DefaultHttpClient();
 					HttpContext localContext = new BasicHttpContext();					
-				Log.e("Image path", "USRE ID "+myApp.getAppInfo().userId);
+				    Log.e("Image path", "USRE ID "+myApp.getAppInfo().userId);
 						HttpPost httpPost = new HttpPost("http://clickfordevelopers.com/demo/snowmada/update_profile.php");
 						MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);						
 						entity.addPart("file", new FileBody(new File(param[0])));
@@ -1861,7 +1924,7 @@ public class HomeView extends BaseView implements IHome {
 		         startActivityForResult(cropIntent, PIC_CROP);
 		    }
 		    catch (ActivityNotFoundException anfe) {
-		       String errorMessage = "Whoops - your device doesn't support the crop action!";
+		        String errorMessage = "Whoops - your device doesn't support the crop action!";
 		        Toast toast = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
 		        toast.show();
 		    }

@@ -3,9 +3,11 @@ package snowmada.main.view;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -72,7 +74,7 @@ public class SigninView extends BaseView {
         super.onCreate(savedInstanceState);
         
        
-        
+       
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);
       
@@ -83,6 +85,7 @@ public class SigninView extends BaseView {
         }
 
         setContentView(R.layout.signin);
+        getContactList();
 
         loginButton = (LoginButton) findViewById(R.id.login_button);
         mSignup = (Button)findViewById(R.id.btn_sign_up);
@@ -98,6 +101,7 @@ public class SigninView extends BaseView {
 			public void onClick(View v) {
 				if(fieldValidation()){
 					logintype = Constants.NORMAL_LOGIN;
+					myApp.getAppInfo().setLoginType("N"); //  Set Login type for normal login   NORMAIL LOGIN: N
 					showProgressDailog();
 					new SignInWeb().execute();
 				}
@@ -129,6 +133,7 @@ public class SigninView extends BaseView {
             public void onUserInfoFetched(GraphUser user) {
             	SigninView.this.user = user;
             	isUiUpdateCall = true;
+            	myApp.getAppInfo().setLoginType("F");//  Set Login type for facebook login   FACEBOOK LOGIN: F
                 updateUI();
                 handlePendingAction();
             }
@@ -243,11 +248,11 @@ public class SigninView extends BaseView {
 		  		request.put("lname", fb_lname);
 		  		request.put("usertype", "F");
 		  	}else{
-		  		request.put("email", et_username.getText().toString().trim());
+		  		request.put("user_id", et_username.getText().toString().trim());
 				request.put("password", et_password.getText().toString().trim());
 				request.put("usertype", "N");
 		  	}
-		  	Log.e("REQUEST=========>>>", request.toString());
+		  	Log.e(TAG, "SIGN in REQ===>>"+request.toString());
 		  		JSONObject response = KlHttpClient.SendHttpPost(URL.LOGIN.getUrl(), request);
 		  		Log.e(TAG, "Sign in response=====>>"+response.toString());
 		  		if(response!=null){
@@ -336,7 +341,29 @@ public class SigninView extends BaseView {
     	return flg;
     }
     
-  
-    
+    /**
+     *  Retrieve DISTINCT contact list with NAME and PHONE 
+     */    
+    public void getContactList(){
+    	Thread t = new Thread(){
+    		public void run(){
+    			String selection = ContactsContract.Contacts.IN_VISIBLE_GROUP + " = '" + ("1") + "'";
+    	        String sortOrder = ContactsContract.Contacts.DISPLAY_NAME  + " COLLATE LOCALIZED ASC";
+    	        Cursor phones    = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,selection,null, sortOrder);
+    	        if(db.getContactCount()>0){
+    	        	db.emptyContactTable();
+    	        }
+    	        while (phones.moveToNext())
+    	        {
+    	        	String name    = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));    
+    	        	String number  = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+    	            db.insertcontact(name, number);
+    	        }
+    		}
+    	};
+    	t.start();
+    	
+
+    }    
    
 }

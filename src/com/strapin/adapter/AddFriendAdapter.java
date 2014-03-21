@@ -12,6 +12,7 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -26,16 +27,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.strapin.Enum.URL;
-import com.strapin.bean.AddFriendBean;
+import com.strapin.bean.AppUserInfoBean;
 import com.strapin.network.KlHttpClient;
 
-public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
+public class AddFriendAdapter extends ArrayAdapter<AppUserInfoBean>{
 	
-	private ArrayList<AddFriendBean> mItems = new ArrayList<AddFriendBean>();
+	private ArrayList<AppUserInfoBean> mItems = new ArrayList<AppUserInfoBean>();
 	private ViewHolder mHolder;
 	private HomeView activity;
+	public String responseMsg;
 	
-	public AddFriendAdapter(HomeView activity, int textViewResourceId,	ArrayList<AddFriendBean> items) {
+	public AddFriendAdapter(HomeView activity, int textViewResourceId,	ArrayList<AppUserInfoBean> items) {
 		super(activity, textViewResourceId, items);
 		this.mItems = items;
 		this.activity =activity;		
@@ -86,9 +88,9 @@ public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
 					Button no = (Button)dialog.findViewById(R.id.btn_no);
 					no.setText(Html.fromHtml("<font color=\"#ffffff\">N</font><font color=\"#28b6ff\">O</font>"));
 					
-					name.setText(mItems.get(position).getName());
+					name.setText(mItems.get(position).getFirstName()+" "+mItems.get(position).getLastName());
 					isTrack.setChecked(true);
-					activity.imageLoader.DisplayImage(mItems.get(position).getFriendId()+"/picture",image);
+					activity.imageLoader.DisplayImage(mItems.get(position).getImage(),image);
 						
 					yes.setOnClickListener(new OnClickListener() {
 						
@@ -100,7 +102,7 @@ public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
 							}else{
 								status = 0;
 							}
-							new AddSnowmadaFriend().execute(mItems.get(position).getFriendId(),mItems.get(position).getName(),""+status);
+							new AddSnowmadaFriend().execute(mItems.get(position).getId(),mItems.get(position).getFirstName()+" "+mItems.get(position).getLastName(),""+status);
 							dialog.dismiss();
 						}
 					});
@@ -122,10 +124,10 @@ public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
 			}
 		});
 			
-		final AddFriendBean bean = mItems.get(position);
+		final AppUserInfoBean bean = mItems.get(position);
 		if(bean != null){
-			activity.imageLoader.DisplayImage("https://graph.facebook.com/"+bean.getFriendId()+"/picture",mHolder.image);
-			mHolder.name.setText(bean.getName());
+			activity.imageLoader.DisplayImage(bean.getImage(),mHolder.image);
+			mHolder.name.setText(bean.getFirstName());
 			
 		}		
 		return v;
@@ -155,23 +157,29 @@ public class AddFriendAdapter extends ArrayAdapter<AddFriendBean>{
 			  		JSONObject response = KlHttpClient.SendHttpPost(URL.ADD_FRIEND.getUrl(), request);
 			       if(response!=null){
 			    	   flg = response.getBoolean("status");
+			    	   responseMsg = response.getString("message");
+			    	   return flg;
 			       }
 			  	   	
 					
 				} catch (Exception e) {
 					activity.dismissProgressDialog();
-					flg = false;
 					e.printStackTrace();
 				}
-				return flg;
+				return null;
 			}
 			@Override
 			protected void onPostExecute(Boolean status) {
 				activity.dismissProgressDialog();
-				if(status){
-					Toast.makeText(activity, "Friend added successfully", Toast.LENGTH_LONG).show();
-				
+				if(status!=null){
+					Log.e("TAG", "=========================================");
+					if(status){					
+						Toast.makeText(activity, responseMsg, Toast.LENGTH_LONG).show();				
+					}else{
+						Toast.makeText(activity, responseMsg, Toast.LENGTH_LONG).show();
+					}
 				}
+				
 				
 			}	
 		}

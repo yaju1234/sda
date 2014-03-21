@@ -21,11 +21,13 @@
                     android:gravity="center"
                     android:orientation="vertical" >
 
-                    <ImageView
+                    <TextView
                         android:id="@+id/add_friend_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/add_friend_text" />
+                        android:textStyle="bold"
+                        android:textSize="15sp"
+                        android:text="ADD FRIENDS" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -100,20 +102,7 @@
                                     android:layout_width="fill_parent"
                                     android:layout_height="fill_parent" >
 
-                                    <TextView
-                                        android:id="@+id/tv_pending_req_counter"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_gravity="center|right"
-                                        android:layout_marginLeft="2dp"
-                                        android:layout_marginRight="3dp"
-                                        android:background="@drawable/request_notify"
-                                        android:gravity="center|top"
-                                        android:paddingTop="3dp"
-                                        android:text="0"
-                                        android:textColor="@color/white"
-                                        android:visibility="visible"
-                                        android:textSize="12sp" />
+                                  
 
                                     <Button
                                         android:id="@+id/btn_request"
@@ -126,6 +115,20 @@
                                         android:textColor="@color/white"
                                         android:textSize="15sp"
                                         android:textStyle="bold" />
+                                      <TextView
+                                        android:id="@+id/tv_pending_req_counter"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center|right"
+                                        android:layout_marginLeft="2dp"
+                                        android:layout_marginRight="3dp"
+                                        android:background="@drawable/request_notify"
+                                        android:gravity="center|top"
+                                        android:paddingTop="3dp"
+                                        android:text="0"
+                                        android:visibility="gone"
+                                        android:textColor="@color/white"
+                                        android:textSize="12sp" />
                                 </FrameLayout>
                             </LinearLayout>
                         </LinearLayout>
@@ -150,6 +153,18 @@
                    
                     android:orientation="horizontal"
                     android:visibility="visible" >
+                        
+                       <!--   <EditText
+                        android:id="@+id/et_input_key_for_search_add_friends"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:hint="Search"
+                        android:paddingLeft="15dp"
+                        style="@style/Holo.EditText"
+                        android:drawableRight="@drawable/search_icon"
+                        android:singleLine="true"
+                        android:textColor="#b9b9b9" /> -->
 
                     <EditText
                         android:id="@+id/et_input_key_for_search_add_friends"
