@@ -232,7 +232,7 @@ public class HomeView extends BaseView implements IHome {
 
 	public List<Integer> deletedPos                          = new ArrayList<Integer>();
 	public List<String> invalidMarkerIDs                     = new ArrayList<String>();
-	public ArrayList<MeetUpBean> meetupinfoarr               = new ArrayList<MeetUpBean>();
+	public ArrayList<MeetUpBean> meetUpInfoArr               = new ArrayList<MeetUpBean>();
 	public HashMap<Marker, String> markerIdHasMap            = new HashMap<Marker, String>();
 	public String current_selected_marker_id                 = "";
 	public int hour;
@@ -270,40 +270,40 @@ public class HomeView extends BaseView implements IHome {
 			super.handleMessage(msg);
 			switch (msg.what) {
 			case 1:
-				meetupinfoarr.get(updatepos).setName(myApp.getAppInfo().userFirstName + " "+ myApp.getAppInfo().userLastName);
-				meetupinfoarr.get(updatepos).setLocation(markersst[2]);
-				meetupinfoarr.get(updatepos).setDescription(markersst[3]);
-				meetupinfoarr.get(updatepos).setDate1(markersst[7]);
-				meetupinfoarr.get(updatepos).setTime(markersst[4]);
-				meetupinfoarr.get(updatepos).setLat(Double.parseDouble(markersst[5]));
-				meetupinfoarr.get(updatepos).setLng(Double.parseDouble(markersst[6]));
+				meetUpInfoArr.get(updatepos).setName(myApp.getAppInfo().userFirstName + " "+ myApp.getAppInfo().userLastName);
+				meetUpInfoArr.get(updatepos).setLocation(markersst[2]);
+				meetUpInfoArr.get(updatepos).setDescription(markersst[3]);
+				meetUpInfoArr.get(updatepos).setDate1(markersst[7]);
+				meetUpInfoArr.get(updatepos).setTime(markersst[4]);
+				meetUpInfoArr.get(updatepos).setLat(Double.parseDouble(markersst[5]));
+				meetUpInfoArr.get(updatepos).setLng(Double.parseDouble(markersst[6]));
 
 				map.clear();
 				mViewSlider.setVisibility(View.VISIBLE);
 				mViewSlider.setVisibility(View.GONE);
-				for (int i = 0; i < meetupinfoarr.size(); i++) {
-					if (meetupinfoarr.get(i).getOwner().equalsIgnoreCase("ME")) {
+				for (int i = 0; i < meetUpInfoArr.size(); i++) {
+					if (meetUpInfoArr.get(i).getOwner().equalsIgnoreCase("ME")) {
 						m   =  map.addMarker (new MarkerOptions()
-								.position (new LatLng(meetupinfoarr.get(i).getLat(), meetupinfoarr.get(i).getLng()))
-								.title ("Name:" + meetupinfoarr.get(i).getName())
-								.snippet ("Location:"+ meetupinfoarr.get(i).getLocation()
-								+ "\nDescription: "+ meetupinfoarr.get(i).getDescription()
-								+ "\nDate: "+ meetupinfoarr.get(i).getDate1()
-								+ "\nTime: "+ meetupinfoarr.get(i).getTime())
+								.position (new LatLng(meetUpInfoArr.get(i).getLat(), meetUpInfoArr.get(i).getLng()))
+								.title ("Name:" + meetUpInfoArr.get(i).getName())
+								.snippet ("Location:"+ meetUpInfoArr.get(i).getLocation()
+								+ "\nDescription: "+ meetUpInfoArr.get(i).getDescription()
+								+ "\nDate: "+ meetUpInfoArr.get(i).getDate1()
+								+ "\nTime: "+ meetUpInfoArr.get(i).getTime())
 								.icon (BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 						m.setDraggable(true);
-						markerIdHasMap.put(m, meetupinfoarr.get(i).getId());
+						markerIdHasMap.put(m, meetUpInfoArr.get(i).getId());
 					} else {
 						m  =   map.addMarker (new MarkerOptions()
-								.position (new LatLng(meetupinfoarr.get(i).getLat(), meetupinfoarr.get(i).getLng()))
-								.title ("Name:" + meetupinfoarr.get(i).getName())
-								.snippet ("Location:"+ meetupinfoarr.get(i).getLocation()
-								+ "\nDescription: "	+ meetupinfoarr.get(i).getDescription()
-								+ "\nDate: "+ meetupinfoarr.get(i).getDate1()
-								+ "\nTime: "+ meetupinfoarr.get(i).getTime())
+								.position (new LatLng(meetUpInfoArr.get(i).getLat(), meetUpInfoArr.get(i).getLng()))
+								.title ("Name:" + meetUpInfoArr.get(i).getName())
+								.snippet ("Location:"+ meetUpInfoArr.get(i).getLocation()
+								+ "\nDescription: "	+ meetUpInfoArr.get(i).getDescription()
+								+ "\nDate: "+ meetUpInfoArr.get(i).getDate1()
+								+ "\nTime: "+ meetUpInfoArr.get(i).getTime())
 								.icon (BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 						m.setDraggable (false);
-						markerIdHasMap.put (m, meetupinfoarr.get(i).getId());
+						markerIdHasMap.put (m, meetUpInfoArr.get(i).getId());
 					}
 				}
 				if (invalidMarkerIDs != null) {
@@ -585,11 +585,7 @@ public class HomeView extends BaseView implements IHome {
 			}
 		}
 		if (v == mUserImage) {
-			setLayoutVisibility(View.GONE, View.GONE, View.GONE,
-					View.VISIBLE, View.GONE, View.GONE,
-					View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
-					View.INVISIBLE, View.INVISIBLE, View.VISIBLE,
-					false, false, false, VIEW_PROFILE);
+			setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE, View.GONE, View.GONE,	View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	View.INVISIBLE, View.INVISIBLE, View.VISIBLE,false, false, false, VIEW_PROFILE);
 			Log.e(TAG, myApp.getAppInfo().image);
 			imageLoader.DisplayImage(myApp.getAppInfo().image,	mProfileImage);
 
@@ -597,7 +593,7 @@ public class HomeView extends BaseView implements IHome {
 		
 		if(v == mProfileImage){
 
-			 AlertDialog.Builder builder = new AlertDialog.Builder(HomeView.this);
+			AlertDialog.Builder builder = new AlertDialog.Builder(HomeView.this);
             builder.setCancelable(true);
             builder.setTitle("Updolad Image");
             builder.setInverseBackgroundForced(true);
@@ -721,7 +717,7 @@ public class HomeView extends BaseView implements IHome {
 				public void onClick(View v) {
 					menu_dialog.dismiss();
 					setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE, View.GONE, View.GONE,	View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	View.INVISIBLE, View.INVISIBLE, View.VISIBLE,false, false, false, VIEW_PROFILE);
-					imageLoader.DisplayImage("https://graph.facebook.com/"+ myApp.getAppInfo().userId + "/picture",mProfileImage);
+					imageLoader.DisplayImage(myApp.getAppInfo().image,mProfileImage);
 				}
 			});
 
@@ -730,32 +726,12 @@ public class HomeView extends BaseView implements IHome {
 			int height = displaymetrics.heightPixels;
 			int width = displaymetrics.widthPixels;
 			
-			
 	         WindowManager.LayoutParams wmlp = menu_dialog.getWindow().getAttributes();
 	         wmlp.gravity = Gravity.TOP | Gravity.LEFT;
 	         wmlp.x = (int)(width*0.142);   //x position
 	         wmlp.y = height;   //y position
-	         menu_dialog.show();
-			
-			
-			
-			/*if (width > 320 && height > 480) {
-				Window sleepWindow = menu_dialog.getWindow();
-				WindowManager.LayoutParams lp = sleepWindow.getAttributes();
-				lp.gravity = Gravity.BOTTOM;
-				sleepWindow.setAttributes(lp);
-			} else {
-				Window sleepWindow = menu_dialog.getWindow();
-				WindowManager.LayoutParams lp = sleepWindow.getAttributes();
-				lp.gravity = Gravity.BOTTOM;
-				sleepWindow.setAttributes(lp);
-
-			}*/
-			//menu_dialog.show();
-
+	         menu_dialog.show();		
 		}
-	
-
 	}
 
 	/*
@@ -772,7 +748,7 @@ public class HomeView extends BaseView implements IHome {
 			break;
 		case BUTTON_PENDING_REQUEST:
 			    setFriendTab(3, View.GONE, View.GONE, View.VISIBLE, View.GONE,	View.GONE, R.drawable.tab_unselect,	R.drawable.tab_unselect, R.drawable.tab_select, "#ffffff","#ffffff", "#00ccff", "REQ", "ESTS");
-			presenter.getFriendRequest();
+			    presenter.getFriendRequest();
 			break;
 		}
 	}
@@ -899,10 +875,7 @@ public class HomeView extends BaseView implements IHome {
 
 	public void getChatWindowActive(String friendName, String fbid) {
 		myApp.getAppInfo().isAppForeground = true;
-		setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE, View.GONE,
-				View.VISIBLE, View.GONE, View.INVISIBLE, View.VISIBLE,
-				View.INVISIBLE, View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,
-				false, false, true, CHAT_LIVE);
+		setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE, View.GONE,View.VISIBLE, View.GONE, View.INVISIBLE, View.VISIBLE,View.INVISIBLE, View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	false, false, true, CHAT_LIVE);
 		presenter.functionChat(fbid, friendName);
 		lblActiveChatFriend.setText(friendName);
 	}
@@ -926,11 +899,7 @@ public class HomeView extends BaseView implements IHome {
 		if (bundle != null) {
 			if (bundle.getString("event").equalsIgnoreCase("chat")) {
 				myApp.getAppInfo().isAppForeground = true;
-				setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE,
-						View.GONE, View.VISIBLE, View.GONE, View.INVISIBLE,
-						View.VISIBLE, View.INVISIBLE, View.INVISIBLE,
-						View.INVISIBLE, View.INVISIBLE, false, false, true,
-						CHAT_LIVE);
+				setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE,	View.GONE, View.VISIBLE, View.GONE, View.INVISIBLE,	View.VISIBLE, View.INVISIBLE, View.INVISIBLE,View.INVISIBLE, View.INVISIBLE, false, false, true,	CHAT_LIVE);
 
 				String sender_name = getIntent().getExtras().getString(	"sender_name");
 				String sender_fb_id = getIntent().getExtras().getString("sender_fb_id");
@@ -986,8 +955,7 @@ public class HomeView extends BaseView implements IHome {
 	public void getPushNotificationDeviceID() {
 		cd = new ConnectionDetector(getApplicationContext());
 		if (!cd.isConnectingToInternet()) {
-			alert.showAlertDialog(HomeView.this, "Internet Connection Error",
-					"Please connect to working Internet connection", false);
+			alert.showAlertDialog(HomeView.this, "Internet Connection Error","Please connect to working Internet connection", false);
 			return;
 		}
 
@@ -1032,11 +1000,11 @@ public class HomeView extends BaseView implements IHome {
 	@Override
 	public void onInfoWindowClick(Marker marker) {
 		current_selected_marker_id = markerIdHasMap.get(marker);
-		for (int i = 0; i < meetupinfoarr.size(); i++) {
-			if (current_selected_marker_id.equalsIgnoreCase(meetupinfoarr.get(i).getId())) {
-				if (meetupinfoarr.get(i).getOwner().equalsIgnoreCase("ME")) {
+		for (int i = 0; i < meetUpInfoArr.size(); i++) {
+			if (current_selected_marker_id.equalsIgnoreCase(meetUpInfoArr.get(i).getId())) {
+				if (meetUpInfoArr.get(i).getOwner().equalsIgnoreCase("ME")) {
 					myApp.isMeetuplocationEditTextEditable = true;
-					setMeetuplocationDialog(marker, current_selected_marker_id,	meetupinfoarr.get(i).getName(), meetupinfoarr.get(i).getLocation(), meetupinfoarr.get(i)	.getDescription(), meetupinfoarr.get(i)	.getDate1(),meetupinfoarr.get(i).getTime(), meetupinfoarr.get(i).getOwner());
+					setMeetuplocationDialog(marker, current_selected_marker_id,	meetUpInfoArr.get(i).getName(), meetUpInfoArr.get(i).getLocation(), meetUpInfoArr.get(i)	.getDescription(), meetUpInfoArr.get(i)	.getDate1(),meetUpInfoArr.get(i).getTime(), meetUpInfoArr.get(i).getOwner());
 				}
 				break;
 			}
@@ -1065,7 +1033,7 @@ public class HomeView extends BaseView implements IHome {
 							m.setDraggable(true);
 
 							current_time_in_millisecond = System.currentTimeMillis();
-							meetupinfoarr.add(new MeetUpBean(""	+ current_time_in_millisecond, "", "", "",	"", "", "ME", point.latitude,	point.longitude));
+							meetUpInfoArr.add(new MeetUpBean(""	+ current_time_in_millisecond, "", "", "",	"", "", "ME", point.latitude,	point.longitude));
 							markerIdHasMap.put(m, ""+ current_time_in_millisecond);
 
 						}
@@ -1122,27 +1090,27 @@ public class HomeView extends BaseView implements IHome {
 			final String meetupdesc, final String meetupdate,
 			final String meetuptime, final String owner) {
 
-		meetupUserDlg = new Dialog(HomeView.this);
+		meetupUserDlg        = new Dialog(HomeView.this);
 		meetupUserDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		meetupUserDlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 		meetupUserDlg.setContentView(R.layout.meetup_info_dialog);
-		Button submit = (Button) meetupUserDlg.findViewById(R.id.btn_submit);
+		Button submit        = (Button) meetupUserDlg.findViewById(R.id.btn_submit);
 		setCustomizeColorText(submit, "SUB", "MIT");
-		Button cancel = (Button) meetupUserDlg.findViewById(R.id.btn_cancel);
+		Button cancel        = (Button) meetupUserDlg.findViewById(R.id.btn_cancel);
 		setCustomizeColorText(cancel, "CAN", "CEL");
-		ImageView iv_date = (ImageView) meetupUserDlg	.findViewById(R.id.image_date);
-		ImageView clock = (ImageView) meetupUserDlg	.findViewById(R.id.image_clock);
-		tvDisplayDate = (TextView) meetupUserDlg.findViewById(R.id.tvDisplayDate1);
+		ImageView iv_date    = (ImageView) meetupUserDlg	.findViewById(R.id.image_date);
+		ImageView clock      = (ImageView) meetupUserDlg	.findViewById(R.id.image_clock);
+		tvDisplayDate        = (TextView) meetupUserDlg.findViewById(R.id.tvDisplayDate1);
 		tvDisplayDate.setText(meetupdate);
-		lblDlgDisplayTime = (TextView) meetupUserDlg.findViewById(R.id.tvDisplayTime1);
+		lblDlgDisplayTime    = (TextView) meetupUserDlg.findViewById(R.id.tvDisplayTime1);
 		lblDlgDisplayTime.setText(meetuptime);
-		final TextView name = (TextView) meetupUserDlg	.findViewById(R.id.ed_name);
+		final TextView name  = (TextView) meetupUserDlg	.findViewById(R.id.ed_name);
 		name.setText(myApp.getAppInfo().userFirstName + " "	+ myApp.getAppInfo().userLastName);
 		name.setClickable(myApp.isMeetuplocationEditTextEditable);
 		final EditText location = (EditText) meetupUserDlg	.findViewById(R.id.ed_location);
 		location.setText(meetuplocation);
 		location.setClickable(myApp.isMeetuplocationEditTextEditable);
-		final EditText desc = (EditText) meetupUserDlg	.findViewById(R.id.ed_desc);
+		final EditText desc     = (EditText) meetupUserDlg	.findViewById(R.id.ed_desc);
 		desc.setText(meetupdesc);
 		desc.setClickable(myApp.isMeetuplocationEditTextEditable);
 		clock.setClickable(myApp.isMeetuplocationEditTextEditable);
@@ -1194,10 +1162,10 @@ public class HomeView extends BaseView implements IHome {
 
 						try {
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-							Date date = new Date();
-							String _currentdate = new SimpleDateFormat(	"yyyy-MM-dd hh:mm:ss").format(date);
-							Date currentdate = sdf.parse(_currentdate);
-							Date scheduledate = sdf.parse(_date + " " + _time);
+							Date date            = new Date();
+							String _currentdate  = new SimpleDateFormat(	"yyyy-MM-dd hh:mm:ss").format(date);
+							Date currentdate     = sdf.parse(_currentdate);
+							Date scheduledate    = sdf.parse(_date + " " + _time);
 							if (scheduledate.compareTo(currentdate) < 0) {
 								Toast.makeText(getApplicationContext(),	"Plesase insert a valid Date&TIme",	Toast.LENGTH_LONG).show();
 							} else {
@@ -1306,9 +1274,9 @@ public class HomeView extends BaseView implements IHome {
 		public View getInfoWindow(final Marker marker) {
 			HomeView.this.m = marker;
 
-			final TextView tv_name = ((TextView) view.findViewById(R.id.tv_marker_name));
+			final TextView tv_name  = ((TextView) view.findViewById(R.id.tv_marker_name));
 			tv_name.setText(marker.getTitle());
-			final TextView tv_loc = ((TextView) view.findViewById(R.id.tv_marker_loc));
+			final TextView tv_loc   = ((TextView) view.findViewById(R.id.tv_marker_loc));
 			Log.e("Snippet ", marker.getSnippet());
 			tv_loc.setText(marker.getSnippet());
 			return view;
@@ -1387,15 +1355,15 @@ public class HomeView extends BaseView implements IHome {
 			boolean flg = false;
 			try {
 
-				JSONObject jsonObject = new JSONObject();
+				JSONObject jsonObject    = new JSONObject();
 				jsonObject.put("fbid", myApp.getAppInfo().userId);
 				JSONObject json          = KlHttpClient.SendHttpPost(URL.MEET_UP_MERKER_LIST.getUrl(), jsonObject);
-				Log.e(TAG, json.toString());
+				//Log.e(TAG, json.toString());
 				SimpleDateFormat sdf     = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 				Date date = new Date();
 				String _currentdate      = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
 				Date currentdate         = sdf.parse(_currentdate);
-				meetupinfoarr.clear();
+				meetUpInfoArr.clear();
 				invalidMarkerIDs.clear();
 				deletedPos.clear();
 				JSONArray jArr = json.getJSONArray("MeetList");
@@ -1412,13 +1380,13 @@ public class HomeView extends BaseView implements IHome {
 					double _lng          = Double.parseDouble(c.getString("lng"));
 					Date scheduledate    = sdf.parse(_date + " " + time);
 					if (currentdate.getTime() < (scheduledate.getTime() + 3600000)) {
-						meetupinfoarr.add(new MeetUpBean(_marker_id, _name,	_loc, _desc, _date, time, _identifier, _lat,_lng));
+						meetUpInfoArr.add(new MeetUpBean(_marker_id, _name,	_loc, _desc, _date, time, _identifier, _lat,_lng));
 					} else {
 						invalidMarkerIDs.add("" + _marker_id);
 					}
 
 				}
-				return meetupinfoarr;
+				return meetUpInfoArr;
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1431,11 +1399,8 @@ public class HomeView extends BaseView implements IHome {
 			super.onPostExecute(result);
 			if (result != null) {
 				for (int i = 0; i < result.size(); i++) {
-					Log.e("name", result.get(i).getName());
-					if (result.get(i).getOwner().equalsIgnoreCase("ME")) {
-						Log.e("Add snippet", "Location:"+ result.get(i).getLocation()
-								+ "\nDescription: "	+ result.get(i).getDescription() + "\nDate: "
-								+ result.get(i).getDate1() + "\nTime: "+ result.get(i).getTime());
+					
+					if (result.get(i).getOwner().equalsIgnoreCase("ME")) {						
 						m = map.addMarker(new MarkerOptions()
 								.position(new LatLng(result.get(i).getLat(),result.get(i).getLng()))
 								.title("Name:" + result.get(i).getName())
@@ -1516,8 +1481,8 @@ public class HomeView extends BaseView implements IHome {
 			if (result != null) {
 				int pos = -1;
 				String marker_id = result[0];
-				for (int i = 0; i < meetupinfoarr.size(); i++) {
-					if (marker_id.equalsIgnoreCase(meetupinfoarr.get(i).getId())) {
+				for (int i = 0; i < meetUpInfoArr.size(); i++) {
+					if (marker_id.equalsIgnoreCase(meetUpInfoArr.get(i).getId())) {
 						pos = i;
 						break;
 					}
@@ -1598,9 +1563,9 @@ public class HomeView extends BaseView implements IHome {
 						String user_type  = c.getString("user_type");
 						String image;
 						if(user_type.equalsIgnoreCase("F")){
-							 image      = !c.isNull("image")? URL.IMAGE_PATH.getUrl()+c.getString("image"): "https://graph.facebook.com/"+ids+"/picture" ;	
+							 image        = !c.isNull("image")? URL.IMAGE_PATH.getUrl()+c.getString("image"): "https://graph.facebook.com/"+ids+"/picture" ;	
 						}else{
-							image      = !c.isNull("image")? URL.IMAGE_PATH.getUrl()+c.getString("image"): URL.IMAGE_PATH.getUrl()+"noimage.jpg" ;
+							image         = !c.isNull("image")? URL.IMAGE_PATH.getUrl()+c.getString("image"): URL.IMAGE_PATH.getUrl()+"noimage.jpg" ;
 						}
 						
 						String phone      = !c.isNull("phone1")? c.getString("phone1"): "";						
@@ -1644,10 +1609,10 @@ public class HomeView extends BaseView implements IHome {
 					}
 				
 
-					mAddFriendAdapter = new AddFriendAdapter(HomeView.this,	R.layout.add_friend_row, mAddFriendArr);
+					mAddFriendAdapter     = new AddFriendAdapter(HomeView.this,	R.layout.add_friend_row, mAddFriendArr);
 					mAddFriendList.setAdapter(mAddFriendAdapter);
 
-					mInviteFriendAdapter = new InviteFriendAdapter(HomeView.this,	R.layout.add_friend_row, mInviteFriendArr);
+					mInviteFriendAdapter  = new InviteFriendAdapter(HomeView.this,	R.layout.add_friend_row, mInviteFriendArr);
 					mLvInviteFriendList.setAdapter(mInviteFriendAdapter);
 				
 				}else{
@@ -1769,9 +1734,9 @@ public class HomeView extends BaseView implements IHome {
 	           Cursor cursor             = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
 	           cursor.moveToFirst();
 	           int columnIndex           = cursor.getColumnIndex(filePathColumn[0]);
-	           String picturePath        = cursor.getString(columnIndex);
+	           String imagepath          = cursor.getString(columnIndex);
 	           cursor.close();
-	        
+	           performCrop(getImageContentUri(HomeView.this,new File(imagepath)));
 	            }
 	       
 	       if(requestCode == REQUEST_CODE_TAKE_PICTURE && resultCode == RESULT_OK && null != data){
@@ -1784,7 +1749,7 @@ public class HomeView extends BaseView implements IHome {
 			   performCrop(getImageContentUri(HomeView.this,new File(imagepath)));
 			}
 	       
-	       else if (requestCode == PIC_CROP && resultCode == RESULT_OK && null != data) {
+	        if (requestCode == PIC_CROP && resultCode == RESULT_OK && null != data) {
    	        Bundle extras = data.getExtras();
 	        Bitmap yourSelectedImage = extras.getParcelable("data");
 	        doSaveNewImage(yourSelectedImage);

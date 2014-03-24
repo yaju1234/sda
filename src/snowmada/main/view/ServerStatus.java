@@ -37,11 +37,19 @@ public class ServerStatus extends Service{
 		sharedPreferences = getApplicationContext().getSharedPreferences(Constants.Settings.GLOBAL_SETTINGS.name(), Context.MODE_PRIVATE);
 		userId = sharedPreferences.getString(Constants.Settings.USER_ID.name(), userId);
 		Log.e("Service created", "Service created");
-		doUpdateStatus();
+		
+	}
+	 
+	 
+
+
+	 @Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		 doUpdateStatus();
+		return START_STICKY;
 	}
 
-
-	 public void doUpdateStatus() {
+	public void doUpdateStatus() {
 		 	runnable = new Runnable(){
 			   public void run() {
 				    handler.postDelayed(runnable, TIME_SPAN);

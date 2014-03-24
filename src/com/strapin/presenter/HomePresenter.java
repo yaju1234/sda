@@ -59,7 +59,8 @@ public class HomePresenter implements IHome.Presenter {
 	public  int deletedPos = -1;
 	public  boolean isTracking = true;
 	public  boolean isFriendListFetched = false;
-	private String TAG = "SNOMADA";
+	private String TAG = "snomada";
+	public boolean isException = false;
 
 	private ArrayList<FriendRequestBean> mRequestArr = new ArrayList<FriendRequestBean>();
 
@@ -101,8 +102,7 @@ public class HomePresenter implements IHome.Presenter {
 		mHomeView.hideSlide().setVisibility(View.GONE);
 		final Dialog dialog = new Dialog(mHomeView);
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		dialog.getWindow().setBackgroundDrawable(
-				new ColorDrawable(android.graphics.Color.TRANSPARENT));
+		dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 		dialog.setContentView(R.layout.track_dialog);
 		dialog.setCancelable(true);
 		dialog.setCanceledOnTouchOutside(true);
@@ -283,9 +283,13 @@ public class HomePresenter implements IHome.Presenter {
 			try {
 				JSONObject request = new JSONObject();
 				request.put("fbid", params[0]);
-				Log.e("SKI JSON", "JSON===>"+request.toString());
+				Log.e(TAG, "JSON REQUEST===>"+request.toString());
 				JSONObject response = KlHttpClient.SendHttpPost(URL.SKI_PATROL.getUrl(), request);
-				return response.getBoolean("status");
+				Log.e(TAG, "JSON RESPONSE===>"+request.toString());
+				if(response!=null){
+					return response.getBoolean("status");
+				}
+				
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -393,9 +397,13 @@ public class HomePresenter implements IHome.Presenter {
 				Double lng = Double.valueOf(json.getString("lng"));
 				mLng = lng;
 
-			} catch (Exception e) {
-				// prsDlg.dismiss();
+			} catch (JSONException e) {
 				e.printStackTrace();
+				return false;
+			}catch(NumberFormatException e){
+				e.printStackTrace();
+				isException = true;
+				return false;
 			}
 			return params[0];
 		}
@@ -409,31 +417,25 @@ public class HomePresenter implements IHome.Presenter {
 					marker.remove();
 				}
 				if (mHomeView.myApp.doTrackFriendLocation) {
-					//Toast.makeText(mHomeView, "lat=" + mLat, 1000).show();
 					Log.d(TAG, TAG + "lat=" + mLat);
 					Log.d(TAG, TAG + "lat=" + mLng);
 					marker = mHomeView.getMap().addMarker(
 							new MarkerOptions()
 									.position(new LatLng(mLat, mLng))
 									.title("Name:" + trackingpersionname)
-									.snippet(
-											"Time:" + new Date().getHours()
+									.snippet("Time:" + new Date().getHours()
 													+ ":"
 													+ new Date().getMinutes()
 													+ ":"
 													+ new Date().getSeconds())
-									.snippet(
-											"Time:" + new Date().getHours()
+									.snippet("Time:" + new Date().getHours()
 													+ ":"
 													+ new Date().getMinutes()
 													+ ":"
 													+ new Date().getSeconds())
 									.icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
 					marker.showInfoWindow();
-					// Toast.makeText(mHomeView, "Zoom="+Global.isZoom,
-					// 1000).show();
 					if (Global.isZoom) {
-						//Toast.makeText(mHomeView, "Zoom=" + Global.isZoom, 1000).show();
 						mHomeView.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLat, mLng), 16));
 						Global.isZoom = false;
 					}
@@ -447,6 +449,17 @@ public class HomePresenter implements IHome.Presenter {
 					HandleTrackPeriod(); // Track 1 min duration control function
 				}
 
+			}else{
+				if(COUNT > 3 && isException){
+					isException = false;
+					mHomeView.getProgressBarLayout().setVisibility(View.GONE);
+					Toast.makeText(mHomeView, "Friends location error", Toast.LENGTH_LONG).show();
+					mHomeView.myApp.doTrackFriendLocation = false;
+					Log.e(TAG, TAG + "staus"+ mHomeView.myApp.doTrackFriendLocation);
+					COUNT = 0;
+					isTracking = true;
+				}
+				
 			}
 		}
 	}
@@ -459,8 +472,7 @@ public class HomePresenter implements IHome.Presenter {
 				jsonObject.put("fbid", mHomeView.myApp.getAppInfo().userId);
 				jsonObject.put("friend_fb_id", mHomeView.myApp.friendId);
 				Log.e("SendTrackNotification", jsonObject.toString());
-				JSONObject json = KlHttpClient.SendHttpPost(
-						URL.SEND_MESSAGE.getUrl(), jsonObject);
+				JSONObject json = KlHttpClient.SendHttpPost(URL.SEND_MESSAGE.getUrl(), jsonObject);
 
 			} catch (Exception e) {
 				// prsDlg.dismiss();
@@ -473,7 +485,10 @@ public class HomePresenter implements IHome.Presenter {
 
 	@Override
 	public void doSkiPatrolFunction() {
-		new SKIEmergencyButtonPressWeb().execute(mHomeView.myApp.getAppInfo().userId);
+		if(mHomeView.myApp.isNetworkConnected(mHomeView)){
+			new SKIEmergencyButtonPressWeb().execute(mHomeView.myApp.getAppInfo().userId);
+		}
+		
 
 	}
 
@@ -502,15 +517,12 @@ public class HomePresenter implements IHome.Presenter {
 		protected ArrayList<ChatBean> doInBackground(String... params) {
 			try {
 				JSONObject jsonObject = new JSONObject();
-				jsonObject.put("sender_fb_id",
-						mHomeView.myApp.getAppInfo().userId);
+				jsonObject.put("sender_fb_id",	mHomeView.myApp.getAppInfo().userId);
 				jsonObject.put("receiver_fb_id", params[0]);
-				jsonObject.put("sender_name",
-						mHomeView.myApp.getAppInfo().userFirstName);
+				jsonObject.put("sender_name",mHomeView.myApp.getAppInfo().userFirstName);
 				jsonObject.put("receiver_name", params[1]);
 
-				JSONObject json = KlHttpClient.SendHttpPost(
-						URL.CHAT_HISTORY.getUrl(), jsonObject);
+				JSONObject json = KlHttpClient.SendHttpPost(URL.CHAT_HISTORY.getUrl(), jsonObject);
 				Log.e("Received Chat history", json.toString());
 				if (json != null) {
 					Global.mChatArr.clear();
@@ -534,14 +546,11 @@ public class HomePresenter implements IHome.Presenter {
 			// prsDlg.dismiss();
 			if (result != null) {
 				if (result.size() > 0) {
-					mChatAdapter = new ChatAdapter(mHomeView,
-							R.layout.chat_row, result);
+					mChatAdapter = new ChatAdapter(mHomeView,R.layout.chat_row, result);
 					mHomeView.getChatListView().setAdapter(mChatAdapter);
-					mHomeView.getChatListView().setSelection(
-							Global.mChatArr.size() - 1);
+					mHomeView.getChatListView().setSelection(Global.mChatArr.size() - 1);
 				} else {
-					mChatAdapter = new ChatAdapter(mHomeView,
-							R.layout.chat_row, result);
+					mChatAdapter = new ChatAdapter(mHomeView,R.layout.chat_row, result);
 					mHomeView.getChatListView().setAdapter(mChatAdapter);
 				}
 			}
@@ -550,8 +559,7 @@ public class HomePresenter implements IHome.Presenter {
 
 	public void ackAfterFriendRequest(int pos) {
 		mRequestArr.remove(pos);
-		mRequestAdapter = new FriendRequestAdapter(mHomeView,
-				R.layout.request_notification_row, mRequestArr);
+		mRequestAdapter = new FriendRequestAdapter(mHomeView,R.layout.request_notification_row, mRequestArr);
 		mHomeView.getRequestList().setAdapter(mRequestAdapter);
 	}
 
@@ -579,13 +587,13 @@ public class HomePresenter implements IHome.Presenter {
 						JSONArray jarray = json.getJSONArray("friends");
 						mRequestArr.clear();
 						for (int i = 0; i < jarray.length(); i++) {
-							JSONObject obj = jarray.getJSONObject(i);
-							String record_id = obj.getString("recordid");
-							String sender_fbid = obj.getString("sender_facebook_profile_id");
+							JSONObject obj      = jarray.getJSONObject(i);
+							String record_id    = obj.getString("recordid");
+							String sender_fbid  = obj.getString("sender_facebook_profile_id");
 							String sender_fname = obj.getString("first_name");
 							String sender_lname = obj.getString("last_name");
-							int trackstatus = Integer.parseInt(obj.getString("trackstatus"));
-							String sender_name = sender_fname + " "+ sender_lname;
+							int trackstatus     = Integer.parseInt(obj.getString("trackstatus"));
+							String sender_name  = sender_fname + " "+ sender_lname;
 							Log.e("name", sender_name);
 							if(!obj.isNull("image")){
 								image = "http://clickfordevelopers.com/demo/snowmada/uploads/"+obj.getString("image");		  					
@@ -657,7 +665,6 @@ public class HomePresenter implements IHome.Presenter {
 			mHomeView.dismissProgressDialog();
 			if (result) {
 				friendlistArr.remove(deletedPos);
-
 				friendlistAdapter = new FriendAdapter(mHomeView,R.layout.friend_row1, friendlistArr);
 				mHomeView.lv_friend_list.setAdapter(friendlistAdapter);
 			}
@@ -667,8 +674,7 @@ public class HomePresenter implements IHome.Presenter {
 	public void showConfirmDeleteDialog(final int pos) {
 		final Dialog deleteDlg = new Dialog(mHomeView);
 		deleteDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		deleteDlg.getWindow().setBackgroundDrawable(
-				new ColorDrawable(android.graphics.Color.TRANSPARENT));
+		deleteDlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 		deleteDlg.setContentView(R.layout.confirm_delete_dlg);
 		deleteDlg.setCancelable(true);
 		deleteDlg.setCanceledOnTouchOutside(true);

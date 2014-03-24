@@ -80,7 +80,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	@SuppressWarnings("deprecation")
 	private static void generateNotification(final Context context,String message) {
 		
-		Log.e("Push notification", message);
+		Log.e("snomada", message);
 		try {
 			JSONObject json = new JSONObject(message);
 			int status = Integer.parseInt(json.getString("status"));
