@@ -101,6 +101,7 @@ import com.strapin.adapter.ChatAdapter;
 import com.strapin.adapter.DealsAdapter;
 import com.strapin.adapter.InviteFriendAdapter;
 import com.strapin.adapter.OfflineMessageAdapter;
+import com.strapin.application.AppInfo;
 import com.strapin.application.SnomadaApp;
 import com.strapin.bean.AppUserInfoBean;
 import com.strapin.bean.ChatBean;
@@ -172,7 +173,7 @@ public class HomeView extends BaseView implements IHome {
 	private LinearLayout  mGreenBarViewProfile;
 
 	private LinearLayout  mMassageLayout;
-	private LinearLayout  mLayoutMsgNotiList;
+	public LinearLayout  mLayoutMsgNotiList;
 	private LinearLayout  mChatSendButton;
 	private LinearLayout  mReqTab;
 
@@ -325,7 +326,9 @@ public class HomeView extends BaseView implements IHome {
 		super.onCreate(savedInstanceState);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.home);
+		Global.iv_chat_avatar_img      = "";
 		myApp                   = (SnomadaApp) getApplication();
+		myApp.setAppInfo(new AppInfo(this));
 		uiHelper                = new UiLifecycleHelper(this, callback);
 		uiHelper.onCreate(savedInstanceState);
 
@@ -628,7 +631,7 @@ public class HomeView extends BaseView implements IHome {
 					mLayoutMsgNotiList.setVisibility(View.GONE);
 				} else {
 					mLayoutMsgNotiList.setVisibility(View.VISIBLE);
-					mMassageAdapter = new OfflineMessageAdapter(HomeView.this,	R.layout.message_notification_row, msg);
+					mMassageAdapter = new OfflineMessageAdapter(HomeView.this,	R.layout.message_notification_row, msg,mLayoutMsgNotiList);
 					mLvMessageList.setAdapter(mMassageAdapter);
 				}
 
@@ -654,7 +657,7 @@ public class HomeView extends BaseView implements IHome {
 		// ****************************** Chat Click listener
 		// Start****************************************************************
 		if (v == mChatSendButton) {
-			if (!lblActiveChatFriend.getText().toString().equalsIgnoreCase("Please Select A Friend To Chat With")) {
+			if (!lblActiveChatFriend.getText().toString().equalsIgnoreCase("  Please Select Friend To Chat")) {
 				String msg = mEtInputChatMsg.getText().toString().trim();
 				if (msg.length() > 0) {
 					Global.mChatArr.add(new ChatBean(myApp.getAppInfo().userFirstName, msg));
@@ -873,11 +876,13 @@ public class HomeView extends BaseView implements IHome {
 		return mChatList;
 	}
 
-	public void getChatWindowActive(String friendName, String fbid) {
+	public void getChatWindowActive(String friendName, String fbid, boolean status, String image) {
 		myApp.getAppInfo().isAppForeground = true;
 		setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE, View.GONE,View.VISIBLE, View.GONE, View.INVISIBLE, View.VISIBLE,View.INVISIBLE, View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	false, false, true, CHAT_LIVE);
-		presenter.functionChat(fbid, friendName);
+		presenter.functionChat(fbid, friendName,status,image);
 		lblActiveChatFriend.setText(friendName);
+		
+		
 	}
 
 	@Override
@@ -906,8 +911,10 @@ public class HomeView extends BaseView implements IHome {
 				String[] splitStr = sender_name.split("\\s+");
 				myApp.IMname = splitStr[0];
 				myApp.getAppInfo().setSenderIDChat(	getIntent().getExtras().getString("sender_fb_id"));
-				presenter.functionChat(sender_fb_id, sender_name);
-				lblActiveChatFriend.setText(sender_name);
+				boolean status = presenter.getFriendStatus(sender_fb_id);
+				String image = presenter.getFriendImage(sender_fb_id);
+				presenter.functionChat(sender_fb_id, sender_name,status,image);
+				
 			} else if (bundle.getString("event").equalsIgnoreCase("meetup")) {
 				Global.isZoom = false;
 				myApp.getAppInfo().setIsAlertForSKIPatrol(false);
@@ -1662,18 +1669,38 @@ public class HomeView extends BaseView implements IHome {
 
 			try {
 				JSONObject request = new JSONObject();
-				request.put("receiver_fb_id", myApp.getAppInfo().userId);
+				request.put("fb_id",      myApp.getAppInfo().userId);
+				request.put("first_name", myApp.getAppInfo().userFirstName);
+				request.put("last_name",  myApp.getAppInfo().userLastName);
 				JSONObject response = KlHttpClient.SendHttpPost(URL.MESSAGE.getUrl(), request);
+				Log.e(TAG, response.toString());
 				if (response != null) {
 					msg.clear();
 					JSONArray jsonArray = response.getJSONArray("newReply");
 					for (int i = 0; i < jsonArray.length(); i++) {
-						JSONObject c       = jsonArray.getJSONObject(i);
-						String id          = c.getString("cr_id");
-						String name        = c.getString("sender");
-						String message     = c.getString("message");
-						String date1       = c.getString("date");
-						msg.add(new NewMessage(id, date1, name, message));
+						JSONObject c                   = jsonArray.getJSONObject(i);
+						String sender_id               = c.getString("sender_id");
+						String receiver_id             = c.getString("receiver_id");
+						String sender_first_name       = c.getString("sender_first_name");
+						String receiver_first_name     = c.getString("receiver_first_name");
+						String sender_last_name        = c.getString("sender_last_name");						
+						String receiver_last_name      = c.getString("receiver_last_name");
+						String date                    = c.getString("date");
+						String message                 = c.getString("message");
+						String sender_image;
+						if(!c.isNull("sender_image")){
+							sender_image = URL.IMAGE_PATH.getUrl()+c.getString("sender_image");
+						}else{
+							sender_image = "https://graph.facebook.com/"+sender_id+"/picture";
+						}
+						
+						String receiver_image;
+						if(!c.isNull("receiver_image")){
+							receiver_image = URL.IMAGE_PATH.getUrl()+c.getString("receiver_image");
+						}else{
+							receiver_image = "https://graph.facebook.com/"+receiver_id+"/picture";
+						}
+						msg.add(new NewMessage(sender_id, receiver_id, sender_first_name, receiver_first_name,sender_last_name,receiver_last_name,date,message,sender_image,receiver_image));
 					}
 				}
 				return msg;

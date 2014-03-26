@@ -15,8 +15,8 @@ public interface IHome {
 		public void getFriendCurrentLocation();
 		public void findListPosition(boolean sataus, String fbid);
 		public void doSkiPatrolFunction();
-		public void functionChat(String facebookid,String name);
-		public void CallChatWindow(String friendName,String fbid);
+		public void functionChat(String facebookid,String name,boolean status, String image);
+		public void CallChatWindow(String friendName,String fbid,boolean status,String image);
 		
 	}
 	public GoogleMap getMap();

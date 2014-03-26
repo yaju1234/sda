@@ -42,16 +42,18 @@
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
              android:background="@drawable/chat_left_bubble"
-           android:layout_toRightOf="@+id/no_image1"
+           android:layout_toRightOf="@+id/iv_avatar_rcver"
             android:layout_marginLeft="10dp"
             android:text="HI! How are you! What are you doing now. " />
 
           <ImageView
-              android:id="@+id/no_image1"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
+              android:id="@+id/iv_avatar_rcver"
+              android:layout_width="40dp"
+              android:layout_height="40dp"
               android:layout_alignParentLeft="true"
               android:layout_centerVertical="true"
+               android:adjustViewBounds="true"
+              android:scaleType="fitXY"
               android:src="@drawable/no_image" />
 
     </RelativeLayout>
@@ -83,7 +85,7 @@
         
           <TextView
              android:id="@+id/sender_msg"
-              android:layout_toLeftOf="@+id/no_image2"
+              android:layout_toLeftOf="@+id/iv_user_img"
              android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
@@ -100,11 +102,13 @@
             android:text="HI! How are you! What are you doing now. "  />
 
           <ImageView
-              android:id="@+id/no_image2"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
+              android:id="@+id/iv_user_img"
+              android:layout_width="40dp"
+              android:layout_height="40dp"
                android:layout_alignParentRight="true"
               android:layout_centerVertical="true"
+              android:adjustViewBounds="true"
+              android:scaleType="fitXY"
               android:src="@drawable/no_image" />
 
     </RelativeLayout>

@@ -83,13 +83,15 @@
             <TextView
                 android:id="@+id/tv_chat_friend"
                 android:layout_width="fill_parent"
-                android:layout_height="25dp"
+                android:layout_height="35dp"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:gravity="center"
-                android:text="Please Select A Friend To Chat With"
+                android:text="Please Select  Friend To Chat"
                 android:textColor="@color/white"
-                android:textSize="15sp"
+                android:textSize="17sp"
+                android:background="@drawable/top_grey_bg"
+                android:drawablePadding="10dp"
                 android:textStyle="bold" />
 
             <TextView
@@ -98,7 +100,7 @@
                 android:layout_height="0.5px"
                 android:layout_below="@+id/tv_chat_friend"
                 android:layout_centerHorizontal="true"
-                android:background="#c6c6c6"
+                android:background="@color/white"
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:textSize="15sp"

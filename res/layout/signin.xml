@@ -3,24 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-     android:scrollbars="none"
+    android:fillViewport="true"
+    android:scrollbars="none"
     tools:context=".MainActivity" >
 
     <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:facebook="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:background="@drawable/sign_in_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
         <RelativeLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/signin_bg_img"
+            android:layout_height="fill_parent"
             tools:context=".MainActivity" >
 
             <RelativeLayout
                 android:id="@+id/lauout_middle"
                 android:layout_width="fill_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_above="@+id/login_button"
                 android:layout_alignParentLeft="true"
                 android:layout_marginBottom="10dp"
@@ -105,12 +108,16 @@
 
             <Button
                 android:id="@+id/btn_sign_up"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="300dp"
+                android:layout_height="35dp"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="10dp"
-                android:background="@drawable/sign_up_btn"
+                android:background="@drawable/blue_btn"
+                android:text="Create A New Account"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
                 android:visibility="visible" />
 
             <com.facebook.widget.LoginButton
@@ -123,6 +130,14 @@
                 android:layout_marginTop="5dp"
                 facebook:confirm_logout="false"
                 facebook:fetch_user_info="true" />
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/lauout_middle"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_snomada" />
         </RelativeLayout>
     </LinearLayout>
 

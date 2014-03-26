@@ -36,5 +36,6 @@ public class Global {
 	public static boolean isZoomAtUSerLocationFirstTime = true;
 
 	public static ArrayList<ChatBean> mChatArr = new ArrayList<ChatBean>();
+	public static String iv_chat_avatar_img = "";
 
 }

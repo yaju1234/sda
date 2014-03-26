@@ -137,7 +137,9 @@ public class HomePresenter implements IHome.Presenter {
 				dialog.cancel();
 				String friendName = friendlistArr.get(pos).getName();
 				String fbid = friendlistArr.get(pos).getFbId();
-				mHomeView.getChatWindowActive(friendName, fbid);
+				boolean status = Integer.parseInt(friendlistArr.get(pos).getStatus())==1?true:false;
+				String image  = friendlistArr.get(pos).getImage();
+				mHomeView.getChatWindowActive(friendName, fbid,status,image);
 			}
 		});
 		// View profile button for view the friend profile
@@ -340,7 +342,7 @@ public class HomePresenter implements IHome.Presenter {
 				JSONObject request = new JSONObject();
 				request.put("fbid", mHomeView.myApp.getAppInfo().userId);
 				JSONObject response = KlHttpClient.SendHttpPost(URL.FRIEND_LIST.getUrl(), request);
-				Log.i("Friend List JSON ============>>>", response.toString());
+				Log.i(TAG,"Friend List JSON ============>>>"+response.toString());
 				flag = response.getBoolean("status");
 				if (flag) {
 					friendlistArr.clear();
@@ -453,7 +455,7 @@ public class HomePresenter implements IHome.Presenter {
 				if(COUNT > 3 && isException){
 					isException = false;
 					mHomeView.getProgressBarLayout().setVisibility(View.GONE);
-					Toast.makeText(mHomeView, "Friends location error", Toast.LENGTH_LONG).show();
+					Toast.makeText(mHomeView, "Error locating friend", Toast.LENGTH_LONG).show();
 					mHomeView.myApp.doTrackFriendLocation = false;
 					Log.e(TAG, TAG + "staus"+ mHomeView.myApp.doTrackFriendLocation);
 					COUNT = 0;
@@ -493,12 +495,19 @@ public class HomePresenter implements IHome.Presenter {
 	}
 
 	@Override
-	public void functionChat(String facebookid, String name) {
+	public void functionChat(String facebookid, String name, boolean status, String image) {
 		mHomeView.getChatFriend().setText(name);
+		Log.e(TAG, "Online status=====>>>"+status);
+		if(status){
+			mHomeView.getChatFriend().setCompoundDrawablesWithIntrinsicBounds(null, null, mHomeView.getResources().getDrawable(R.drawable.green_ball), null);
+		}else{
+			mHomeView.getChatFriend().setCompoundDrawablesWithIntrinsicBounds(null, null, mHomeView.getResources().getDrawable(R.drawable.red_ball), null);
+		}
 		mHomeView.hideSlide().setVisibility(View.GONE);
 		String fname = name;
 		String[] splitStr = fname.split("\\s+");
 		mHomeView.myApp.getAppInfo().setSenderIDChat(facebookid);
+		Global.iv_chat_avatar_img = image;
 		mHomeView.myApp.IMname = splitStr[0];
 		new getChatHistory().execute(facebookid, splitStr[0]);
 	}
@@ -507,8 +516,7 @@ public class HomePresenter implements IHome.Presenter {
 		mHomeView.hideSlide().setVisibility(View.GONE);
 	}
 
-	public class getChatHistory extends
-			AsyncTask<String, Void, ArrayList<ChatBean>> {
+	public class getChatHistory extends	AsyncTask<String, Void, ArrayList<ChatBean>> {
 		protected void onPreExecute() {
 
 		}
@@ -630,8 +638,8 @@ public class HomePresenter implements IHome.Presenter {
 	}
 
 	@Override
-	public void CallChatWindow(String friendName, String fbid) {
-		mHomeView.getChatWindowActive(friendName, fbid);
+	public void CallChatWindow(String friendName, String fbid,boolean status, String image) {
+		mHomeView.getChatWindowActive(friendName, fbid,status,image);
 
 	}
 
@@ -702,6 +710,30 @@ public class HomePresenter implements IHome.Presenter {
 			}
 		});
 		deleteDlg.show();
+	}
+	
+	public boolean getFriendStatus(String id){
+		boolean status  = false;
+		for(int i=0; i<friendlistArr.size(); i++){
+			if(friendlistArr.get(i).getFbId().equalsIgnoreCase(id)){
+				status = friendlistArr.get(i).isOnline();
+				break;
+			}
+		}
+		return status;
+		
+	}
+	
+	public String getFriendImage(String id){
+		String image  = "";
+		for(int i=0; i<friendlistArr.size(); i++){
+			if(friendlistArr.get(i).getFbId().equalsIgnoreCase(id)){
+				image = friendlistArr.get(i).getImage();
+				break;
+			}
+		}
+		return image;
+		
 	}
 
 }

@@ -6,10 +6,13 @@ import snowmada.main.view.HomeView;
 import snowmada.main.view.R;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView.FindListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -22,10 +25,12 @@ public class ChatAdapter extends ArrayAdapter<ChatBean>{
 	private ArrayList<ChatBean> mItems = new ArrayList<ChatBean>();
 	private ViewHolder mHolder;
 	
+	
 	public ChatAdapter(HomeView activity, int textViewResourceId,	ArrayList<ChatBean> mChat) {
 		super(activity, textViewResourceId, mChat);
 		this.activity = activity;
 		mItems = Global.mChatArr;
+		
 		
 		
 	}		  
@@ -47,13 +52,15 @@ public class ChatAdapter extends ArrayAdapter<ChatBean>{
 			v = vi.inflate(R.layout.chat_row, null);
 			mHolder = new ViewHolder();
 			v.setTag(mHolder);	
-			mHolder.mSender = (RelativeLayout)v.findViewById(R.id.sender);
-			mHolder.mReceiver = (RelativeLayout)v.findViewById(R.id.receiver);
-			mHolder.mSenderMsg = (TextView)v.findViewById(R.id.sender_msg);
-			mHolder.mReceiverMsg = (TextView)v.findViewById(R.id.receiver_msg);
-			mHolder.mSenderName = (TextView)v.findViewById(R.id.sender_name);
-			mHolder.mReceiverName = (TextView)v.findViewById(R.id.receiver_name);
-			mHolder.mMain = (LinearLayout)v.findViewById(R.id.main);
+			mHolder.mSender          = (RelativeLayout)v.findViewById(R.id.sender);
+			mHolder.mReceiver        = (RelativeLayout)v.findViewById(R.id.receiver);
+			mHolder.mSenderMsg       = (TextView)v.findViewById(R.id.sender_msg);
+			mHolder.mReceiverMsg     = (TextView)v.findViewById(R.id.receiver_msg);
+			mHolder.mSenderName      = (TextView)v.findViewById(R.id.sender_name);
+			mHolder.mReceiverName    = (TextView)v.findViewById(R.id.receiver_name);
+			mHolder.iv_avatar_rcver  = (ImageView)v.findViewById(R.id.iv_avatar_rcver);
+			mHolder.iv_user_img      = (ImageView)v.findViewById(R.id.iv_user_img);
+			mHolder.mMain            = (LinearLayout)v.findViewById(R.id.main);
 				
 		}
 		else {
@@ -68,12 +75,15 @@ public class ChatAdapter extends ArrayAdapter<ChatBean>{
 				mHolder.mReceiver.setVisibility(View.GONE);
 				mHolder.mSenderName.setText("Me");
 				mHolder.mSenderMsg.setText(bean.getMessage());
+				activity.imageLoader.DisplayImage(activity.myApp.getAppInfo().image,mHolder.iv_user_img);
 				
 			}else{
 				mHolder.mSender.setVisibility(View.GONE);
 				mHolder.mReceiver.setVisibility(View.VISIBLE);
 				mHolder.mReceiverName.setText(bean.getSender());
-				mHolder.mReceiverMsg.setText(bean.getMessage());			
+				mHolder.mReceiverMsg.setText(bean.getMessage());
+				Log.e("snomada", "AVATAR "+Global.iv_chat_avatar_img);
+				activity.imageLoader.DisplayImage(Global.iv_chat_avatar_img,mHolder.iv_avatar_rcver);
 			}
 			
 		}		
@@ -86,6 +96,8 @@ public class ChatAdapter extends ArrayAdapter<ChatBean>{
 		public TextView mReceiverMsg;	
 		public TextView mSenderName;
 		public TextView mReceiverName;
+		public ImageView iv_avatar_rcver;
+		public ImageView iv_user_img;
 		public LinearLayout mMain;
 	}
 	

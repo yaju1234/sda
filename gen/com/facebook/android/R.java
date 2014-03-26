@@ -117,7 +117,7 @@ public final class R {
 	public static final class drawable {
 		public static final int com_facebook_picker_list_selector = 0x7f020030;
 		public static final int com_facebook_button_check = 0x7f020020;
-		public static final int com_facebook_picker_default_separator_color = 0x7f0200ce;
+		public static final int com_facebook_picker_default_separator_color = 0x7f0200d7;
 		public static final int com_facebook_button_check_on = 0x7f020022;
 		public static final int com_facebook_profile_picture_blank_portrait = 0x7f020037;
 		public static final int com_facebook_picker_list_selector_background_transition = 0x7f020031;

@@ -76,7 +76,8 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 							String[] splitStr = fname.split("\\s+");
 							activity.myApp.IMname = splitStr[0];
 							Global.mChatArr.clear();
-							activity.presenter.functionChat(mItems.get(position).getFbId(), mItems.get(position).getName());
+							boolean status = mItems.get(position).isOnline();
+							activity.presenter.functionChat(mItems.get(position).getFbId(), mItems.get(position).getName(),status,mItems.get(position).getImage());
 						
 					}else{// When Tracking  
 						activity.myApp.isTrackingSKIPatrol = false;
