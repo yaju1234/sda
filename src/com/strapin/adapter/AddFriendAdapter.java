@@ -127,7 +127,7 @@ public class AddFriendAdapter extends ArrayAdapter<AppUserInfoBean>{
 		final AppUserInfoBean bean = mItems.get(position);
 		if(bean != null){
 			activity.imageLoader.DisplayImage(bean.getImage(),mHolder.image);
-			mHolder.name.setText(bean.getFirstName());
+			mHolder.name.setText(bean.getFirstName()+" "+bean.getLastName());
 			
 		}		
 		return v;

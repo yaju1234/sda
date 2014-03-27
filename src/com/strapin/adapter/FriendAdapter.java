@@ -6,7 +6,6 @@ import org.json.JSONObject;
 
 import snowmada.main.view.HomeView;
 import snowmada.main.view.R;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -22,11 +21,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.strapin.Enum.URL;
-import com.strapin.Util.ImageLoader;
 import com.strapin.bean.FriendListBean;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
-import com.strapin.presenter.HomePresenter;
 
 public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 	

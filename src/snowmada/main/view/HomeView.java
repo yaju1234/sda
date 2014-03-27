@@ -173,7 +173,7 @@ public class HomeView extends BaseView implements IHome {
 	private LinearLayout  mGreenBarViewProfile;
 
 	private LinearLayout  mMassageLayout;
-	public LinearLayout  mLayoutMsgNotiList;
+	public LinearLayout   mLayoutMsgNotiList;
 	private LinearLayout  mChatSendButton;
 	private LinearLayout  mReqTab;
 
@@ -192,15 +192,15 @@ public class HomeView extends BaseView implements IHome {
 
 	private Dialog menu_dialog, meetupUserDlg;
 
-	private ArrayList<DealsBean> mDealsArr                     = new ArrayList<DealsBean>();
+	private ArrayList<DealsBean> mDealsArr                       = new ArrayList<DealsBean>();
 	private ArrayList<AppUserInfoBean> mAddFriendArr             = new ArrayList<AppUserInfoBean>();
 	private ArrayList<AppUserInfoBean> mAddFriendSearchArr       = new ArrayList<AppUserInfoBean>();
 
-	private ArrayList<AppUserInfoBean> mInviteFriendArr       = new ArrayList<AppUserInfoBean>();
-	private ArrayList<AppUserInfoBean> mInviteFriendSearchArr = new ArrayList<AppUserInfoBean>();
-	private ArrayList<AppusersBean> mContactList           = new ArrayList<AppusersBean>();
-	private ArrayList<AppUserInfoBean> mAppUserList           = new ArrayList<AppUserInfoBean>();
-	private ArrayList<NewMessage> msg                         = new ArrayList<NewMessage>();
+	private ArrayList<AppUserInfoBean> mInviteFriendArr          = new ArrayList<AppUserInfoBean>();
+	private ArrayList<AppUserInfoBean> mInviteFriendSearchArr    = new ArrayList<AppUserInfoBean>();
+	private ArrayList<AppusersBean> mContactList                 = new ArrayList<AppusersBean>();
+	private ArrayList<AppUserInfoBean> mAppUserList              = new ArrayList<AppUserInfoBean>();
+	private ArrayList<NewMessage> msg                            = new ArrayList<NewMessage>();
 
 	private DealsAdapter mAdapter;
 	private AddFriendAdapter mAddFriendAdapter;
@@ -550,24 +550,6 @@ public class HomeView extends BaseView implements IHome {
 		handler.postDelayed(runnable, 0);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu, menu);
-		return true;
-
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.menu_logout:
-			myApp.getAppInfo().setSession(false);
-			finish();
-
-		}
-		return super.onOptionsItemSelected(item);
-	}
 
 	@Override
 	public void onClick(View v) {
@@ -1631,8 +1613,6 @@ public class HomeView extends BaseView implements IHome {
 							flag = false;
 							for (int j = 0; j < appusersArr.size(); j++) {
 								if (mContactList.get(i).getId().equalsIgnoreCase(appusersArr.get(j).getPhone())) {
-									Log.e("Contact NO.", mContactList.get(i).getId());
-									Log.e("Contact Name.", mContactList.get(i).getName());
 									mAddFriendArr.add(new AppUserInfoBean(appusersArr.get(j).getId(),""	,mContactList.get(i).getName(),"",appusersArr.get(j).getImage(),"N",mContactList.get(i).getId()));
 									flag = true;
 									break;
@@ -1689,16 +1669,16 @@ public class HomeView extends BaseView implements IHome {
 						String message                 = c.getString("message");
 						String sender_image;
 						if(!c.isNull("sender_image")){
-							sender_image = URL.IMAGE_PATH.getUrl()+c.getString("sender_image");
+							sender_image               = URL.IMAGE_PATH.getUrl()+c.getString("sender_image");
 						}else{
-							sender_image = "https://graph.facebook.com/"+sender_id+"/picture";
+							sender_image               = "https://graph.facebook.com/"+sender_id+"/picture";
 						}
 						
 						String receiver_image;
 						if(!c.isNull("receiver_image")){
-							receiver_image = URL.IMAGE_PATH.getUrl()+c.getString("receiver_image");
+							receiver_image             = URL.IMAGE_PATH.getUrl()+c.getString("receiver_image");
 						}else{
-							receiver_image = "https://graph.facebook.com/"+receiver_id+"/picture";
+							receiver_image             = "https://graph.facebook.com/"+receiver_id+"/picture";
 						}
 						msg.add(new NewMessage(sender_id, receiver_id, sender_first_name, receiver_first_name,sender_last_name,receiver_last_name,date,message,sender_image,receiver_image));
 					}
@@ -1711,13 +1691,8 @@ public class HomeView extends BaseView implements IHome {
 		}
 	}
 
-	public void setFriendTab(int selectedTab, int addfriendlistview,
-			int invitefriendlistview, int pendingreqview,
-			int addsearcglayoutview, int invitesearchlayoutview,
-			int drawableaddfriend, int drawableinvitefriend, int requestfriend,
-			String addfriendtextcolor, String invitefriendtextcolor,
-			String pendingreqtextcolor, String blueTxt, String whiteTxt) {
-		myApp.selectedTab = selectedTab;
+	public void setFriendTab(int selectedTab, int addfriendlistview,int invitefriendlistview, int pendingreqview,int addsearcglayoutview, int invitesearchlayoutview,int drawableaddfriend, int drawableinvitefriend, int requestfriend,	String addfriendtextcolor, String invitefriendtextcolor,String pendingreqtextcolor, String blueTxt, String whiteTxt) {
+		myApp.selectedTab          = selectedTab;
 		mAddFriendList.            setVisibility(addfriendlistview);
 		mLvInviteFriendList.       setVisibility(invitefriendlistview);
 		mRequestList.              setVisibility(pendingreqview);
@@ -1942,6 +1917,24 @@ public class HomeView extends BaseView implements IHome {
 			        e.printStackTrace();
 			 }
 		}
-	
+		@Override
+		public boolean onCreateOptionsMenu(Menu menu) {
+			MenuInflater inflater = getMenuInflater();
+			inflater.inflate(R.menu.menu, menu);
+			return true;
+
+		}
+
+		@Override
+		public boolean onOptionsItemSelected(MenuItem item) {
+			switch (item.getItemId()) {
+			case R.id.menu_logout:
+				myApp.getAppInfo().setSession(false);
+				finish();
+
+			}
+			return super.onOptionsItemSelected(item);
+		}
+
 
 }

@@ -497,7 +497,6 @@ public class HomePresenter implements IHome.Presenter {
 	@Override
 	public void functionChat(String facebookid, String name, boolean status, String image) {
 		mHomeView.getChatFriend().setText(name);
-		Log.e(TAG, "Online status=====>>>"+status);
 		if(status){
 			mHomeView.getChatFriend().setCompoundDrawablesWithIntrinsicBounds(null, null, mHomeView.getResources().getDrawable(R.drawable.green_ball), null);
 		}else{
@@ -525,10 +524,10 @@ public class HomePresenter implements IHome.Presenter {
 		protected ArrayList<ChatBean> doInBackground(String... params) {
 			try {
 				JSONObject jsonObject = new JSONObject();
-				jsonObject.put("sender_fb_id",	mHomeView.myApp.getAppInfo().userId);
+				jsonObject.put("sender_fb_id",	 mHomeView.myApp.getAppInfo().userId);
 				jsonObject.put("receiver_fb_id", params[0]);
-				jsonObject.put("sender_name",mHomeView.myApp.getAppInfo().userFirstName);
-				jsonObject.put("receiver_name", params[1]);
+				jsonObject.put("sender_name",    mHomeView.myApp.getAppInfo().userFirstName);
+				jsonObject.put("receiver_name",  params[1]);
 
 				JSONObject json = KlHttpClient.SendHttpPost(URL.CHAT_HISTORY.getUrl(), jsonObject);
 				Log.e("Received Chat history", json.toString());

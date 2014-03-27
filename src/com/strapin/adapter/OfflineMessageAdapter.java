@@ -73,11 +73,11 @@ public class OfflineMessageAdapter extends ArrayAdapter<NewMessage>{
 					
 				}
 				if(activity.myApp.getAppInfo().userId.equalsIgnoreCase(mItems.get(position).getSenderId())){
-					boolean status= activity.presenter.getFriendStatus(mItems.get(position).getReceiverId());
-					activity.presenter.CallChatWindow(mItems.get(position).getReceiverFirstName(), mItems.get(position).getReceiverId(),status,mItems.get(position).getReceiverImage());
+					boolean status  = activity.presenter.getFriendStatus(mItems.get(position).getReceiverId());
+					activity.presenter.CallChatWindow(mItems.get(position).getReceiverFirstName()+" "+mItems.get(position).getReceiverLastName(), mItems.get(position).getReceiverId(),status,mItems.get(position).getReceiverImage());
 				}else{
-					boolean status= activity.presenter.getFriendStatus(mItems.get(position).getSenderId());
-					activity.presenter.CallChatWindow(mItems.get(position).getSenderFirstName(), mItems.get(position).getSenderId(),status,mItems.get(position).getSenderImage());
+					boolean status  = activity.presenter.getFriendStatus(mItems.get(position).getSenderId());
+					activity.presenter.CallChatWindow(mItems.get(position).getSenderFirstName()+" "+mItems.get(position).getSenderLastName(), mItems.get(position).getSenderId(),status,mItems.get(position).getSenderImage());
 				}
 				
 				
@@ -91,13 +91,12 @@ public class OfflineMessageAdapter extends ArrayAdapter<NewMessage>{
 				mHolder.name.setText(bean.getSenderFirstName()+" "+bean.getSenderLastName());
 				mHolder.message.setText(bean.getMessage());
 				imageLoader.DisplayImage(bean.getSenderImage(),mHolder.image);	
-				Log.e("snomada", "ImageURL111=====>>>>"+bean.getSenderImage());
+				
 			}else{
 				mHolder.reply_icon.setVisibility(View.GONE);
 				mHolder.name.setText(bean.getSenderFirstName()+" "+bean.getSenderLastName());
 				mHolder.message.setText(bean.getMessage());
-				imageLoader.DisplayImage(bean.getSenderImage(),mHolder.image);
-				Log.e("snomada", "ImageURL222=====>>>>"+bean.getSenderImage());
+				imageLoader.DisplayImage(bean.getSenderImage(),mHolder.image);				
 			}
 						
 		}		
