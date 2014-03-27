@@ -4,12 +4,10 @@ import java.util.ArrayList;
 
 import org.json.JSONObject;
 
+import snowmada.main.view.HomeView;
 import snowmada.main.view.R;
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,28 +20,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.strapin.Enum.URL;
 import com.strapin.Util.ImageLoader;
 import com.strapin.bean.FriendRequestBean;
-import com.strapin.global.Global;
+import com.strapin.global.Constants;
 import com.strapin.network.KlHttpClient;
-import com.strapin.presenter.HomePresenter;
 
 public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
-	private Context mCtx;
 	private ViewHolder mHolder;
-	private Activity activity;
-	private ProgressDialog mDialog;
+	private HomeView activity;
 	private ImageLoader imageLoader;
 	public ArrayList<FriendRequestBean> item = new ArrayList<FriendRequestBean>();
-	private HomePresenter mPresenter;
 	private int pos;
 	  
-	public FriendRequestAdapter(HomePresenter mPresenter,Activity activity,Context context, int textViewResourceId,	ArrayList<FriendRequestBean> items) {
-		super(context, textViewResourceId);
-		this.mCtx = context;
+	public FriendRequestAdapter(HomeView activity, int textViewResourceId,	ArrayList<FriendRequestBean> items) {
+		super(activity, textViewResourceId);
 		this.item = items;	
 		this.activity = activity;
-		this.mPresenter = mPresenter;
 		imageLoader=new ImageLoader(activity);
 	}	
 
@@ -61,7 +54,7 @@ public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
 	public View getView( final int position,  View convertView, ViewGroup parent) {
 		View v = convertView;
 		if (v == null) {
-			LayoutInflater vi = (LayoutInflater) mCtx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater vi = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			v = vi.inflate(R.layout.request_notification_row, null);
 
 			mHolder = new ViewHolder();
@@ -77,14 +70,12 @@ public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
 				
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					Log.e("isChecked", ""+isChecked);
-					
 					if(isChecked){
-						item.get(position).setTrackStatus("1");
+						item.get(position).setTrackStatus(Constants.ACTIVE_TRACK_STATUS);
 						mHolder.mTrackStatus.setChecked(true);
 						notifyDataSetChanged();
 					}else{
-						item.get(position).setTrackStatus("0");
+						item.get(position).setTrackStatus(Constants.DEACTIVE_TRACK_STATUS);
 						mHolder.mTrackStatus.setChecked(false);
 						notifyDataSetChanged();
 					}
@@ -97,14 +88,10 @@ public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
 				@Override
 				public void onClick(View v) {					
 					String action = "accept";
-					pos = position;
-					
-					
-					
+					pos = position;					
 					String record_id = item.get(position).getRecordId();
-					String track_status= item.get(position).getTrackStatus();
-					Log.e("item.get(position).getTrackStatus()", item.get(position).getTrackStatus());
-					new AddFriendStatus().execute(action,record_id,track_status);
+					int track_status= item.get(position).getTrackStatus();
+					new AddFriendStatus().execute(action,record_id,""+track_status);
 				}
 			});
 			mHolder.mNoButton.setOnClickListener(new OnClickListener() {
@@ -128,12 +115,12 @@ public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
 		if(mVendor != null){
 			
 			mHolder.mName.setText(mVendor.getSenderName());
-			if(item.get(position).getTrackStatus().equalsIgnoreCase("0")){
+			if(item.get(position).getTrackStatus()==Constants.DEACTIVE_TRACK_STATUS){
 				mHolder.mTrackStatus.setChecked(false);
 			}else{
 				mHolder.mTrackStatus.setChecked(true);
 			}
-			imageLoader.DisplayImage("https://graph.facebook.com/"+mVendor.getSenderfbId()+"/picture",mHolder.mFriendImage);				
+			imageLoader.DisplayImage(mVendor.getImage(),mHolder.mFriendImage);				
 		}		
 		return v;
 	}
@@ -147,29 +134,24 @@ public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
 	}
 	public class AddFriendStatus extends AsyncTask<String, Void, Boolean>{		
 		protected void onPreExecute() {
-			mDialog = new ProgressDialog(activity);
-			mDialog.setMessage("Please wait...");
-			mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			mDialog.setIndeterminate(true);
-			mDialog.setCancelable(false);
-			mDialog.show();
+			activity.showProgressDailog();
 		}		
 		@Override
 		protected Boolean doInBackground(String... params) {
-			JSONObject json;
+			JSONObject response;
 			boolean flag = false;
 		  	try {
-				JSONObject mJsonObject = new JSONObject();
-				mJsonObject.put("actn", params[0]);
-				mJsonObject.put("recordid", params[1]);
-				mJsonObject.put("track_status", params[2]);
-				Log.e("ACk mJSON REQ", mJsonObject.toString());
-				json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/accept_friend.php", mJsonObject);
-				if(json!=null){
-					flag = json.getBoolean("status");
+				JSONObject request = new JSONObject();
+				request.put("actn", params[0]);
+				request.put("recordid", params[1]);
+				request.put("track_status", params[2]);
+				response = KlHttpClient.SendHttpPost(URL.ACCEPT_FRIEND_REQ.getUrl(), request);
+				if(response!=null){
+					flag = response.getBoolean("status");
 				}
 				
 		  	}catch (Exception e) {
+		  		activity.dismissProgressDialog();
 				return false;
 			}
 			return flag;
@@ -178,10 +160,10 @@ public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
 		
 		@Override
 		protected void onPostExecute(Boolean result) {							
-				mDialog.dismiss();		
+			activity.dismissProgressDialog();		
 				if(result){
-					Global.isAddSnowmadaFriend = true;
-					mPresenter.ackAfterFriendRequest(pos);
+					activity.myApp.isWebServiceCallForRefreshFriendList = true;
+					activity.presenter.ackAfterFriendRequest(pos);
 				}							
 			}
 		}

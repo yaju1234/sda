@@ -2,6 +2,7 @@ package com.strapin.adapter;
 
 import java.util.ArrayList;
 
+import snowmada.main.view.HomeView;
 import snowmada.main.view.R;
 import android.app.Activity;
 import android.content.Context;
@@ -10,88 +11,102 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.webkit.WebView.FindListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.strapin.Util.ImageLoader;
-import com.strapin.bean.MessageBean;
+import com.strapin.bean.NewMessage;
 import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.presenter.HomePresenter;
 
 @SuppressWarnings("unused")
-public class OfflineMessageAdapter extends ArrayAdapter<MessageBean>{
+public class OfflineMessageAdapter extends ArrayAdapter<NewMessage>{
 	
-	private Context mCtx;
-	private ArrayList<MessageBean> mItems = new ArrayList<MessageBean>();
+	private ArrayList<NewMessage> mItems = new ArrayList<NewMessage>();
 	private ViewHolder mHolder;
 	private ImageLoader imageLoader;
-	private Activity activity;
+	private HomeView activity;
 	private HomePresenter mPresenter;
-	private SnowmadaDbAdapter mSdb;
 	private LinearLayout mLayoutMessageNotificationList; 
-	public OfflineMessageAdapter( LinearLayout mLayoutMessageNotificationList ,HomePresenter mPresenter,Activity activity,Context context, int textViewResourceId,	ArrayList<MessageBean> mChat) {
-		super(context, textViewResourceId);
-		this.mCtx = context;
+	private  LinearLayout mLayoutMsgNotiList;
+	public OfflineMessageAdapter(HomeView activity, int textViewResourceId,	ArrayList<NewMessage> mChat , LinearLayout mLayoutMsgNotiList) {
+		super(activity, textViewResourceId);
 		this.activity = activity;
 		this.mItems = mChat;
-		this.mPresenter = mPresenter;
-		imageLoader=new ImageLoader(activity);
-		this.mLayoutMessageNotificationList =mLayoutMessageNotificationList ; 
-		mSdb = SnowmadaDbAdapter.databaseHelperInstance(mCtx);
-		Log.e("SIze", ""+mItems.size());
-		
+		this.mLayoutMsgNotiList = mLayoutMsgNotiList;
+		imageLoader=new ImageLoader(activity);		
 	}		  
 	@Override
 	public int getCount() {
 		return mItems.size();
 	}
 
-	
-	
 	@Override
 	public View getView( final int position,  View convertView, ViewGroup parent) {
 		View v = convertView;
 		if (v == null) {
-			LayoutInflater vi = (LayoutInflater) mCtx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater vi = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			v = vi.inflate(R.layout.message_notification_row, null);
 			mHolder = new ViewHolder();
 			v.setTag(mHolder);	
-			mHolder.mSenderMsg = (TextView)v.findViewById(R.id.friend_message);
-			mHolder.mSenderName = (TextView)v.findViewById(R.id.facebook_friend_name);
-			mHolder.mFriendImage = (ImageView)v.findViewById(R.id.user_friend_image);
-			mHolder.mMain = (RelativeLayout)v.findViewById(R.id.main);
+			mHolder.message = (TextView)v.findViewById(R.id.tv_reply_message);
+			mHolder.name = (TextView)v.findViewById(R.id.tv_name);
+			mHolder.image = (ImageView)v.findViewById(R.id.iv_profile_image);
+			mHolder.main = (RelativeLayout)v.findViewById(R.id.rl_main);
+			mHolder.reply_icon = (ImageView)v.findViewById(R.id.iv_reply_icon);
 		}
 		else {
 			mHolder =  (ViewHolder) v.getTag();
 		}	
 		
-		mHolder.mMain.setOnClickListener(new OnClickListener() {
+		mHolder.main.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				mLayoutMessageNotificationList.setVisibility(View.GONE);
-				//mSdb.deleteChatMessage( mItems.get(position).getSenderFbId());
-				mSdb.UpdateMessageStatus(""+mItems.get(position).getId());
-				mPresenter.CallChatWindow(mItems.get(position).getSenderName(), mItems.get(position).getSenderFbId());	
+				if (mLayoutMsgNotiList.getVisibility() == View.VISIBLE) {
+					mLayoutMsgNotiList.setVisibility(View.GONE);
+				} else {
+					mLayoutMsgNotiList.setVisibility(View.VISIBLE);		
+					
+				}
+				if(activity.myApp.getAppInfo().userId.equalsIgnoreCase(mItems.get(position).getSenderId())){
+					boolean status  = activity.presenter.getFriendStatus(mItems.get(position).getReceiverId());
+					activity.presenter.CallChatWindow(mItems.get(position).getReceiverFirstName()+" "+mItems.get(position).getReceiverLastName(), mItems.get(position).getReceiverId(),status,mItems.get(position).getReceiverImage());
+				}else{
+					boolean status  = activity.presenter.getFriendStatus(mItems.get(position).getSenderId());
+					activity.presenter.CallChatWindow(mItems.get(position).getSenderFirstName()+" "+mItems.get(position).getSenderLastName(), mItems.get(position).getSenderId(),status,mItems.get(position).getSenderImage());
+				}
+				
 				
 			}
 		});
-		
-		final MessageBean bean = mItems.get(position);
+			
+		final NewMessage bean = mItems.get(position);
 		if(bean!= null){
-			//Log.e("Adapter", ""+bean.getSenderName());
-			mHolder.mSenderName.setText(bean.getSenderName());
-			mHolder.mSenderMsg.setText(bean.getTextMessage());
-			imageLoader.DisplayImage("https://graph.facebook.com/"+bean.getSenderFbId()+"/picture",mHolder.mFriendImage);				
+			if(activity.myApp.getAppInfo().userId.equalsIgnoreCase(bean.getSenderId())){
+				mHolder.reply_icon.setVisibility(View.VISIBLE);
+				mHolder.name.setText(bean.getSenderFirstName()+" "+bean.getSenderLastName());
+				mHolder.message.setText(bean.getMessage());
+				imageLoader.DisplayImage(bean.getSenderImage(),mHolder.image);	
+				
+			}else{
+				mHolder.reply_icon.setVisibility(View.GONE);
+				mHolder.name.setText(bean.getSenderFirstName()+" "+bean.getSenderLastName());
+				mHolder.message.setText(bean.getMessage());
+				imageLoader.DisplayImage(bean.getSenderImage(),mHolder.image);				
+			}
+						
 		}		
 		return v;
 	}
 	class ViewHolder {	
-		public TextView mSenderName;
-		public TextView mSenderMsg;	
-		public ImageView mFriendImage;
-		public RelativeLayout mMain;
+		public TextView name;
+		public TextView message;	
+		public ImageView image;
+		public ImageView reply_icon;
+		public RelativeLayout main;
 	}
 }

@@ -1,17 +1,26 @@
 package snowmada.main.view;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
 import com.facebook.*;
 import com.facebook.model.GraphObject;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.*;
 import com.strapin.Enum.URL;
-import com.strapin.db.SnowmadaDbAdapter;
-import com.strapin.global.Global;
+import com.strapin.global.Constants;
 import com.strapin.network.KlHttpClient;
 
 import org.json.JSONArray;
@@ -20,11 +29,19 @@ import org.json.JSONObject;
 
 public class SigninView extends BaseView {
 
-   private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
+    private final String PENDING_ACTION_BUNDLE_KEY = "com.facebook.samples.hellofacebook:PendingAction";
     private LoginButton loginButton;
     private PendingAction pendingAction = PendingAction.NONE;
     private GraphUser user;
     private boolean isUiUpdateCall = false; 
+    private Button mSignup;
+    private EditText et_username,et_password;
+    private Button btn_login;
+    private String logintype;
+    private String fb_fname;
+    private String fb_lname;
+    private String fb_id;
+    private String TAG = "snomada";
    
     private enum PendingAction {
         NONE,
@@ -57,7 +74,7 @@ public class SigninView extends BaseView {
         super.onCreate(savedInstanceState);
         
        
-        
+       
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);
       
@@ -68,8 +85,39 @@ public class SigninView extends BaseView {
         }
 
         setContentView(R.layout.signin);
+        getContactList();
 
         loginButton = (LoginButton) findViewById(R.id.login_button);
+        mSignup = (Button)findViewById(R.id.btn_sign_up);
+        btn_login = (Button)findViewById(R.id.btn_login);
+        et_username = (EditText)findViewById(R.id.input_user_name);
+        et_password = (EditText)findViewById(R.id.input_password);
+        
+        
+        
+        btn_login.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(fieldValidation()){
+					logintype = Constants.NORMAL_LOGIN;
+					myApp.getAppInfo().setLoginType("N"); //  Set Login type for normal login   NORMAIL LOGIN: N
+					showProgressDailog();
+					new SignInWeb().execute();
+				}
+				
+			}
+		});
+        
+        mSignup.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				Intent i = new Intent(SigninView.this, SignUpView.class);
+				startActivity(i);
+			}
+		});
         
 
     	Session session = Session.getActiveSession();
@@ -83,9 +131,9 @@ public class SigninView extends BaseView {
         loginButton.setUserInfoChangedCallback(new LoginButton.UserInfoChangedCallback() {
             @Override
             public void onUserInfoFetched(GraphUser user) {
-             	
             	SigninView.this.user = user;
             	isUiUpdateCall = true;
+            	myApp.getAppInfo().setLoginType("F");//  Set Login type for facebook login   FACEBOOK LOGIN: F
                 updateUI();
                 handlePendingAction();
             }
@@ -151,6 +199,7 @@ public class SigninView extends BaseView {
 
     private void updateUI() {
     	if(isUiUpdateCall){
+    		isUiUpdateCall = false;
     		 Session session = Session.getActiveSession();
     	        Log.e("Session", ""+session.isOpened());
     	        boolean enableButtons = (session != null && session.isOpened());
@@ -158,15 +207,13 @@ public class SigninView extends BaseView {
     	     
     	        if (enableButtons && user != null) {
     	        	showProgressDailog();
-    	        	if(db.getRowCount()>0){
-    					db.updateUserInfo(user.getId(),user.getFirstName(),user.getLastName());
-    				}else{
-    					db.insertUserInfo(user.getId(),user.getFirstName(),user.getLastName());
-    				}
-    	        	myApp.getAppInfo().setSession(true);
-    	        	Global.mDob = user.getBirthday();
-    				myApp.getAppInfo().setSession(true);
-    				getFriendList();
+    	        	fb_fname = user.getFirstName();
+    	        	fb_lname = user.getLastName();
+    	        	fb_id = user.getId();
+    	        	/*myApp.getAppInfo().setUserInfo(user.getFirstName(), user.getLastName(), user.getId());
+    	        	myApp.getAppInfo().setSession(true);*/
+    	        	getFriendList();
+    	        	logintype = Constants.FACEBOOK_LOGIN;
     				new SignInWeb().execute();
     	        	
     	        } else {
@@ -191,32 +238,53 @@ public class SigninView extends BaseView {
 
      public class SignInWeb extends AsyncTask<String, Void, Boolean>{		
 		@Override
-		protected Boolean doInBackground(String... params) {			
+		protected Boolean doInBackground(String... params) {	
+			boolean flg = false;
 		  	try {
-		  		JSONObject jsonObject = new JSONObject();
-		  		jsonObject.put("fbid", db.getUserFbID());
-		  		jsonObject.put("fname", db.getUserFirstName());
-		  		jsonObject.put("lname", db.getUserLastName());
-		  		JSONObject json = KlHttpClient.SendHttpPost(URL.LOGIN.getURL(), jsonObject);
-		    return json.getBoolean("status");
+		  		JSONObject request = new JSONObject();
+		  	if(logintype.equalsIgnoreCase("F")){		  		
+		  		request.put("fbid", fb_id);
+		  		request.put("fname", fb_fname);
+		  		request.put("lname", fb_lname);
+		  		request.put("usertype", "F");
+		  	}else{
+		  		request.put("user_id", et_username.getText().toString().trim());
+				request.put("password", et_password.getText().toString().trim());
+				request.put("usertype", "N");
+		  	}
+		  	Log.e(TAG, "SIGN in REQ===>>"+request.toString());
+		  		JSONObject response = KlHttpClient.SendHttpPost(URL.LOGIN.getUrl(), request);
+		  		Log.e(TAG, "Sign in response=====>>"+response.toString());
+		  		if(response!=null){
+		  			flg =  response.getBoolean("status");
+		  			if(flg){
+		  				String imgurl;
+		  				if(!response.isNull("image")){
+		  					imgurl = URL.IMAGE_PATH.getUrl()+response.getString("image");		  					
+		  				}else{
+		  					imgurl = "https://graph.facebook.com/" + response.getString("user_id")	+ "/picture";
+		  				}
+		  				myApp.getAppInfo().setUserInfo(response.getString("first_name"),response.getString("last_name"), response.getString("user_id"),imgurl);
+	    	        	myApp.getAppInfo().setSession(true);
+		  			}
+		  			
+		  		}	   
 				
 			} catch (Exception e) {
+				dismissProgressDialog();
 				e.printStackTrace();
 			}
-			return null;
+			return flg;
 		}
 		@Override
 		protected void onPostExecute(Boolean status) {
-			if(status){
 			dismissProgressDialog();
+			if(status){			
 			startActivity(new Intent(SigninView.this, HomeView.class));
 			SigninView.this.finish();
 			}
 			
-		}	
-		
-		 
-
+		}
 	}
     public void getFriendList(){
     	String fqlQuery = "SELECT uid,name,pic_square FROM user WHERE uid IN " +
@@ -258,4 +326,44 @@ public class SigninView extends BaseView {
     	}); 
     	Request.executeBatchAsync(request); 
     }
+    
+    public boolean fieldValidation(){
+    	boolean flg = true;
+    	if(et_username.getText().toString().trim().equals("")){
+    		et_username.setError("Please enter username");
+    		flg = false;
+    	}
+    	
+    	if(et_password.getText().toString().trim().equals("")){
+    		et_password.setError("Please enter password");
+    		flg = false;
+    	}
+    	return flg;
+    }
+    
+    /**
+     *  Retrieve DISTINCT contact list with NAME and PHONE 
+     */    
+    public void getContactList(){
+    	Thread t = new Thread(){
+    		public void run(){
+    			String selection = ContactsContract.Contacts.IN_VISIBLE_GROUP + " = '" + ("1") + "'";
+    	        String sortOrder = ContactsContract.Contacts.DISPLAY_NAME  + " COLLATE LOCALIZED ASC";
+    	        Cursor phones    = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,selection,null, sortOrder);
+    	        if(db.getContactCount()>0){
+    	        	db.emptyContactTable();
+    	        }
+    	        while (phones.moveToNext())
+    	        {
+    	        	String name    = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));    
+    	        	String number  = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+    	            db.insertcontact(name, number);
+    	        }
+    		}
+    	};
+    	t.start();
+    	
+
+    }    
+   
 }

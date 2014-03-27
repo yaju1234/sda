@@ -7,12 +7,6 @@ import android.util.Log;
 
 public class SnowmadaTableCreate {
 	
-	/*private static final String DATABASE_SNOMADA = "CREATE TABLE "
-			+ TableConstantName.TABLE_NAME + " ("
-			+ TableConstantName.ID
-			+ "  INTEGER PRIMARY KEY AUTOINCREMENT, "
-			+ TableConstantName.FACEBOOK_ID + "		  TEXT);";*/
-	
 	private static final String DATABASE_SNOMADA = "CREATE TABLE "
 			+ TableConstantName.TABLE_NAME + " ("
 			+ TableConstantName.ID
@@ -31,20 +25,15 @@ public class SnowmadaTableCreate {
 			+ TableConstantName.TABLE_MEETUP + " ("
 			+ TableConstantName.ID
 			+ "  INTEGER PRIMARY KEY AUTOINCREMENT, "
-			+ TableConstantName.FACEBOOK_ID + " TEXT, "
-			+ TableConstantName.NAME + " TEXT, "
-			+ TableConstantName.LOCATION + " TEXT, "
 			+ TableConstantName.LATITUDE + " TEXT, "
 			+ TableConstantName.LONGITUDE + " TEXT, "
-			+ TableConstantName.CLOCKTIME + " TEXT, "
-			+ TableConstantName.ABOUT + " TEXT, "
-			+ TableConstantName.STATUS + " TEXT, "
-			+ TableConstantName.CREATOR + "		  TEXT);";
+			+ TableConstantName.STATUS + "		  TEXT);";
 	
 	private static final String DATABASE_SKIPETROL = "CREATE TABLE "
 			+ TableConstantName.TABLE_SKIPETROL + " ("
 			+ TableConstantName.ID
 			+ "  INTEGER PRIMARY KEY AUTOINCREMENT, "
+			+ TableConstantName.PATROLER_ID + " TEXT, "
 			+ TableConstantName.FIRSTNAME + " TEXT, "
 			+ TableConstantName.LASTNAME + " TEXT, "
 			+ TableConstantName.LATITUDE + " TEXT, "
@@ -66,23 +55,31 @@ public class SnowmadaTableCreate {
 			+ TableConstantName.FB_ID + " TEXT, "
 			+ TableConstantName.FB_NAME + "		  TEXT);";
 	
+	private static final String DATABASE_CONTACT_LIST = "CREATE TABLE "
+			+ TableConstantName.TABLE_CONTACT_LIST + " ("
+			+ TableConstantName.ID
+			+ "  INTEGER PRIMARY KEY AUTOINCREMENT, "
+			+ TableConstantName.CONTACT_PHONE + " TEXT, "
+			+ TableConstantName.CONTACT_NAME + "		  TEXT);";
+	
 	private static final String DATABASE_SESSION = "CREATE TABLE "
 			+ TableConstantName.TABLE_SESSION + " ("
 			+ TableConstantName.ID
 			+ "  INTEGER PRIMARY KEY AUTOINCREMENT, "
 			+ TableConstantName.IS_SESSION_VALID + "		  TEXT);";
 	
-	public static void onCreate(SQLiteDatabase database) {
+	public static void onCreate (SQLiteDatabase database) {
 		Log.v("SendQueueTable OnCreate", "Reached Here");
 		database.beginTransaction();
 		try {
-			database.execSQL(DATABASE_SNOMADA);
-			database.execSQL(DATABASE_SKI);
-			database.execSQL(DATABASE_MEETUP);
-			database.execSQL(DATABASE_SKIPETROL);
-			database.execSQL(DATABASE_CHAT_MESSAGE);
-			database.execSQL(DATABASE_FACEBOK_FRIENDS);
-			database.execSQL(DATABASE_SESSION);
+			database.execSQL (DATABASE_SNOMADA);
+			database.execSQL (DATABASE_SKI);
+			database.execSQL (DATABASE_MEETUP);
+			database.execSQL (DATABASE_SKIPETROL);
+			database.execSQL (DATABASE_CHAT_MESSAGE);
+			database.execSQL (DATABASE_FACEBOK_FRIENDS);
+			database.execSQL (DATABASE_CONTACT_LIST);
+			database.execSQL (DATABASE_SESSION);
 			database.setTransactionSuccessful();
 		} catch (SQLException e) {
 			throw e;
@@ -91,16 +88,17 @@ public class SnowmadaTableCreate {
 		}
 	}
 
-	public static void onUpgrade(SQLiteDatabase database, int oldVersion,
+	public static void onUpgrade (SQLiteDatabase database, int oldVersion,
 			int newVersion) {
 		    Log.w(SnowmadaTableCreate.class.getName(),"Upgrading database from version " + oldVersion + " to "+ newVersion + ", which will destroy all old data");
-			database.execSQL("DROP TABLE IF EXISTS" + TableConstantName.TABLE_NAME);
-			database.execSQL("DROP TABLE IF EXISTS" + TableConstantName.TABLE_SKI);
-			database.execSQL("DROP TABLE IF EXISTS" + TableConstantName.TABLE_MEETUP);
-			database.execSQL("DROP TABLE IF EXISTS" + TableConstantName.TABLE_SKIPETROL);
-			database.execSQL("DROP TABLE IF EXISTS" + TableConstantName.TABLE_MESSAGE);
-			database.execSQL("DROP TABLE IF EXISTS" + TableConstantName.TABLE_FB_FRIENDS);
-			database.execSQL("DROP TABLE IF EXISTS" + TableConstantName.TABLE_SESSION);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_NAME);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_SKI);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_MEETUP);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_SKIPETROL);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_MESSAGE);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_FB_FRIENDS);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_CONTACT_LIST);
+			database.execSQL("DROP TABLE IF EXISTS " + TableConstantName.TABLE_SESSION);
 		onCreate(database);
 	}
 }

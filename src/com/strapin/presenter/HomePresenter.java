@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import snowmada.main.view.HomeView;
 import snowmada.main.view.R;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -29,8 +28,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.strapin.Enum.URL;
 import com.strapin.Interface.IHome;
-import com.strapin.Util.ImageLoader;
 import com.strapin.Util.Utility;
 import com.strapin.adapter.ChatAdapter;
 import com.strapin.adapter.FriendAdapter;
@@ -38,623 +37,702 @@ import com.strapin.adapter.FriendRequestAdapter;
 import com.strapin.bean.ChatBean;
 import com.strapin.bean.FriendListBean;
 import com.strapin.bean.FriendRequestBean;
-import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
 
-public class HomePresenter implements IHome.Presenter{
+public class HomePresenter implements IHome.Presenter {
 	private HomeView mHomeView;
-	private ArrayList<FriendListBean> mFriendArr = new ArrayList<FriendListBean>();
-	private FriendAdapter mAdapter;
-	private ProgressDialog mDialog;
+	public ArrayList<FriendListBean> friendlistArr = new ArrayList<FriendListBean>();
+	private FriendAdapter friendlistAdapter;
 	private Double mLat;
 	private Double mLng;
-	private String mName;
-	public ImageLoader imageLoader;
+	public  String trackingpersionname;
 	private Marker marker;
-	private SnowmadaDbAdapter mDbAdapter;
-	private boolean TrackDurationControllFlag = false;
-	private  Handler handler = new Handler();
-	private  Runnable runnable;
-	private  long lastUsed;
-	private  long idle=0;
+	public  boolean TrackDurationControllFlag = false;
+	private Handler handler = new Handler();
+	private Runnable runnable;
+	private long lastUsed;
+	private long idle = 0;
 	private ChatAdapter mChatAdapter;
 	private FriendRequestAdapter mRequestAdapter;
-	private int COUNT = 0;
-	public int deletedPos = -1;
-	
+	public  static int COUNT = 0;
+	public  int deletedPos = -1;
+	public  boolean isTracking = true;
+	public  boolean isFriendListFetched = false;
+	private String TAG = "snomada";
+	public boolean isException = false;
+
 	private ArrayList<FriendRequestBean> mRequestArr = new ArrayList<FriendRequestBean>();
-	
-	
-	public HomePresenter(HomeView mHomeView){
+
+	public HomePresenter(HomeView mHomeView) {
 		this.mHomeView = mHomeView;
-		mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(mHomeView.getActivity());
-		imageLoader=new ImageLoader(mHomeView.getActivity());
-		callAdapter();
-		
+
 	}
 
 	@Override
-	public void callAdapter() {
-		if(Utility.isNetworkConnected(mHomeView.getContext())){
+	public void getFriendList() {
+		if (Utility.isNetworkConnected(mHomeView)) {
+			isFriendListFetched = false;
 			new GetFriendListWeb().execute();
 		}
 	}
-	
-	
 
+	/*
+	 * public void trackSKIPatrol(String id,String fname, String lname){
+	 * 
+	 * TrackDurationControllFlag = true;
+	 * mHomeView.hideSlide().setVisibility(View.GONE); mHomeView.myApp.friendId
+	 * = id; trackingpersionname = fname+" "+lname; Global.isZoom = true; COUNT
+	 * = 0; isTracking = false; if(marker!=null){ marker.remove(); }
+	 * mHomeView.getProgressBarLayout().setVisibility(View.VISIBLE);
+	 * handler.removeCallbacks(runnable); mHomeView.myApp.doTrackFriendLocation
+	 * = true;
+	 * 
+	 * }
+	 */
+
+	/**
+	 * Select a Friend from sliding friend list (Chat is not doing on that
+	 * time). A dialog with open with 4 buttons 1. Track 2. View profile 3. Chat
+	 * 4. Delete Friend
+	 * 
+	 */
 	@Override
 	public void setOnFriendClick(final int pos) {
 		mHomeView.hideSlide().setVisibility(View.GONE);
-		final Dialog dialog = new Dialog(mHomeView.getActivity());				
+		final Dialog dialog = new Dialog(mHomeView);
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 		dialog.setContentView(R.layout.track_dialog);
 		dialog.setCancelable(true);
-		dialog.setCanceledOnTouchOutside(true);		
-		TextView friend_name = (TextView)dialog.findViewById(R.id.tv_friend_full_name);
-		ImageView friend_image = (ImageView)dialog.findViewById(R.id.iv_friend_profile_img);		
-		Button chat_with = (Button)dialog.findViewById(R.id.btn_chat_with_friend);
+		dialog.setCanceledOnTouchOutside(true);
+		TextView friend_name = (TextView) dialog.findViewById(R.id.tv_friend_full_name);
+		ImageView friend_image = (ImageView) dialog.findViewById(R.id.iv_friend_profile_img);
+		Button chat_with = (Button) dialog.findViewById(R.id.btn_chat_with_friend);
 		chat_with.setText(Html.fromHtml("<font color=\"#ffffff\">CH</font><font color=\"#28b6ff\">AT</font>"));
-		Button profile = (Button)dialog.findViewById(R.id.btn_view_friend_frofile);
+		Button profile = (Button) dialog.findViewById(R.id.btn_view_friend_frofile);
 		profile.setText(Html.fromHtml("<font color=\"#ffffff\">PROF</font><font color=\"#28b6ff\">ILE</font>"));
-		Button track_friend = (Button)dialog.findViewById(R.id.btn_track_friend_location);
+		Button track_friend = (Button) dialog.findViewById(R.id.btn_track_friend_location);
 		track_friend.setText(Html.fromHtml("<font color=\"#ffffff\">TRA</font><font color=\"#28b6ff\">CK</font>"));
-		Button delete = (Button)dialog.findViewById(R.id.btn_delete_friend);
-		delete.setText(Html.fromHtml("<font color=\"#ffffff\">DEL</font><font color=\"#28b6ff\">ETE</font>"));
-		imageLoader.DisplayImage("https://graph.facebook.com/"+mFriendArr.get(pos).getFbId()+"/picture",friend_image);
-		TextView online_status = (TextView)dialog.findViewById(R.id.tv_friend_online_status);
-		if(mFriendArr.get(pos).getOnlineStatus().equalsIgnoreCase("1")){
+		Button delete = (Button) dialog.findViewById(R.id.btn_delete_friend);
+		delete.setText(Html	.fromHtml("<font color=\"#ffffff\">DEL</font><font color=\"#28b6ff\">ETE</font>"));
+		Log.d(TAG, TAG + "" + friendlistArr.size());
+		mHomeView.imageLoader.DisplayImage("https://graph.facebook.com/"	+ friendlistArr.get(pos).getFbId() + "/picture", friend_image);
+		TextView online_status = (TextView) dialog	.findViewById(R.id.tv_friend_online_status);
+		if (friendlistArr.get(pos).isOnline()) {
 			online_status.setText("Online");
 			online_status.setTextColor(Color.parseColor("#0be423"));
-		}else{
+		} else {
 			online_status.setText("Offline");
 			online_status.setTextColor(Color.parseColor("#FF0000"));
 		}
-		
-		friend_name.setText(mFriendArr.get(pos).getName());
-		dialog.show();		
+
+		friend_name.setText(friendlistArr.get(pos).getName());
+		dialog.show();
+		// Chat with button for chat with the selected friend
 		chat_with.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				dialog.cancel();
-				String friendName = mFriendArr.get(pos).getName();
-				String fbid = mFriendArr.get(pos).getFbId();
-				mHomeView.getChatWindowActive(friendName,fbid);
+				String friendName = friendlistArr.get(pos).getName();
+				String fbid = friendlistArr.get(pos).getFbId();
+				boolean status = Integer.parseInt(friendlistArr.get(pos).getStatus())==1?true:false;
+				String image  = friendlistArr.get(pos).getImage();
+				mHomeView.getChatWindowActive(friendName, fbid,status,image);
 			}
-		});		
+		});
+		// View profile button for view the friend profile
 		profile.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				dialog.cancel();				
-			}
-		});		
-		track_friend.setOnClickListener(new OnClickListener() {			
-			@Override
-			public void onClick(View v) {
 
-				if(mFriendArr.get(pos).getOnlineStatus().equalsIgnoreCase("1")){	
-					/*if(mHomeView.myApp.isMeetuplocationWindoEnable){
-						mHomeView.doTrack();
-					}*/
-					TrackDurationControllFlag = true;
-					mHomeView.hideSlide().setVisibility(View.GONE);
-					mName = mFriendArr.get(pos).getName();
-					Global.sFriendName = mName;
-					Global.sFriendId = mFriendArr.get(pos).getFbId();
-					Global.isZoom = true;
-					if(Utility.isNetworkConnected(mHomeView.getContext())){
-						new SendTrackNotification().execute(mDbAdapter.getUserFbID(),Global.sFriendId);
-						mHomeView.myApp.doTrackFriendLocation = true;
-						mHomeView.getProgressBarLayout().setVisibility(View.VISIBLE);
-						COUNT = 0;
-					}
-					
-				}else{
-					final Dialog dialog1 = new Dialog(mHomeView.getActivity());				
-					dialog1.requestWindowFeature(Window.FEATURE_NO_TITLE);
-					dialog1.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-					dialog1.setContentView(R.layout.track_fail_dialog);
-					dialog1.setCancelable(false);
-					Button ok = (Button)dialog1.findViewById(R.id.iv_ok);
-					ok.setText(Html.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
-					TextView tv_alert_txt = (TextView)dialog1.findViewById(R.id.tv_alert_text);
-					tv_alert_txt.setText(Html.fromHtml("<font color=\"#ffffff\">ALERT</font>&nbsp;&nbsp;<font color=\"#28b6ff\">DIALOG</font>"));
-					ok.setOnClickListener(new OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							dialog1.dismiss();							
-						}
-					});
-					dialog1.show();
-				}	
+			@Override
+			public void onClick(View v) {
 				dialog.cancel();
 			}
 		});
-		
+		// Track button for tracking the friend location . (Track will working
+		// only when user/friend is online)
+		track_friend.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// First Check any tracing is continue or not
+				if (isTracking) {
+					isTracking = false;
+					// Check the friend/user is online/offline
+					if (friendlistArr.get(pos).isOnline()) {
+						TrackDurationControllFlag = true;
+						mHomeView.hideSlide().setVisibility(View.GONE);
+						trackingpersionname = friendlistArr.get(pos).getName();
+						mHomeView.myApp.friendId = friendlistArr.get(pos).getFbId();
+						Global.isZoom = true;
+						if (Utility.isNetworkConnected(mHomeView)) {
+							new SendTrackNotification().execute();
+							mHomeView.myApp.doTrackFriendLocation = true;
+							mHomeView.getProgressBarLayout().setVisibility(	View.VISIBLE);
+							COUNT = 0;
+						}
+
+					} else {
+						final Dialog user_offline_dialog = new Dialog(mHomeView);
+						user_offline_dialog	.requestWindowFeature(Window.FEATURE_NO_TITLE);
+						user_offline_dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+						user_offline_dialog	.setContentView(R.layout.track_fail_dialog);
+						user_offline_dialog.setCancelable(false);
+						Button ok = (Button) user_offline_dialog.findViewById(R.id.iv_ok);
+						ok.setText(Html	.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
+						TextView tv_alert_txt = (TextView) user_offline_dialog.findViewById(R.id.tv_alert_text);
+						tv_alert_txt.setText(Html.fromHtml("<font color=\"#ffffff\">ALERT</font>&nbsp;&nbsp;<font color=\"#28b6ff\">DIALOG</font>"));
+						ok.setOnClickListener(new OnClickListener() {
+
+							@Override
+							public void onClick(View v) {
+								isTracking = true;
+								user_offline_dialog.dismiss();
+							}
+						});
+						user_offline_dialog.show();
+					}
+					dialog.cancel();
+				} else {
+					Toast.makeText(mHomeView,	"Please wait... tracing continue",Toast.LENGTH_LONG).show();
+				}
+			}
+
+		});
+
 		delete.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				dialog.cancel();
 				showConfirmDeleteDialog(pos);
-				
-			}
 
-			
+			}
 		});
-		}
-	
-	
+	}
+
 	@Override
 	public void getFriendCurrentLocation() {
-		if(Utility.isNetworkConnected(mHomeView.getContext())){
-			new getFriendLocation1().execute(Global.sFriendId);
-		}		
+
+		//Toast.makeText(mHomeView, "COUNT == " + COUNT, 1000).show();
+		if (mHomeView.myApp.isNetworkConnected(mHomeView)) {
+			if (COUNT > 3) {
+				new LocationTrack().execute(true);
+
+			} else {
+				COUNT++;
+				Global.isZoom = true;
+				mHomeView.getProgressBarLayout().setVisibility(View.VISIBLE);
+				new LocationTrack().execute(false);
+			}
+
+		}
 	}
-	
+
 	public void HandleTrackPeriod() {
 		lastUsed = System.currentTimeMillis();
 		idle = 0;
 		runnable = new Runnable() {
 			public void run() {
-				handler.postDelayed(runnable, 3000);
 
+				handler.postDelayed(runnable, 100);
 				idle = System.currentTimeMillis() - lastUsed;
 				Log.i("idle", "" + idle);
-
-				if (idle >= 30000/*5*60*1000*/) {
+				if (idle >= 30000) {
 					mHomeView.myApp.doTrackFriendLocation = false;
-					//mHomeView.getMap().clear();
-					marker.remove();
-					handler.removeCallbacks(runnable);
-					
+					Log.e(TAG, TAG + "staus"+ mHomeView.myApp.doTrackFriendLocation);
+					COUNT = 0;
+					isTracking = true;
+					if (marker != null) {
+						marker.remove();
 					}
+					handler.removeCallbacks(runnable);
+				}
+
 			}
 		};
 		handler.postDelayed(runnable, 1000);
-		
+
 	}
 
-	
-
 	@Override
-	public void findListPosition(String sataus, String fbid) {
+	public void findListPosition(boolean sataus, String fbid) {
 		int pos = -1;
-		
-		for(int i=0; i<mFriendArr.size(); i++){
-			if(mFriendArr.get(i).getFbId().equalsIgnoreCase(fbid)){
+		for (int i = 0; i < friendlistArr.size(); i++) {
+			if (friendlistArr.get(i).getFbId().equalsIgnoreCase(fbid)) {
 				pos = i;
 				break;
 			}
 		}
-		Log.e("position", ""+pos);
-		
 		updateItemAtPosition(pos, sataus);
 	}
-	
-	private void updateItemAtPosition(int position, String status) {
-		mFriendArr.get(position).setOnlineStatus(status);
-		mAdapter = new FriendAdapter(HomePresenter.this,mHomeView, R.layout.friend_row1, mFriendArr);
-		mHomeView.getList().setAdapter(mAdapter);
-		//mHomeView.getList().setOnTouchListener(mTouchListener);
-		}
-	
-	
-public class SKIEmergencyButtonPressWeb extends AsyncTask<String, Void, Boolean>{
 
-		
+	private void updateItemAtPosition(int position, boolean isonline) {
+		friendlistArr.get(position).setOnline(isonline);
+		friendlistAdapter = new FriendAdapter(mHomeView, R.layout.friend_row1,	friendlistArr);
+		mHomeView.lv_friend_list.setAdapter(friendlistAdapter);
+	}
+
+	public class SKIEmergencyButtonPressWeb extends	AsyncTask<String, Void, Boolean> {
+
 		protected void onPreExecute() {
-			mDialog = new ProgressDialog(mHomeView.getActivity());
-			mDialog.setMessage("Please wait...");
-			mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			mDialog.setIndeterminate(true);
-			mDialog.setCancelable(false);
-			mDialog.show();
+			mHomeView.showProgressDailog();
 		}
 
 		@Override
 		protected Boolean doInBackground(String... params) {
-			
-		  	try {
-				JSONObject mJsonObject = new JSONObject();
-				mJsonObject.put("fbid", params[0]);
+
+			try {
+				JSONObject request = new JSONObject();
+				request.put("fbid", params[0]);
+				Log.e(TAG, "JSON REQUEST===>"+request.toString());
+				JSONObject response = KlHttpClient.SendHttpPost(URL.SKI_PATROL.getUrl(), request);
+				Log.e(TAG, "JSON RESPONSE===>"+request.toString());
+				if(response!=null){
+					return response.getBoolean("status");
+				}
 				
-				Log.e("JSON", mJsonObject.toString());
-				JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/ski_patrol.php", mJsonObject);
-				return json.getBoolean("status");
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
 			return false;
 		}
-		
+
 		@Override
 		protected void onPostExecute(Boolean result) {
-			mDialog.dismiss();
-			if(result){
-				
-				final Dialog dialog1 = new Dialog(mHomeView.getActivity());				
+			mHomeView.dismissProgressDialog();
+			if (result) {
+
+				final Dialog dialog1 = new Dialog(mHomeView);
 				dialog1.requestWindowFeature(Window.FEATURE_NO_TITLE);
-				dialog1.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+				dialog1.getWindow().setBackgroundDrawable(	new ColorDrawable(android.graphics.Color.TRANSPARENT));
 				dialog1.setContentView(R.layout.skipetrol_btn_press_dialog);
 				dialog1.setCancelable(false);
-				
-				Button ok = (Button)dialog1.findViewById(R.id.iv_dlg_ok);
-				ok.setText(Html.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
-				TextView tv_dialog = (TextView)dialog1.findViewById(R.id.tv_alert_dialog_text);
+
+				Button ok = (Button) dialog1.findViewById(R.id.iv_dlg_ok);
+				ok.setText(Html	.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
+				TextView tv_dialog = (TextView) dialog1	.findViewById(R.id.tv_alert_dialog_text);
 				tv_dialog.setText(Html.fromHtml("<font color=\"#ffffff\">ALERT</font>&nbsp;&nbsp;<font color=\"#28b6ff\">DIALOG</font>"));
-				
+
 				ok.setOnClickListener(new OnClickListener() {
-					
+
 					@Override
 					public void onClick(View v) {
-						
+
 						dialog1.dismiss();
 					}
 				});
-				
+
 				dialog1.show();
-						}
+			}
 		}
 	}
 
+	public class GetFriendListWeb extends AsyncTask<String, Void, Boolean> {
+		protected void onPreExecute() {
+			 mHomeView.showProgressDailog();
+			
+		}
 
-public class GetFriendListWeb extends AsyncTask<String, Void, Boolean>{		
-	protected void onPreExecute() {
-		mDialog = new ProgressDialog(mHomeView.getContext());
-		mDialog.setMessage("Please wait...");
-		mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		mDialog.setIndeterminate(true);
-		mDialog.setCancelable(false);
-		mDialog.show();		
-		Log.e("GetFriendListWeb", "GetFriendListWeb");
-		
+		@Override
+		protected Boolean doInBackground(String... params) {
+			try {
+				boolean flag = false;
+				String image;
+				JSONObject request = new JSONObject();
+				request.put("fbid", mHomeView.myApp.getAppInfo().userId);
+				JSONObject response = KlHttpClient.SendHttpPost(URL.FRIEND_LIST.getUrl(), request);
+				Log.i(TAG,"Friend List JSON ============>>>"+response.toString());
+				flag = response.getBoolean("status");
+				if (flag) {
+					friendlistArr.clear();
+					JSONArray arr = response.getJSONArray("friends");
+					for (int j = 0; j < arr.length(); j++) {
+						JSONObject c = arr.getJSONObject(j);
+						String name = c.getString("name");
+						String fbid = c.getString("friend_facebook_id");
+						String track = c.getString("track");
+						boolean online = Integer.parseInt(c	.getString("online_status")) == 1 ? true: false;
+						String isuserexists = c.getString("isuserexists");
+						if(!c.isNull("image")){
+							image = "http://clickfordevelopers.com/demo/snowmada/uploads/"+c.getString("image");		  					
+		  				}else{
+		  					image = "https://graph.facebook.com/" +fbid+ "/picture";
+		  				}
+						friendlistArr.add(new FriendListBean(name, fbid, track,	online, isuserexists,image));
+						//
+					}
+					return flag;
+				} else {
+					return flag;
+				}
+			} catch (Exception e) {
+				 mHomeView.dismissProgressDialog();
+				e.printStackTrace();
+				return false;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(Boolean status) {
+			 mHomeView.dismissProgressDialog();
+			//Toast.makeText(mHomeView, "get Friend list", 1000).show();
+			if (status) {
+				isFriendListFetched = true;
+				friendlistAdapter = new FriendAdapter(mHomeView,R.layout.friend_row1, friendlistArr);
+				mHomeView.lv_friend_list.setAdapter(friendlistAdapter);
+			}
+		}
 	}
-	@Override
-	protected Boolean doInBackground(String... params) {
-		
-	  	try {
-	  		boolean flag = false;
-	  		JSONObject jsonObject = new JSONObject();
-	  		jsonObject.put("fbid", mDbAdapter.getUserFbID());
-	  		
-	  		Log.e("JSON", jsonObject.toString());
-	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/snowmada_friend.php", jsonObject);
-	  		Log.e("Friend list Response JSON", json.toString());
-	  		flag = json.getBoolean("status");
-	  		if(flag){
-	  			mFriendArr.clear();
-	  			JSONArray arr = json.getJSONArray("friends");
-	  			for(int j=0; j< arr.length(); j++){
-	  				JSONObject c = arr.getJSONObject(j);
-	  				String name = c.getString("name");
-	  				String fbid = c.getString("friend_facebook_id");
-	  				String track = c.getString("track");
-	  				String online = c.getString("online_status");
-	  				String isuserexists = c.getString("isuserexists");
-	  				mFriendArr.add(new FriendListBean(name, fbid, track,online,isuserexists));
-	  				//
-	  			} 
-	  			return flag;
-	   }else{
-		   return flag;
-	   }					
-		} catch (Exception e) {
-			mDialog.dismiss();
-			e.printStackTrace();
-			return false;
-		}				
+
+	public class LocationTrack extends AsyncTask<Boolean, Void, Boolean> {
+
+		@Override
+		protected Boolean doInBackground(Boolean... params) {
+			try {
+				JSONObject jsonObject = new JSONObject();
+				jsonObject.put("user_id", mHomeView.myApp.friendId);
+				JSONObject json = KlHttpClient.SendHttpPost(URL.GET_LOCATION.getUrl(), jsonObject);
+				Log.e("Received friend location JSOn", json.toString());
+				Double lat = Double.valueOf(json.getString("lat"));
+				mLat = lat;
+				Double lng = Double.valueOf(json.getString("lng"));
+				mLng = lng;
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return false;
+			}catch(NumberFormatException e){
+				e.printStackTrace();
+				isException = true;
+				return false;
+			}
+			return params[0];
+		}
+
+		@Override
+		protected void onPostExecute(Boolean status) {
+
+			if (status) {
+				mHomeView.getProgressBarLayout().setVisibility(View.GONE);
+				if (marker != null) {
+					marker.remove();
+				}
+				if (mHomeView.myApp.doTrackFriendLocation) {
+					Log.d(TAG, TAG + "lat=" + mLat);
+					Log.d(TAG, TAG + "lat=" + mLng);
+					marker = mHomeView.getMap().addMarker(
+							new MarkerOptions()
+									.position(new LatLng(mLat, mLng))
+									.title("Name:" + trackingpersionname)
+									.snippet("Time:" + new Date().getHours()
+													+ ":"
+													+ new Date().getMinutes()
+													+ ":"
+													+ new Date().getSeconds())
+									.snippet("Time:" + new Date().getHours()
+													+ ":"
+													+ new Date().getMinutes()
+													+ ":"
+													+ new Date().getSeconds())
+									.icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
+					marker.showInfoWindow();
+					if (Global.isZoom) {
+						mHomeView.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLat, mLng), 16));
+						Global.isZoom = false;
+					}
+				}
+				/**
+				 * Call Timer for 1 min
+				 */
+				if (TrackDurationControllFlag) {
+					Log.e("timer Contol flag=======>>>>>>>>>>>>>>>>>>>>>>>>",	"" + TrackDurationControllFlag);
+					TrackDurationControllFlag = false;
+					HandleTrackPeriod(); // Track 1 min duration control function
+				}
+
+			}else{
+				if(COUNT > 3 && isException){
+					isException = false;
+					mHomeView.getProgressBarLayout().setVisibility(View.GONE);
+					Toast.makeText(mHomeView, "Error locating friend", Toast.LENGTH_LONG).show();
+					mHomeView.myApp.doTrackFriendLocation = false;
+					Log.e(TAG, TAG + "staus"+ mHomeView.myApp.doTrackFriendLocation);
+					COUNT = 0;
+					isTracking = true;
+				}
+				
+			}
+		}
 	}
+
+	public class SendTrackNotification extends AsyncTask<String, Void, Boolean> {
+		@Override
+		protected Boolean doInBackground(String... params) {
+			try {
+				JSONObject jsonObject = new JSONObject();
+				jsonObject.put("fbid", mHomeView.myApp.getAppInfo().userId);
+				jsonObject.put("friend_fb_id", mHomeView.myApp.friendId);
+				Log.e("SendTrackNotification", jsonObject.toString());
+				JSONObject json = KlHttpClient.SendHttpPost(URL.SEND_MESSAGE.getUrl(), jsonObject);
+
+			} catch (Exception e) {
+				// prsDlg.dismiss();
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+	}
+
 	@Override
-	protected void onPostExecute(Boolean status) {
-		mDialog.dismiss();
-		Log.e("GetFriendListWeb onPostExecute", "GetFriendListWeb onPostExecute");
+	public void doSkiPatrolFunction() {
+		if(mHomeView.myApp.isNetworkConnected(mHomeView)){
+			new SKIEmergencyButtonPressWeb().execute(mHomeView.myApp.getAppInfo().userId);
+		}
+		
+
+	}
+
+	@Override
+	public void functionChat(String facebookid, String name, boolean status, String image) {
+		mHomeView.getChatFriend().setText(name);
 		if(status){
-			mAdapter = new FriendAdapter(HomePresenter.this,mHomeView, R.layout.friend_row1, mFriendArr);
-			
-			mHomeView.getList().setAdapter(mAdapter);
-			
-		}				
-	}	
-}
-
-
-
-public class getFriendLocation1 extends AsyncTask<String, Void, Boolean>{		
-	protected void onPreExecute() {
-	
+			mHomeView.getChatFriend().setCompoundDrawablesWithIntrinsicBounds(null, null, mHomeView.getResources().getDrawable(R.drawable.green_ball), null);
+		}else{
+			mHomeView.getChatFriend().setCompoundDrawablesWithIntrinsicBounds(null, null, mHomeView.getResources().getDrawable(R.drawable.red_ball), null);
+		}
+		mHomeView.hideSlide().setVisibility(View.GONE);
+		String fname = name;
+		String[] splitStr = fname.split("\\s+");
+		mHomeView.myApp.getAppInfo().setSenderIDChat(facebookid);
+		Global.iv_chat_avatar_img = image;
+		mHomeView.myApp.IMname = splitStr[0];
+		new getChatHistory().execute(facebookid, splitStr[0]);
 	}
-	@Override
-	protected Boolean doInBackground(String... params) {			
-	  	try {
-	  		JSONObject jsonObject = new JSONObject();
-	  		jsonObject.put("fbid", params[0]);
-	  		
-	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/getlocation.php", jsonObject);
-	  		Log.e("Received friend location JSOn", json.toString());
-	  		Double lat =  Double.valueOf(json.getString("lat"));
-	  		mLat = lat;
-	  		Double lng =  Double.valueOf(json.getString("lng"));
-	  		mLng = lng;
-			
-		} catch (Exception e) {
-			//prsDlg.dismiss();
-			e.printStackTrace();
-		}
-		return null;
+
+	public void closeSlider() {
+		mHomeView.hideSlide().setVisibility(View.GONE);
 	}
-	@Override
-	protected void onPostExecute(Boolean status) {
-		//Toast.makeText(mHomeView, ""+COUNT, Toast.LENGTH_LONG).show();
-		
-		COUNT++;
-		if(COUNT>3){
-			mHomeView.getProgressBarLayout().setVisibility(View.GONE);
-		//mHomeView.getMap().clear();	
-		if(marker != null){
-			marker.remove();
-		}
-		marker = mHomeView.getMap().addMarker(new MarkerOptions().position(new LatLng(mLat, mLng)).title("Name:"+mName/*+" "+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()+"Distance:"+distance+" meter"*/).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds()).snippet("Time:"+new Date().getHours()+":"+new Date().getMinutes()+":"+new Date().getSeconds())  .icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
-		marker.showInfoWindow();
-		if(Global.isZoom){
-			Global.isZoom = false;
-			mHomeView.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLat, mLng), 16));
-			
-		}
-		/*if(Global.isInfoWindow){
-			marker.showInfoWindow();	
-		}*/
-		
-		if(TrackDurationControllFlag){
-			TrackDurationControllFlag = false;
-			HandleTrackPeriod();
-		}
-		}
-		
-			
-	}	
-}
 
-public class SendTrackNotification extends AsyncTask<String, Void, Boolean>{		
-	@Override
-	protected Boolean doInBackground(String... params) {			
-	  	try {
-	  		JSONObject jsonObject = new JSONObject();
-	  		jsonObject.put("fbid", params[0]);
-	  		jsonObject.put("friend_fb_id", params[1]);	
-	  		Log.e("SendTrackNotification", jsonObject.toString());
-	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/send_message.php", jsonObject);
-			
-		} catch (Exception e) {
-			//prsDlg.dismiss();
-			e.printStackTrace();
+	public class getChatHistory extends	AsyncTask<String, Void, ArrayList<ChatBean>> {
+		protected void onPreExecute() {
+
 		}
-		return null;
-	}
-	
-}
 
+		@Override
+		protected ArrayList<ChatBean> doInBackground(String... params) {
+			try {
+				JSONObject jsonObject = new JSONObject();
+				jsonObject.put("sender_fb_id",	 mHomeView.myApp.getAppInfo().userId);
+				jsonObject.put("receiver_fb_id", params[0]);
+				jsonObject.put("sender_name",    mHomeView.myApp.getAppInfo().userFirstName);
+				jsonObject.put("receiver_name",  params[1]);
 
-@Override
-public void doSkiPatrolFunction() {
-	new SKIEmergencyButtonPressWeb().execute(mDbAdapter.getUserFbID());
-	
-}
-
-@Override
-public void functionChat(String facebookid, String name) {
-	mHomeView.getChatFriend().setText(name);
-	mHomeView.hideSlide().setVisibility(View.GONE);
-	String fname = name;
-	String[] splitStr = fname.split("\\s+");
-	mHomeView.myApp.getAppInfo().setSenderIDChat(facebookid);
-	Global.mChatUserName = splitStr[0];
-	new getChatHistory().execute(facebookid,splitStr[0]);
-}
-public void closeSlider(){
-	mHomeView.hideSlide().setVisibility(View.GONE);
-}
-public class getChatHistory extends AsyncTask<String, Void, ArrayList<ChatBean>>{		
-	protected void onPreExecute() {
-	
-	}
-	@Override
-	protected ArrayList<ChatBean> doInBackground(String... params) {			
-	  	try {
-	  		JSONObject jsonObject = new JSONObject();
-	  		jsonObject.put("sender_fb_id", mDbAdapter.getUserFbID());
-	  		jsonObject.put("receiver_fb_id",params[0]);
-	  		jsonObject.put("sender_name", mDbAdapter.getUserFirstName());
-	  		jsonObject.put("receiver_name", params[1]);
-	  		
-	  		JSONObject json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/chat_history.php", jsonObject);
-	  		Log.e("Received Chat history", json.toString());
-	  		if(json != null){
-				Global.mChatArr.clear();
+				JSONObject json = KlHttpClient.SendHttpPost(URL.CHAT_HISTORY.getUrl(), jsonObject);
+				Log.e("Received Chat history", json.toString());
+				if (json != null) {
+					Global.mChatArr.clear();
 					JSONArray array = json.getJSONArray("history");
-					for(int i = 0;i<array.length();i++){
+					for (int i = 0; i < array.length(); i++) {
 						JSONObject obj = array.getJSONObject(i);
 						String sender_name = obj.getString("sender");
 						String message = obj.getString("message");
 						Global.mChatArr.add(new ChatBean(sender_name, message));
 					}
 					return Global.mChatArr;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			return null;
 		}
-		return null;
-	}
-	@Override
-	protected void onPostExecute(ArrayList<ChatBean> result) {
-		//prsDlg.dismiss();
-		if(result != null){
-			if(result.size()>0){
-				mChatAdapter = new ChatAdapter(mHomeView.getContext(), R.layout.chat_row, result);
-				mHomeView.getChatListView().setAdapter(mChatAdapter);
-				mHomeView.getChatListView().setSelection(Global.mChatArr.size()-1);
-			}else{
-				mChatAdapter = new ChatAdapter(mHomeView.getContext(), R.layout.chat_row, result);
-				mHomeView.getChatListView().setAdapter(mChatAdapter);
-			}
-		}		
-	}	
-}
 
-public void ackAfterFriendRequest(int pos){
-	mRequestArr.remove(pos);
-	mRequestAdapter = new FriendRequestAdapter(HomePresenter.this,mHomeView.getActivity(),mHomeView.getActivity(),R.layout.request_notification_row, mRequestArr);
-	mHomeView.getRequestList().setAdapter(mRequestAdapter);	
-}
-
-public void getFriendRequest(){
-	new GetAllFriendRequest().execute();
-}
-
-public class GetAllFriendRequest extends AsyncTask<String, Void, Boolean>{		
-	protected void onPreExecute() {
-		mDialog = new ProgressDialog(mHomeView.getActivity());
-		mDialog.setMessage("Please wait...");
-		mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		mDialog.setIndeterminate(true);
-		mDialog.setCancelable(false);
-		mDialog.show();
-	}		
-	@Override
-	protected Boolean doInBackground(String... params) {
-		JSONObject json;
-		boolean flag = false;
-	  	try {
-			JSONObject mJsonObject = new JSONObject();
-			mJsonObject.put("fbid", mDbAdapter.getUserFbID());
-			json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/pending_friend.php", mJsonObject);
-			if(json!=null){
-				flag = json.getBoolean("status");
-				if(flag){
-					JSONArray jarray = json.getJSONArray("friends");
-					mRequestArr.clear();
-					for(int i= 0; i<jarray.length(); i++){
-						JSONObject obj = jarray.getJSONObject(i);
-						String record_id = obj.getString("recordid");
-						String sender_fbid = obj.getString("sender_facebook_profile_id");
-						String sender_fname = obj.getString("first_name");
-						String sender_lname = obj.getString("last_name");
-						String trackstatus = obj.getString("trackstatus");
-						String sender_name = sender_fname +" "+sender_lname;
-						Log.e("name", sender_name);
-					
-						mRequestArr.add(new FriendRequestBean(sender_fbid, mDbAdapter.getUserFbID(), sender_name, record_id,trackstatus));
-						
-					}
-				}else{
-					return false;
+		@Override
+		protected void onPostExecute(ArrayList<ChatBean> result) {
+			// prsDlg.dismiss();
+			if (result != null) {
+				if (result.size() > 0) {
+					mChatAdapter = new ChatAdapter(mHomeView,R.layout.chat_row, result);
+					mHomeView.getChatListView().setAdapter(mChatAdapter);
+					mHomeView.getChatListView().setSelection(Global.mChatArr.size() - 1);
+				} else {
+					mChatAdapter = new ChatAdapter(mHomeView,R.layout.chat_row, result);
+					mHomeView.getChatListView().setAdapter(mChatAdapter);
 				}
 			}
-	  	}catch (Exception e) {
-			return false;
-		}
-		return flag;
-	}
-	
-	@Override
-	protected void onPostExecute(Boolean result) {							
-			mDialog.dismiss();		
-			if(result){
-				mRequestAdapter = new FriendRequestAdapter(HomePresenter.this,mHomeView.getActivity(),mHomeView.getActivity(),R.layout.request_notification_row, mRequestArr);
-				mHomeView.getRequestList().setAdapter(mRequestAdapter);	
-			}							
 		}
 	}
 
-public void updatePendingFriendList(String sender_id, String sender_name,
-		String receiver_fbid, String record_id, String track_status) {
-		mRequestArr.add(new FriendRequestBean(sender_id, mDbAdapter.getUserFbID(), sender_name, record_id,track_status));
-		mRequestAdapter = new FriendRequestAdapter(HomePresenter.this,mHomeView.getActivity(),mHomeView.getActivity(),R.layout.request_notification_row, mRequestArr);
-		mHomeView.getRequestList().setAdapter(mRequestAdapter);	
+	public void ackAfterFriendRequest(int pos) {
+		mRequestArr.remove(pos);
+		mRequestAdapter = new FriendRequestAdapter(mHomeView,R.layout.request_notification_row, mRequestArr);
+		mHomeView.getRequestList().setAdapter(mRequestAdapter);
 	}
 
-@Override
-public void CallChatWindow(String friendName, String fbid) {
-	mHomeView.getChatWindowActive(friendName,fbid);
-	
-}
+	public void getFriendRequest() {
+		new GetAllFriendRequest().execute();
+	}
 
-public class DeleteFriendWeb extends AsyncTask<String, Void, Boolean>{		
-	protected void onPreExecute() {
-		mDialog = new ProgressDialog(mHomeView.getActivity());
-		mDialog.setMessage("Please wait...");
-		mDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		mDialog.setIndeterminate(true);
-		mDialog.setCancelable(false);
-		mDialog.show();
-	}		
-	@Override
-	protected Boolean doInBackground(String... params) {
-		JSONObject json;
-		boolean flag = false;
-	  	try {
-			JSONObject mJsonObject = new JSONObject();
-			mJsonObject.put("fbid", mDbAdapter.getUserFbID());
-			mJsonObject.put("friend_id", params[0]);
-			json = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/delete_friend.php", mJsonObject);
-			if(json!=null){
-				flag = json.getBoolean("del_status");
-				
+	public class GetAllFriendRequest extends AsyncTask<String, Void, Boolean> {
+		protected void onPreExecute() {
+			mHomeView.showProgressDailog();
+		}
+
+		@Override
+		protected Boolean doInBackground(String... params) {
+			JSONObject json;
+			boolean flag = false;
+			String image;
+			try {
+				JSONObject mJsonObject = new JSONObject();
+				mJsonObject.put("fbid", mHomeView.myApp.getAppInfo().userId);
+				json = KlHttpClient.SendHttpPost(URL.PENDING_FRIEND_REQUEST.getUrl(), mJsonObject);
+				if (json != null) {
+					flag = json.getBoolean("status");
+					if (flag) {
+						JSONArray jarray = json.getJSONArray("friends");
+						mRequestArr.clear();
+						for (int i = 0; i < jarray.length(); i++) {
+							JSONObject obj      = jarray.getJSONObject(i);
+							String record_id    = obj.getString("recordid");
+							String sender_fbid  = obj.getString("sender_facebook_profile_id");
+							String sender_fname = obj.getString("first_name");
+							String sender_lname = obj.getString("last_name");
+							int trackstatus     = Integer.parseInt(obj.getString("trackstatus"));
+							String sender_name  = sender_fname + " "+ sender_lname;
+							Log.e("name", sender_name);
+							if(!obj.isNull("image")){
+								image = "http://clickfordevelopers.com/demo/snowmada/uploads/"+obj.getString("image");		  					
+			  				}else{
+			  					image = "https://graph.facebook.com/" +sender_fbid+ "/picture";
+			  				}
+							mRequestArr.add(new FriendRequestBean(sender_fbid,mHomeView.myApp.getAppInfo().userId,sender_name, record_id, trackstatus,image));
+
+						}
+					} else {
+						return false;
+					}
+				}
+			} catch (Exception e) {
+				return false;
 			}
-	  	}catch (Exception e) {
 			return flag;
 		}
-		return flag;
-	}
-	
-	@Override
-	protected void onPostExecute(Boolean result) {							
-			mDialog.dismiss();		
-			if(result){
-				mFriendArr.remove(deletedPos);
-				
-				mAdapter = new FriendAdapter(HomePresenter.this,mHomeView, R.layout.friend_row1, mFriendArr);				
-				mHomeView.getList().setAdapter(mAdapter);
-			}							
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			mHomeView.dismissProgressDialog();
+			if (result) {
+				mRequestAdapter = new FriendRequestAdapter(mHomeView,R.layout.request_notification_row, mRequestArr);
+				mHomeView.getRequestList().setAdapter(mRequestAdapter);
+			}
 		}
 	}
 
-public void showConfirmDeleteDialog(final int pos) {
-	final Dialog deleteDlg = new Dialog(mHomeView.getActivity());				
-	deleteDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
-	deleteDlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-	deleteDlg.setContentView(R.layout.confirm_delete_dlg);
-	deleteDlg.setCancelable(true);
-	deleteDlg.setCanceledOnTouchOutside(true);	
-	Button btn_yes = (Button)deleteDlg.findViewById(R.id.btn_confirm_delete_yes);
-	btn_yes.setText(Html.fromHtml("<font color=\"#ffffff\">YE</font><font color=\"#28b6ff\">S</font>"));
-	Button btn_no = (Button)deleteDlg.findViewById(R.id.btn_confirm_delete_no);
-	btn_no.setText(Html.fromHtml("<font color=\"#ffffff\">N</font><font color=\"#28b6ff\">O</font>"));
-	btn_yes.setOnClickListener(new OnClickListener() {
-		
-		@Override
-		public void onClick(View v) {
-			deleteDlg.dismiss();
-			String friend_id = mFriendArr.get(pos).getFbId();
-			deletedPos = pos;
-			new DeleteFriendWeb().execute(friend_id);
+	public void updatePendingFriendList(String sender_id, String sender_name,String receiver_fbid, String record_id, int track_status,String image) {
+		mRequestArr.add(new FriendRequestBean(sender_id, mHomeView.myApp.getAppInfo().userId, sender_name, record_id, track_status,image));
+		mRequestAdapter = new FriendRequestAdapter(mHomeView,R.layout.request_notification_row, mRequestArr);
+		mHomeView.getRequestList().setAdapter(mRequestAdapter);
+	}
+
+	@Override
+	public void CallChatWindow(String friendName, String fbid,boolean status, String image) {
+		mHomeView.getChatWindowActive(friendName, fbid,status,image);
+
+	}
+
+	public class DeleteFriendWeb extends AsyncTask<String, Void, Boolean> {
+		protected void onPreExecute() {
+			mHomeView.showProgressDailog();
 		}
-	});
+
+		@Override
+		protected Boolean doInBackground(String... params) {
+			JSONObject json;
+			boolean flag = false;
+			try {
+				JSONObject mJsonObject = new JSONObject();
+				mJsonObject.put("fbid", mHomeView.myApp.getAppInfo().userId);
+				mJsonObject.put("friend_id", params[0]);
+				json = KlHttpClient.SendHttpPost(URL.FRIEND_DELETE.getUrl(),mJsonObject);
+				if (json != null) {
+					flag = json.getBoolean("del_status");
+
+				}
+			} catch (Exception e) {
+				mHomeView.dismissProgressDialog();
+				return flag;
+			}
+			return flag;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			mHomeView.dismissProgressDialog();
+			if (result) {
+				friendlistArr.remove(deletedPos);
+				friendlistAdapter = new FriendAdapter(mHomeView,R.layout.friend_row1, friendlistArr);
+				mHomeView.lv_friend_list.setAdapter(friendlistAdapter);
+			}
+		}
+	}
+
+	public void showConfirmDeleteDialog(final int pos) {
+		final Dialog deleteDlg = new Dialog(mHomeView);
+		deleteDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		deleteDlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+		deleteDlg.setContentView(R.layout.confirm_delete_dlg);
+		deleteDlg.setCancelable(true);
+		deleteDlg.setCanceledOnTouchOutside(true);
+		Button btn_yes = (Button) deleteDlg	.findViewById(R.id.btn_confirm_delete_yes);
+		btn_yes.setText(Html.fromHtml("<font color=\"#ffffff\">YE</font><font color=\"#28b6ff\">S</font>"));
+		Button btn_no = (Button) deleteDlg.findViewById(R.id.btn_confirm_delete_no);
+		btn_no.setText(Html	.fromHtml("<font color=\"#ffffff\">N</font><font color=\"#28b6ff\">O</font>"));
+		btn_yes.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				deleteDlg.dismiss();
+				String friend_id = friendlistArr.get(pos).getFbId();
+				deletedPos = pos;
+				new DeleteFriendWeb().execute(friend_id);
+			}
+		});
+
+		btn_no.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				deleteDlg.dismiss();
+			}
+		});
+		deleteDlg.show();
+	}
 	
-	btn_no.setOnClickListener(new OnClickListener() {
-		
-		@Override
-		public void onClick(View v) {
-		
-			deleteDlg.dismiss();
-			
+	public boolean getFriendStatus(String id){
+		boolean status  = false;
+		for(int i=0; i<friendlistArr.size(); i++){
+			if(friendlistArr.get(i).getFbId().equalsIgnoreCase(id)){
+				status = friendlistArr.get(i).isOnline();
+				break;
+			}
 		}
-	});
-	deleteDlg.show();	
-}
+		return status;
+		
+	}
+	
+	public String getFriendImage(String id){
+		String image  = "";
+		for(int i=0; i<friendlistArr.size(); i++){
+			if(friendlistArr.get(i).getFbId().equalsIgnoreCase(id)){
+				image = friendlistArr.get(i).getImage();
+				break;
+			}
+		}
+		return image;
+		
+	}
 
 }

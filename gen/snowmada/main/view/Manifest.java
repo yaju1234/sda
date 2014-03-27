@@ -9,8 +9,6 @@ package snowmada.main.view;
 
 public final class Manifest {
     public static final class permission {
-        /**  Creates a custom permission so only this app can receive its messages. 
-         */
         public static final String C2D_MESSAGE="snowmada.main.view.permission.C2D_MESSAGE";
         public static final String MAPS_RECEIVE="snowmada.main.view.permission.MAPS_RECEIVE";
     }

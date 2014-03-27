@@ -1,18 +1,8 @@
 package snowmada.main.view;
 
 
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.strapin.Interface.IBase;
-import com.strapin.application.AppInfo;
-import com.strapin.application.SnomadaApp;
-import com.strapin.db.SnowmadaDbAdapter;
-
 import android.app.ProgressDialog;
+import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.text.Html;
@@ -21,13 +11,33 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.strapin.Interface.IBase;
+import com.strapin.application.AppInfo;
+import com.strapin.application.SnomadaApp;
+import com.strapin.db.SnowmadaDbAdapter;
+
 public class BaseView extends FragmentActivity implements IBase,OnClickListener,OnMarkerClickListener,OnMapLongClickListener,OnMarkerDragListener,OnInfoWindowClickListener{
-	public SnomadaApp myApp;
-	public boolean inIt  = false;
+	public SnomadaApp                myApp;
+	public boolean inIt              = false;
 	public ProgressDialog prsDlg;
-	public SnowmadaDbAdapter db;;
-	//public ImageLoader imageLoader;
-//	public DisplayImageOptions options;
+	public SnowmadaDbAdapter db;	
+	public DisplayImageOptions options;
+    protected ImageLoader imageLoader = ImageLoader.getInstance();  
+    
+
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		db = SnowmadaDbAdapter.databaseHelperInstance(this);
+	}
 
 	@Override
 	protected void onStart() {
@@ -39,19 +49,10 @@ public class BaseView extends FragmentActivity implements IBase,OnClickListener,
 		    StrictMode.setThreadPolicy(policy);
 		}
 		myApp = (SnomadaApp) getApplication();
-		db = SnowmadaDbAdapter.databaseHelperInstance(this);
+		
 		if(!myApp.inIt){
 			myApp.inIt = true;
 			myApp.setAppInfo(new AppInfo(this));
-			
-			/*imageLoader = ImageLoader.getInstance();
-			options = new DisplayImageOptions.Builder()
-			.showStubImage(R.drawable.app_logo)
-			.showImageForEmptyUri(R.drawable.app_logo)
-			.cacheInMemory()
-			.cacheOnDisc()
-			.displayer(new RoundedBitmapDisplayer(20))
-			.build();*/
 			
 		}
 		init();
@@ -109,6 +110,7 @@ public class BaseView extends FragmentActivity implements IBase,OnClickListener,
 		}
 		
 	}
+
 	
 	
 	

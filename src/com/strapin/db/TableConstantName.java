@@ -3,7 +3,7 @@ package com.strapin.db;
 public class TableConstantName {
 	
 	public static final String DATABASE_NAME = "snowmada.db";
-	public static final int    DATABASE_VERSION = 2;
+	public static final int    DATABASE_VERSION = 6;
 	
 	public static final String TABLE_NAME = "snowmada";
 	public static final String ID = "Id";
@@ -16,10 +16,7 @@ public class TableConstantName {
 	
 	public static final String TABLE_MEETUP = "meetup";
 	public static final String NAME = "name";
-	public static final String LOCATION = "location";
-	public static final String CLOCKTIME = "time1";
-	public static final String ABOUT = "about";
-	public static final String CREATOR = "creator";
+	public static final String PATROLER_ID = "patroler_id";
 	public static final String LATITUDE = "lat";
 	public static final String LONGITUDE = "lng";
 	
@@ -37,8 +34,14 @@ public class TableConstantName {
 	public static final String FB_ID = "fbid";
 	public static final String FB_NAME = "fb_name";
 	
+	public static final String TABLE_CONTACT_LIST = "contact_list";
+	public static final String CONTACT_NAME = "fbid";
+	public static final String CONTACT_PHONE = "fb_name";
+	
 	public static final String TABLE_SESSION = "session";
 	public static final String IS_SESSION_VALID = "issession";
+	
+	
 	
 
 }

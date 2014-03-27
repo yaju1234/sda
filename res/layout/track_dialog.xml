@@ -2,21 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@xml/dlg_black_bg"
+    android:background="@drawable/dlg_texture_bg"
     android:orientation="vertical"
     android:paddingBottom="20dp"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
-    android:paddingTop="20dp" >
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    android:paddingTop="10dp" >
+    
+ <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:background="@color/white"
             android:gravity="center" >
 
             <ImageView
@@ -27,67 +32,105 @@
                 android:src="@drawable/image" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/tv_friend_full_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="Username"
-                android:textColor="@color/white"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/tv_friend_online_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:text="online"
-                android:textColor="#0be423"
-                android:textSize="12sp" />
-        </LinearLayout>
+       
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal" >
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/btn_chat_with_friend"
-            android:layout_width="70dp"
-            android:layout_height="30dp"
-            android:background="@xml/white_rounded"
-            android:layout_marginRight="5dp"
-            android:text="CHAT" />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal" >
 
-        <Button
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+               android:gravity="center|top"
+               android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <Button
+                    android:id="@+id/btn_track_friend_location"
+                    android:layout_width="70dp"
+                    android:layout_height="28dp"
+                    android:layout_marginRight="2dp"
+                    android:background="@xml/white_rounded"
+                    android:text="SUBMIT" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center|top"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <Button
+                    android:id="@+id/btn_chat_with_friend"
+                    android:layout_width="70dp"
+                    android:layout_height="28dp"
+                    android:background="@xml/white_rounded"
+                    android:text="CHAT" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:layout_marginTop="3dp"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:gravity="center|bottom"
+                android:orientation="vertical" >
+                 <Button
             android:id="@+id/btn_view_friend_frofile"
             android:layout_width="70dp"
-            android:layout_height="30dp"
+            android:layout_height="28dp"
             android:background="@xml/white_rounded"
-             android:layout_marginRight="5dp"
             android:text="PROFILE" />
+            </LinearLayout>
 
-        <Button
-            android:id="@+id/btn_track_friend_location"
-            android:layout_width="70dp"
-            android:layout_height="30dp"
-            android:background="@xml/white_rounded"
-             android:layout_marginRight="5dp"
-            android:text="SUBMIT" />
-        
-        <Button
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:gravity="center|bottom"
+                android:orientation="vertical" >
+                  <Button
             android:id="@+id/btn_delete_friend"
             android:layout_width="70dp"
-            android:layout_height="30dp"
+             android:layout_height="28dp"
             android:background="@xml/white_rounded"
             android:text="DELETE" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
+    </LinearLayout>
+     <TextView
+            android:id="@+id/tv_friend_full_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+           android:text="Soumen Ghosh"
+           android:layout_marginTop="5dp"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tv_friend_online_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="online"
+            android:textColor="#0be423"
+            android:textSize="12sp" />
 
 </LinearLayout>
