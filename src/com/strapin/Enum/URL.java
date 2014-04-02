@@ -2,6 +2,7 @@ package com.strapin.Enum;
 
 public enum URL {
 	SEND_CURRENT_LOCATION("http://clickfordevelopers.com/demo/snowmada/send_current_location.php"),
+	SIGNUP("http://clickfordevelopers.com/demo/snowmada/sign_up.php"),
 	LOGIN("http://clickfordevelopers.com/demo/snowmada/login.php"),
 	COUNT_PENDING_FRIEND("http://clickfordevelopers.com/demo/snowmada/count_pending_friend.php"),
 	ADD_FRIEND("http://clickfordevelopers.com/demo/snowmada/add_friend_request.php"),

@@ -13,6 +13,8 @@ public class Global {
 
 	// public static String sFriendName = "";
 	public static boolean isZoom = false;
+	public static boolean isTrackedLocationZoomed = false;
+	public static boolean isAppForeground       = false;
 
 	/* public static String mChatUserName = ""; */
 

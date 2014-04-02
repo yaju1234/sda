@@ -13,7 +13,7 @@ public class AppInfo {
 	public String image                  = null;
 	public boolean session               = false;
 	public String senderIdChat           ="";
-	public boolean isAppForeground       = false;
+	//public boolean isAppForeground       = false;
 	public boolean isAlertForSKIPatrol   = false;
 	public String loginType              = "";
 	public SharedPreferences sharedPreferences;
@@ -27,7 +27,7 @@ public class AppInfo {
 		image                    = sharedPreferences.getString(Constants.Settings.USER_IMAGE.name(), image);
 		session                  = sharedPreferences.getBoolean(Constants.Settings.IS_SESSION_AVAILABLE.name(), session);
 		senderIdChat             = sharedPreferences.getString(Constants.Settings.SENDER_ID_CHAT.name(), senderIdChat);
-		isAppForeground          = sharedPreferences.getBoolean(Constants.Settings.APP_FOREGROUND.name(), isAppForeground);
+		//isAppForeground          = sharedPreferences.getBoolean(Constants.Settings.APP_FOREGROUND.name(), isAppForeground);
 		isAlertForSKIPatrol      = sharedPreferences.getBoolean(Constants.Settings.ALERT_SKI_PATROL.name(), isAlertForSKIPatrol);
 		loginType                = sharedPreferences.getString(Constants.Settings.LOGIN_TYPE.name(), loginType);
 	}
@@ -66,12 +66,12 @@ public class AppInfo {
 		edit.commit();
 	}
 	
-	public void setIsAppForgroung(boolean flg){
+	/*public void setIsAppForgroung(boolean flg){
 		isAppForeground          = flg;
 		Editor edit              = sharedPreferences.edit();
 		edit.putBoolean(Constants.Settings.APP_FOREGROUND.name(), isAppForeground);
 		edit.commit();
-	}
+	}*/
 	
 	public void setIsAlertForSKIPatrol(boolean flg){
 		isAlertForSKIPatrol      = flg;

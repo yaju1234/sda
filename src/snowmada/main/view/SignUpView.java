@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.strapin.Enum.URL;
 import com.strapin.network.KlHttpClient;
 
 import android.os.AsyncTask;
@@ -34,7 +35,7 @@ public class SignUpView extends BaseView{
 		email         = (EditText)findViewById(R.id.et_email);
 		password      = (EditText)findViewById(R.id.et_password);
 		confPassword  = (EditText)findViewById(R.id.et_conf_password);
-		phone       = (EditText)findViewById(R.id.et_ph);
+		phone         = (EditText)findViewById(R.id.et_ph);
 		signUp        = (Button)findViewById(R.id.btn_signup);
 		signUp.setOnClickListener(this);
 	}
@@ -112,7 +113,7 @@ public class SignUpView extends BaseView{
 				request.put("phone1",    phone.getText().toString().trim());
 				request.put("email",    email.getText().toString().trim());
 				request.put("password", password.getText().toString().trim());
-				JSONObject response  = KlHttpClient.SendHttpPost("http://clickfordevelopers.com/demo/snowmada/sign_up.php", request);
+				JSONObject response  = KlHttpClient.SendHttpPost(URL.SIGNUP.getUrl(), request);
 			if(response!=null){
 				flg = response.getBoolean("status");
 			}
@@ -122,20 +123,17 @@ public class SignUpView extends BaseView{
 				return flg;
 			}			
 			return flg;
-		}
-		
+		}		
 
 		@Override
 		protected void onPostExecute(Boolean result) {
 			super.onPostExecute(result);
 			dismissProgressDialog();
-			if(result){
-				
+			if(result){				
 				Toast.makeText(SignUpView.this, "Sign up successfull", Toast.LENGTH_LONG).show();
 				SignUpView.this.finish();
 			}
 		}
-
 		
 	}
 

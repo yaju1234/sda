@@ -77,6 +77,7 @@
                 android:cacheColorHint="@null"
                 android:divider="@null"
                 android:dividerHeight="10dp"
+                android:stackFromBottom="true"
                 android:visibility="visible" >
             </ListView>
 

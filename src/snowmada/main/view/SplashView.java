@@ -18,7 +18,7 @@ public class SplashView extends BaseView implements ISplash{
 	@Override
 	public void init(){
 		myApp.getAppInfo().setSenderIDChat("");
-		myApp.getAppInfo().setIsAppForgroung(true);
+		Global.isAppForeground = true;
 		if(!myApp.getAppInfo().session){
 			new SplashPresenter(this);			
 		}
@@ -27,7 +27,7 @@ public class SplashView extends BaseView implements ISplash{
 	@Override
 	protected void onResume() {
 		super.onResume();
-		myApp.getAppInfo().setIsAppForgroung(true);
+		Global.isAppForeground = true;
 		if(myApp.getAppInfo().session){
 			startActivity(new Intent(SplashView.this,HomeView.class));
 			SplashView.this.finish();

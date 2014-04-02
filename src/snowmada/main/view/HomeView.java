@@ -6,6 +6,8 @@ import static com.strapin.common.CommonUtilities.SENDER_ID;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -193,7 +195,7 @@ public class HomeView extends BaseView implements IHome {
 	private Dialog menu_dialog, meetupUserDlg;
 
 	private ArrayList<DealsBean> mDealsArr                       = new ArrayList<DealsBean>();
-	private ArrayList<AppUserInfoBean> mAddFriendArr             = new ArrayList<AppUserInfoBean>();
+	public ArrayList<AppUserInfoBean>  addFriendArr              = new ArrayList<AppUserInfoBean>();
 	private ArrayList<AppUserInfoBean> mAddFriendSearchArr       = new ArrayList<AppUserInfoBean>();
 
 	private ArrayList<AppUserInfoBean> mInviteFriendArr          = new ArrayList<AppUserInfoBean>();
@@ -291,7 +293,7 @@ public class HomeView extends BaseView implements IHome {
 								+ "\nDescription: "+ meetUpInfoArr.get(i).getDescription()
 								+ "\nDate: "+ meetUpInfoArr.get(i).getDate1()
 								+ "\nTime: "+ meetUpInfoArr.get(i).getTime())
-								.icon (BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+								.icon (BitmapDescriptorFactory.fromResource(R.drawable.meet_up_icon)));
 						m.setDraggable(true);
 						markerIdHasMap.put(m, meetUpInfoArr.get(i).getId());
 					} else {
@@ -302,7 +304,7 @@ public class HomeView extends BaseView implements IHome {
 								+ "\nDescription: "	+ meetUpInfoArr.get(i).getDescription()
 								+ "\nDate: "+ meetUpInfoArr.get(i).getDate1()
 								+ "\nTime: "+ meetUpInfoArr.get(i).getTime())
-								.icon (BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+								.icon (BitmapDescriptorFactory.fromResource(R.drawable.meet_up_icon)));
 						m.setDraggable (false);
 						markerIdHasMap.put (m, meetUpInfoArr.get(i).getId());
 					}
@@ -405,20 +407,18 @@ public class HomeView extends BaseView implements IHome {
 
 			@Override
 			public void afterTextChanged(Editable s) {}
-
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,	int after) {}
-
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,int count) {
 				String searchString = mSearchAddFriend.getText().toString();
 				int textLength = searchString.length();
 				mAddFriendSearchArr.clear();
-				for (int i = 0; i < mAddFriendArr.size(); i++) {
-					String retailerName = mAddFriendArr.get(i).getFirstName()+" "+mAddFriendArr.get(i).getLastName();
+				for (int i = 0; i < addFriendArr.size(); i++) {
+					String retailerName = addFriendArr.get(i).getFirstName()+" "+addFriendArr.get(i).getLastName();
 					if (textLength <= retailerName.length()) {
 						if (searchString.equalsIgnoreCase(retailerName.substring(0, textLength))) {
-							mAddFriendSearchArr.add(new AppUserInfoBean(mAddFriendArr.get(i).getId(),mAddFriendArr.get(i).getEmail(),mAddFriendArr.get(i).getFirstName(),mAddFriendArr.get(i).getLastName(),mAddFriendArr.get(i).getImage(),mAddFriendArr.get(i).getUserType(),mAddFriendArr.get(i).getPhone()));
+							mAddFriendSearchArr.add(new AppUserInfoBean(addFriendArr.get(i).getId(),addFriendArr.get(i).getEmail(),addFriendArr.get(i).getFirstName(),addFriendArr.get(i).getLastName(),addFriendArr.get(i).getImage(),addFriendArr.get(i).getUserType(),addFriendArr.get(i).getPhone()));
 						}
 					}
 				}
@@ -502,10 +502,11 @@ public class HomeView extends BaseView implements IHome {
 
 		if (myApp.getAppInfo().isAlertForSKIPatrol) {
 			myApp.doTrackFriendLocation = true;
+			Global.isTrackedLocationZoomed = true;
 			myApp.getAppInfo().setIsAlertForSKIPatrol(false);
 			Patrol p = db.getSkiPetrolInfo();
 			myApp.friendId = p.getPatrolerId();
-			presenter.trackingpersionname = p.getPatrolerFirstName() + " "	+ p.getPatrolerLastName();
+			presenter.trackingpersionname = p.getPatrolerFirstName()+ " "+ p.getPatrolerLastName();
 			presenter.isTracking = false;
 			HomePresenter.COUNT = 0;
 			presenter.TrackDurationControllFlag = true;
@@ -608,16 +609,19 @@ public class HomeView extends BaseView implements IHome {
 			presenter.doSkiPatrolFunction();
 		}
 		if (v == mMassageLayout) {
-			if (msg.size() > 0) {
-				if (mLayoutMsgNotiList.getVisibility() == View.VISIBLE) {
-					mLayoutMsgNotiList.setVisibility(View.GONE);
-				} else {
-					mLayoutMsgNotiList.setVisibility(View.VISIBLE);
-					mMassageAdapter = new OfflineMessageAdapter(HomeView.this,	R.layout.message_notification_row, msg,mLayoutMsgNotiList);
-					mLvMessageList.setAdapter(mMassageAdapter);
-				}
+			if(msg!=null){
+				if (msg.size() > 0) {
+					if (mLayoutMsgNotiList.getVisibility() == View.VISIBLE) {
+						mLayoutMsgNotiList.setVisibility(View.GONE);
+					} else {
+						mLayoutMsgNotiList.setVisibility(View.VISIBLE);
+						mMassageAdapter = new OfflineMessageAdapter(HomeView.this,	R.layout.message_notification_row, msg,mLayoutMsgNotiList);
+						mLvMessageList.setAdapter(mMassageAdapter);
+					}
 
+				}
 			}
+			
 
 		}
 
@@ -692,7 +696,7 @@ public class HomeView extends BaseView implements IHome {
 				public void onClick(View v) {
 					menu_dialog.dismiss();
 					setLayoutVisibility(View.GONE, View.GONE, View.VISIBLE,	View.GONE, View.GONE, View.GONE, View.INVISIBLE,View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	View.VISIBLE, View.INVISIBLE, false, false, false,ADD_FRIENDS);
-					if (!(mAddFriendArr.size() > 0)) {
+					if (!(addFriendArr.size() > 0)) {
 						new AppUsers().execute();
 					}
 				}
@@ -753,7 +757,7 @@ public class HomeView extends BaseView implements IHome {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
 			myApp.doTrackFriendLocation = false;
-			myApp.getAppInfo().isAppForeground = false;
+			Global.isAppForeground = false;
 			handler.removeCallbacks(runnable);
 			HomeView.this.finish();
 			return true;
@@ -766,7 +770,7 @@ public class HomeView extends BaseView implements IHome {
 		public void onReceive(Context context, Intent intent) {
 			String newMessage = intent.getExtras().getString(EXTRA_MESSAGE);
 			WakeLocker.acquire(getApplicationContext());
-			Log.i("Receive push homeview ======>", newMessage);
+			
 			if (newMessage != null && newMessage.startsWith("{")
 					&& newMessage.endsWith("}")) {
 				try {
@@ -787,13 +791,12 @@ public class HomeView extends BaseView implements IHome {
 						}
 					} else if (status == Constants.SKI_PATROL_PUSH_NOTIFICATION) {
 						
-							if(myApp.getAppInfo().isAppForeground){
+							if(Global.isAppForeground){
 								String patroler_id      = json.getString("patroler_id");
 								String latitude         = json.getString("lat");
 								String longitude        = json.getString("lng");
 								String fname            = json.getString("fname");
-								String lname            = json.getString("lname");
-								
+								String lname            = json.getString("lname");								
 								
 								if (db.getSkiPetrolRowCount() > 0) {
 										db.updateSkiPetrolInfo(patroler_id,fname, lname, latitude,	longitude);
@@ -833,7 +836,7 @@ public class HomeView extends BaseView implements IHome {
 
 	@Override
 	protected void onDestroy() {
-		myApp.getAppInfo().setIsAppForgroung(false);
+		Global.isAppForeground =false;
 		if (mRegisterTask != null) {
 			mRegisterTask.cancel(true);
 		}
@@ -859,12 +862,10 @@ public class HomeView extends BaseView implements IHome {
 	}
 
 	public void getChatWindowActive(String friendName, String fbid, boolean status, String image) {
-		myApp.getAppInfo().isAppForeground = true;
+		Global.isAppForeground = true;
 		setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE, View.GONE,View.VISIBLE, View.GONE, View.INVISIBLE, View.VISIBLE,View.INVISIBLE, View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	false, false, true, CHAT_LIVE);
 		presenter.functionChat(fbid, friendName,status,image);
-		lblActiveChatFriend.setText(friendName);
-		
-		
+		lblActiveChatFriend.setText(friendName);		
 	}
 
 	@Override
@@ -875,17 +876,10 @@ public class HomeView extends BaseView implements IHome {
 	@Override
 	public void defaultChatWindoOpenFromNotificationList() {
 		Bundle bundle = getIntent().getExtras();
-		/*
-		 * if(myApp.getAppInfo().isAlertForSKIPatrol){ myApp.isZoom = true;
-		 * myApp.getAppInfo().setIsAlertForSKIPatrol(false); Patrol p =
-		 * db.getSkiPetrolInfo(); presenter.trackSKIPatrol(p.getPatrolerId(),
-		 * p.getPatrolerFirstName(),p.getPatrolerLastName());
-		 * 
-		 * }
-		 */
+		
 		if (bundle != null) {
 			if (bundle.getString("event").equalsIgnoreCase("chat")) {
-				myApp.getAppInfo().isAppForeground = true;
+				Global.isAppForeground = true;
 				setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE,	View.GONE, View.VISIBLE, View.GONE, View.INVISIBLE,	View.VISIBLE, View.INVISIBLE, View.INVISIBLE,View.INVISIBLE, View.INVISIBLE, false, false, true,	CHAT_LIVE);
 
 				String sender_name = getIntent().getExtras().getString(	"sender_name");
@@ -1013,17 +1007,17 @@ public class HomeView extends BaseView implements IHome {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							dialog.dismiss();
-
-							m = map.addMarker(new MarkerOptions()
+							setMeetUp(point);
+							/*m = map.addMarker(new MarkerOptions()
 									.position(point)
 									.title(myApp.getAppInfo().userFirstName	+ " "+ myApp.getAppInfo().userLastName)
 									.snippet("Click here update info")
 									.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 							m.setDraggable(true);
-
+							
 							current_time_in_millisecond = System.currentTimeMillis();
 							meetUpInfoArr.add(new MeetUpBean(""	+ current_time_in_millisecond, "", "", "",	"", "", "ME", point.latitude,	point.longitude));
-							markerIdHasMap.put(m, ""+ current_time_in_millisecond);
+							markerIdHasMap.put(m, ""+ current_time_in_millisecond);*/
 
 						}
 					});
@@ -1398,7 +1392,7 @@ public class HomeView extends BaseView implements IHome {
 												+ result.get(i).getDescription()
 												+ "\nDate: "+ result.get(i).getDate1()
 												+ "\nTime: "+ result.get(i).getTime())
-								.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+								.icon(BitmapDescriptorFactory.fromResource(R.drawable.meet_up_icon)));
 						m.setDraggable(true);
 
 						markerIdHasMap.put(m, result.get(i).getId());
@@ -1410,7 +1404,7 @@ public class HomeView extends BaseView implements IHome {
 												+ "\nDescription: "	+ result.get(i).getDescription()
 												+ "\nDate: "+ result.get(i).getDate1()
 												+ "\nTime: "+ result.get(i).getTime())
-								.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+								.icon(BitmapDescriptorFactory.fromResource(R.drawable.meet_up_icon)));
 						m.setDraggable(false);
 
 						markerIdHasMap.put(m, result.get(i).getId());
@@ -1547,12 +1541,11 @@ public class HomeView extends BaseView implements IHome {
 						String ids        = c.getString("id");
 						String email      =  !c.isNull("email") ? c.getString("email"): "";											
 						String first_name = c.getString("first_name");
-						String last_name  = c.getString("last_name");
-																	
+						String last_name  = c.getString("last_name");																	
 						String user_type  = c.getString("user_type");
 						String image;
 						if(user_type.equalsIgnoreCase("F")){
-							 image        = !c.isNull("image")? URL.IMAGE_PATH.getUrl()+c.getString("image"): "https://graph.facebook.com/"+ids+"/picture" ;	
+							image        = !c.isNull("image")? URL.IMAGE_PATH.getUrl()+c.getString("image"): "https://graph.facebook.com/"+ids+"/picture" ;	
 						}else{
 							image         = !c.isNull("image")? URL.IMAGE_PATH.getUrl()+c.getString("image"): URL.IMAGE_PATH.getUrl()+"noimage.jpg" ;
 						}
@@ -1583,7 +1576,7 @@ public class HomeView extends BaseView implements IHome {
 							flag = false;
 							for (int j = 0; j < appusersArr.size(); j++) {
 								if (mContactList.get(i).getId().equalsIgnoreCase(appusersArr.get(j).getId())) {
-									mAddFriendArr.add(new AppUserInfoBean(appusersArr.get(j).getId(),""	,appusersArr.get(j).getFirstName(),appusersArr.get(j).getLastName(),appusersArr.get(j).getImage(),"F",""));
+									addFriendArr.add(new AppUserInfoBean(appusersArr.get(j).getId(),""	,appusersArr.get(j).getFirstName(),appusersArr.get(j).getLastName(),appusersArr.get(j).getImage(),"F",""));
 									flag = true;
 									break;
 								}
@@ -1598,7 +1591,7 @@ public class HomeView extends BaseView implements IHome {
 					}
 				
 
-					mAddFriendAdapter     = new AddFriendAdapter(HomeView.this,	R.layout.add_friend_row, mAddFriendArr);
+					mAddFriendAdapter     = new AddFriendAdapter(HomeView.this,	R.layout.add_friend_row, addFriendArr);
 					mAddFriendList.setAdapter(mAddFriendAdapter);
 
 					mInviteFriendAdapter  = new InviteFriendAdapter(HomeView.this,	R.layout.add_friend_row, mInviteFriendArr);
@@ -1613,7 +1606,7 @@ public class HomeView extends BaseView implements IHome {
 							flag = false;
 							for (int j = 0; j < appusersArr.size(); j++) {
 								if (mContactList.get(i).getId().equalsIgnoreCase(appusersArr.get(j).getPhone())) {
-									mAddFriendArr.add(new AppUserInfoBean(appusersArr.get(j).getId(),""	,mContactList.get(i).getName(),"",appusersArr.get(j).getImage(),"N",mContactList.get(i).getId()));
+									addFriendArr.add(new AppUserInfoBean(appusersArr.get(j).getId(),""	,mContactList.get(i).getName(),"",appusersArr.get(j).getImage(),"N",mContactList.get(i).getId()));
 									flag = true;
 									break;
 								}
@@ -1628,7 +1621,7 @@ public class HomeView extends BaseView implements IHome {
 					}
 				
 
-					mAddFriendAdapter = new AddFriendAdapter(HomeView.this,	R.layout.add_friend_row, mAddFriendArr);
+					mAddFriendAdapter = new AddFriendAdapter(HomeView.this,	R.layout.add_friend_row, addFriendArr);
 					mAddFriendList.setAdapter(mAddFriendAdapter);
 
 					mInviteFriendAdapter = new InviteFriendAdapter(HomeView.this,	R.layout.add_friend_row, mInviteFriendArr);
@@ -1653,6 +1646,7 @@ public class HomeView extends BaseView implements IHome {
 				request.put("first_name", myApp.getAppInfo().userFirstName);
 				request.put("last_name",  myApp.getAppInfo().userLastName);
 				JSONObject response = KlHttpClient.SendHttpPost(URL.MESSAGE.getUrl(), request);
+				//JSONObject response   = new JSONObject(readXMLinString(getApplicationContext()));
 				Log.e(TAG, response.toString());
 				if (response != null) {
 					msg.clear();
@@ -1672,8 +1666,7 @@ public class HomeView extends BaseView implements IHome {
 							sender_image               = URL.IMAGE_PATH.getUrl()+c.getString("sender_image");
 						}else{
 							sender_image               = "https://graph.facebook.com/"+sender_id+"/picture";
-						}
-						
+						}						
 						String receiver_image;
 						if(!c.isNull("receiver_image")){
 							receiver_image             = URL.IMAGE_PATH.getUrl()+c.getString("receiver_image");
@@ -1758,11 +1751,8 @@ public class HomeView extends BaseView implements IHome {
 	        setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE, View.GONE, View.GONE,	View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	View.INVISIBLE, View.INVISIBLE, View.VISIBLE,false, false, false, VIEW_PROFILE);
 	        mProfileImage.setImageBitmap(yourSelectedImage);
 		    mUserImage.setImageBitmap(yourSelectedImage);
-		    Log.e(TAG,"PATH "+ filepath);
-	        new ImageUploadTask().execute(filepath);
-	        }
-		   
-	     
+		    new ImageUploadTask().execute(filepath);
+	        }     
 
 	}
 
@@ -1912,7 +1902,6 @@ public class HomeView extends BaseView implements IHome {
 			        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
 			        out.flush();
 			        out.close();
-
 			 } catch (Exception e) {
 			        e.printStackTrace();
 			 }
@@ -1922,19 +1911,152 @@ public class HomeView extends BaseView implements IHome {
 			MenuInflater inflater = getMenuInflater();
 			inflater.inflate(R.menu.menu, menu);
 			return true;
-
 		}
-
 		@Override
 		public boolean onOptionsItemSelected(MenuItem item) {
 			switch (item.getItemId()) {
 			case R.id.menu_logout:
 				myApp.getAppInfo().setSession(false);
 				finish();
-
 			}
 			return super.onOptionsItemSelected(item);
 		}
+public void setMeetUp(final LatLng latlng){
 
+	current_time_in_millisecond = System.currentTimeMillis();
+	meetupUserDlg        = new Dialog(HomeView.this);
+	meetupUserDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	meetupUserDlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+	meetupUserDlg.setContentView(R.layout.meetup_info_dialog);
+	Button submit        = (Button) meetupUserDlg.findViewById(R.id.btn_submit);
+	setCustomizeColorText(submit, "SUB", "MIT");
+	Button cancel        = (Button) meetupUserDlg.findViewById(R.id.btn_cancel);
+	setCustomizeColorText(cancel, "CAN", "CEL");
+	ImageView iv_date    = (ImageView) meetupUserDlg	.findViewById(R.id.image_date);
+	ImageView clock      = (ImageView) meetupUserDlg	.findViewById(R.id.image_clock);
+	tvDisplayDate        = (TextView) meetupUserDlg.findViewById(R.id.tvDisplayDate1);
+	
+	lblDlgDisplayTime    = (TextView) meetupUserDlg.findViewById(R.id.tvDisplayTime1);
+	
+	final TextView name  = (TextView) meetupUserDlg	.findViewById(R.id.ed_name);
+	name.setText(myApp.getAppInfo().userFirstName + " "	+ myApp.getAppInfo().userLastName);
+	name.setClickable(myApp.isMeetuplocationEditTextEditable);
+	final EditText location = (EditText) meetupUserDlg	.findViewById(R.id.ed_location);
+	
+	location.setClickable(myApp.isMeetuplocationEditTextEditable);
+	final EditText desc     = (EditText) meetupUserDlg	.findViewById(R.id.ed_desc);
+	
+	desc.setClickable(myApp.isMeetuplocationEditTextEditable);
+	clock.setClickable(myApp.isMeetuplocationEditTextEditable);
+	iv_date.setClickable(myApp.isMeetuplocationEditTextEditable);
+	setCurrentDateOnView();
+	clock.setOnClickListener(new OnClickListener() {
 
+		@SuppressWarnings("deprecation")
+		@Override
+		public void onClick(View v) {
+			showDialog(TIME_DIALOG_ID);
+
+		}
+	});
+
+	iv_date.setOnClickListener(new OnClickListener() {
+
+		@SuppressWarnings("deprecation")
+		@Override
+		public void onClick(View v) {
+			showDialog(DATE_DIALOG_ID);
+
+		}
+	});
+
+	submit.setOnClickListener(new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			meetupUserDlg.dismiss();
+			
+				String _name         = name.getText().toString().trim();
+				String _loc_name     = location.getText().toString().trim();
+				String _desc         = desc.getText().toString().trim();
+				String _date         = tvDisplayDate.getText().toString().trim();
+				String _time         = lblDlgDisplayTime.getText().toString().trim();
+				String _id           = current_selected_marker_id;
+				double _lat          = latlng.latitude;
+				double _lng          = latlng.longitude;
+				if (_loc_name.length()      == 0) {
+					     location.setError("Please enter Location Name");
+				} else if (_desc.length()   == 0) {
+					     desc.setError("Please enter Description");
+				} else if (_date.length()   == 0) {
+					     tvDisplayDate.setError("Please enter Date");
+				} else if (_time.length()   == 0) {
+					     lblDlgDisplayTime.setError("Please enter Time");
+				} else {
+
+					try {
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+						Date date            = new Date();
+						String _currentdate  = new SimpleDateFormat(	"yyyy-MM-dd hh:mm:ss").format(date);
+						Date currentdate     = sdf.parse(_currentdate);
+						Date scheduledate    = sdf.parse(_date + " " + _time);
+						if (scheduledate.compareTo(currentdate) < 0) {
+							Toast.makeText(getApplicationContext(),	"Plesase insert a valid Date&TIme",	Toast.LENGTH_LONG).show();
+						} else {
+							new SubmitMeetUplocation().execute(""+ current_time_in_millisecond, _name,_loc_name, _desc, _time, "" + _lat, ""	+ _lng, _date);
+							m = map.addMarker(new MarkerOptions()
+							.position(new LatLng(latlng.latitude,latlng.longitude))
+							.title("Name:" + myApp.getAppInfo().userFirstName	+ " "+ myApp.getAppInfo().userLastName)
+							.snippet("Location:"+ _loc_name
+											+ "\nDescription: "
+											+ _desc
+											+ "\nDate: "+ _date
+											+ "\nTime: "+ _time)
+							.icon(BitmapDescriptorFactory.fromResource(R.drawable.meet_up_icon)));
+					m.setDraggable(true);
+
+					
+					
+					meetUpInfoArr.add(new MeetUpBean(""	+ current_time_in_millisecond, _name, _loc_name, _desc,	_date, _time, "ME", _lng,	_lng));
+					markerIdHasMap.put(m, ""+ current_time_in_millisecond);
+						
+						
+						}
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+
+				}
+			
+		}
+	});
+
+	cancel.setOnClickListener(new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			meetupUserDlg.dismiss();
+
+		}
+	});
+
+	meetupUserDlg.show();
+
+}
+public static String readXMLinString(Context c) {
+	try {
+		InputStream is = c.getAssets().open("log1.txt");
+		int size = is.available();
+		byte[] buffer = new byte[size];
+		is.read(buffer);
+		is.close();
+		String text = new String(buffer);
+
+		return text;
+
+	} catch (IOException e) {
+		throw new RuntimeException(e);
+	}
+
+}
 }

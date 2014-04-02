@@ -18,6 +18,7 @@ import com.strapin.application.SnomadaApp;
 import com.strapin.common.ServerUtilities;
 import com.strapin.db.SnowmadaDbAdapter;
 import com.strapin.global.Constants;
+import com.strapin.global.Global;
 
 public class GCMIntentService extends GCMBaseIntentService {
 
@@ -26,9 +27,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	public static SnomadaApp app = null;
 	 public static String weiw_message = null;
 	 public static SharedPreferences sharedPreferences;
-	 public static boolean isAppForeground = false;
-
-    public GCMIntentService() {
+	 public GCMIntentService() {
         super(SENDER_ID);
     }
     
@@ -36,7 +35,6 @@ public class GCMIntentService extends GCMBaseIntentService {
     protected void onRegistered(Context context, String registrationId) {
     	app = (SnomadaApp) getApplication();
     	sharedPreferences = context.getSharedPreferences(Constants.Settings.GLOBAL_SETTINGS.name(), Context.MODE_PRIVATE);
-    	isAppForeground = sharedPreferences.getBoolean(Constants.Settings.APP_FOREGROUND.name(), isAppForeground);
     	Log.i(TAG, "Device registered: regId = " + registrationId);
         displayMessage(context, "Your device registred with GCM");
         ServerUtilities.register(context, registrationId,app.getAppInfo().userId);
@@ -96,8 +94,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 					showNotification(context, noti_msg,intent);
 				
 			}else if (status==Constants.SKI_PATROL_PUSH_NOTIFICATION) {
-				isAppForeground = sharedPreferences.getBoolean(Constants.Settings.APP_FOREGROUND.name(), isAppForeground);
-				if(!isAppForeground){
+				if(!Global.isAppForeground){
 					String patroler_id                  = json.getString("patroler_id");
 					String latitude                     = json.getString("lat");
 					String longitude                    = json.getString("lng");
@@ -123,7 +120,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 				 String name         = json.getString("name");
 				 String sender_fb_id = json.getString("sender_fb_id");				 
 				 weiw_message        = name+":"+msg;				 
-				if(app.getAppInfo().isAppForeground){					
+				if(Global.isAppForeground){					
 					if(app.isChatActive){
 						if(!name.equalsIgnoreCase(app.IMname)){// Third person ping							
 							Intent notificationIntent = new Intent(context,	HomeView.class);
@@ -178,8 +175,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 				 String lat = json.getString("lat");
 				 String lng = json.getString("lng");
 				 weiw_message = msg+" "+name;
-				 isAppForeground = sharedPreferences.getBoolean(Constants.Settings.APP_FOREGROUND.name(), isAppForeground);
-				 if(!isAppForeground){
+				 if(!Global.isAppForeground){
 					 SnowmadaDbAdapter mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(context);
 					 mDbAdapter.insertMeetUpInfo(lat, lng, "1");
 				 }				

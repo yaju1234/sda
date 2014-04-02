@@ -42,27 +42,27 @@ import com.strapin.network.KlHttpClient;
 
 public class HomePresenter implements IHome.Presenter {
 	private HomeView mHomeView;
-	public ArrayList<FriendListBean> friendlistArr = new ArrayList<FriendListBean>();
+	public ArrayList<FriendListBean> friendlistArr   = new ArrayList<FriendListBean>();
 	private FriendAdapter friendlistAdapter;
 	private Double mLat;
 	private Double mLng;
 	public  String trackingpersionname;
 	private Marker marker;
-	public  boolean TrackDurationControllFlag = false;
-	private Handler handler = new Handler();
+	public  boolean TrackDurationControllFlag        = false;
+	private Handler handler                          = new Handler();
 	private Runnable runnable;
 	private long lastUsed;
-	private long idle = 0;
+	private long idle                                = 0;
 	private ChatAdapter mChatAdapter;
 	private FriendRequestAdapter mRequestAdapter;
-	public  static int COUNT = 0;
-	public  int deletedPos = -1;
-	public  boolean isTracking = true;
-	public  boolean isFriendListFetched = false;
-	private String TAG = "snomada";
-	public boolean isException = false;
+	public  static int COUNT                          = 0;
+	public  int deletedPos                            = -1;
+	public  boolean isTracking                        = true;
+	public  boolean isFriendListFetched               = false;
+	private String TAG                                = "snomada";
+	public boolean isException                        = false;
 
-	private ArrayList<FriendRequestBean> mRequestArr = new ArrayList<FriendRequestBean>();
+	private ArrayList<FriendRequestBean> mRequestArr   = new ArrayList<FriendRequestBean>();
 
 	public HomePresenter(HomeView mHomeView) {
 		this.mHomeView = mHomeView;
@@ -77,19 +77,7 @@ public class HomePresenter implements IHome.Presenter {
 		}
 	}
 
-	/*
-	 * public void trackSKIPatrol(String id,String fname, String lname){
-	 * 
-	 * TrackDurationControllFlag = true;
-	 * mHomeView.hideSlide().setVisibility(View.GONE); mHomeView.myApp.friendId
-	 * = id; trackingpersionname = fname+" "+lname; Global.isZoom = true; COUNT
-	 * = 0; isTracking = false; if(marker!=null){ marker.remove(); }
-	 * mHomeView.getProgressBarLayout().setVisibility(View.VISIBLE);
-	 * handler.removeCallbacks(runnable); mHomeView.myApp.doTrackFriendLocation
-	 * = true;
-	 * 
-	 * }
-	 */
+	
 
 	/**
 	 * Select a Friend from sliding friend list (Chat is not doing on that
@@ -164,7 +152,7 @@ public class HomePresenter implements IHome.Presenter {
 						mHomeView.hideSlide().setVisibility(View.GONE);
 						trackingpersionname = friendlistArr.get(pos).getName();
 						mHomeView.myApp.friendId = friendlistArr.get(pos).getFbId();
-						Global.isZoom = true;
+						Global.isTrackedLocationZoomed = true;
 						if (Utility.isNetworkConnected(mHomeView)) {
 							new SendTrackNotification().execute();
 							mHomeView.myApp.doTrackFriendLocation = true;
@@ -194,7 +182,7 @@ public class HomePresenter implements IHome.Presenter {
 					}
 					dialog.cancel();
 				} else {
-					Toast.makeText(mHomeView,	"Please wait... tracing continue",Toast.LENGTH_LONG).show();
+					Toast.makeText(mHomeView,	"Please wait..one tracking continue",Toast.LENGTH_LONG).show();
 				}
 			}
 
@@ -220,10 +208,10 @@ public class HomePresenter implements IHome.Presenter {
 				new LocationTrack().execute(true);
 
 			} else {
-				COUNT++;
-				Global.isZoom = true;
+				
 				mHomeView.getProgressBarLayout().setVisibility(View.VISIBLE);
 				new LocationTrack().execute(false);
+				COUNT++;
 			}
 
 		}
@@ -285,9 +273,7 @@ public class HomePresenter implements IHome.Presenter {
 			try {
 				JSONObject request = new JSONObject();
 				request.put("fbid", params[0]);
-				Log.e(TAG, "JSON REQUEST===>"+request.toString());
 				JSONObject response = KlHttpClient.SendHttpPost(URL.SKI_PATROL.getUrl(), request);
-				Log.e(TAG, "JSON RESPONSE===>"+request.toString());
 				if(response!=null){
 					return response.getBoolean("status");
 				}
@@ -342,7 +328,6 @@ public class HomePresenter implements IHome.Presenter {
 				JSONObject request = new JSONObject();
 				request.put("fbid", mHomeView.myApp.getAppInfo().userId);
 				JSONObject response = KlHttpClient.SendHttpPost(URL.FRIEND_LIST.getUrl(), request);
-				Log.i(TAG,"Friend List JSON ============>>>"+response.toString());
 				flag = response.getBoolean("status");
 				if (flag) {
 					friendlistArr.clear();
@@ -412,7 +397,7 @@ public class HomePresenter implements IHome.Presenter {
 
 		@Override
 		protected void onPostExecute(Boolean status) {
-
+			Log.e("SSSS","Zoom: "+Global.isTrackedLocationZoomed+ " Count "+ COUNT+  "  Status "+status);
 			if (status) {
 				mHomeView.getProgressBarLayout().setVisibility(View.GONE);
 				if (marker != null) {
@@ -437,9 +422,10 @@ public class HomePresenter implements IHome.Presenter {
 													+ new Date().getSeconds())
 									.icon(BitmapDescriptorFactory.fromResource(R.drawable.friend)));
 					marker.showInfoWindow();
-					if (Global.isZoom) {
+					//Toast.makeText(mHomeView, ""+Global.isTrackedLocationZoomed, Toast.LENGTH_LONG).show();
+					if (Global.isTrackedLocationZoomed) {
 						mHomeView.getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLat, mLng), 16));
-						Global.isZoom = false;
+						Global.isTrackedLocationZoomed = false;
 					}
 				}
 				/**
