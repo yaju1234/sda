@@ -17,7 +17,7 @@ import com.google.android.gcm.GCMBaseIntentService;
 import com.strapin.application.SnomadaApp;
 import com.strapin.common.ServerUtilities;
 import com.strapin.db.SnowmadaDbAdapter;
-import com.strapin.global.Constants;
+import com.strapin.global.Constant;
 import com.strapin.global.Global;
 
 public class GCMIntentService extends GCMBaseIntentService {
@@ -34,7 +34,7 @@ public class GCMIntentService extends GCMBaseIntentService {
   @Override
     protected void onRegistered(Context context, String registrationId) {
     	app = (SnomadaApp) getApplication();
-    	sharedPreferences = context.getSharedPreferences(Constants.Settings.GLOBAL_SETTINGS.name(), Context.MODE_PRIVATE);
+    	sharedPreferences = context.getSharedPreferences(Constant.Settings.GLOBAL_SETTINGS.name(), Context.MODE_PRIVATE);
     	Log.i(TAG, "Device registered: regId = " + registrationId);
         displayMessage(context, "Your device registred with GCM");
         ServerUtilities.register(context, registrationId,app.getAppInfo().userId);
@@ -84,7 +84,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 			int status = Integer.parseInt(json.getString("status"));
 			/*app.isZoom = false;*/
 			
-			if (status==Constants.TRACKING_PUSH_NOTIFICATION) {
+			if (status==Constant.TRACKING_PUSH_NOTIFICATION) {
 				TrackLocation.createInstance(context,app);
 				String noti_msg                         = json.getString("message");
 				locationManager                         = (LocationManager) context	.getSystemService(Context.LOCATION_SERVICE);
@@ -93,7 +93,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 					PendingIntent intent                = PendingIntent.getActivity(context,0, new Intent(), 0);
 					showNotification(context, noti_msg,intent);
 				
-			}else if (status==Constants.SKI_PATROL_PUSH_NOTIFICATION) {
+			}else if (status==Constant.SKI_PATROL_PUSH_NOTIFICATION) {
 				if(!Global.isAppForeground){
 					String patroler_id                  = json.getString("patroler_id");
 					String latitude                     = json.getString("lat");
@@ -115,7 +115,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 
 				
 				
-			}else  if(status==Constants.CHAT_PUSH_NOTIFICATION) {
+			}else  if(status==Constant.CHAT_PUSH_NOTIFICATION) {
 				 String msg          = json.getString("chatmessage");
 				 String name         = json.getString("name");
 				 String sender_fb_id = json.getString("sender_fb_id");				 
@@ -153,14 +153,14 @@ public class GCMIntentService extends GCMBaseIntentService {
 						showNotification(context, weiw_message,intent);
 						
 				}
-			}else if(status==Constants.FRIEND_REQUEST_COME_PUSH_NOTIFICATION){//Status five for current friend request receive
+			}else if(status==Constant.FRIEND_REQUEST_COME_PUSH_NOTIFICATION){//Status five for current friend request receive
 				 String sender_id          = json.getString("senderid");
 				 String sender_name        = json.getString("sendername");
 				 String msg                = "send friend request";				 
 				 weiw_message              = sender_name+" "+msg;				 
 				 PendingIntent intent      = PendingIntent.getActivity(context,0, new Intent() , 0);					
 				    showNotification(context, weiw_message,intent);				 
-			 }else if(status==Constants.FRIEND_REQUEST_ACCEPT_PUSH_NOTIFICATION){//Request acknowledgment				
+			 }else if(status==Constant.FRIEND_REQUEST_ACCEPT_PUSH_NOTIFICATION){//Request acknowledgment				
 				 app.isWebServiceCallForRefreshFriendList = true;
 				 String friend_name = json.getString("friend_name");
 				 String msg = "has accept your friend request";				 
@@ -168,7 +168,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 					PendingIntent intent = PendingIntent.getActivity(context,0, new Intent(), 0);
 					showNotification(context, weiw_message,intent);
 					
-			 }else if(status==Constants.CREATE_MEETUP_PUSH_NOTIFICATION){//Request acknowledgment
+			 }else if(status==Constant.CREATE_MEETUP_PUSH_NOTIFICATION){//Request acknowledgment
 				
 				 String msg = json.getString("meetup_noti_msg");
 				 String name = json.getString("name");
@@ -176,9 +176,14 @@ public class GCMIntentService extends GCMBaseIntentService {
 				 String lng = json.getString("lng");
 				 weiw_message = msg+" "+name;
 				 if(!Global.isAppForeground){
+				     Global.meetupzoomFlag = true;
 					 SnowmadaDbAdapter mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(context);
 					 mDbAdapter.insertMeetUpInfo(lat, lng, "1");
-				 }				
+				 }else{
+				     Global.meetupzoomFlag = true;
+				     SnowmadaDbAdapter mDbAdapter = SnowmadaDbAdapter.databaseHelperInstance(context);
+					 mDbAdapter.insertMeetUpInfo(lat, lng, "1");
+				 }
 				 	Intent notificationIntent = new Intent(context,	HomeView.class);
 					notificationIntent.putExtra("event", "meetup");
 					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP	| Intent.FLAG_ACTIVITY_SINGLE_TOP);

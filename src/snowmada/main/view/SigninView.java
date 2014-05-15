@@ -1,26 +1,22 @@
 package snowmada.main.view;
 
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import com.facebook.*;
 import com.facebook.model.GraphObject;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.*;
 import com.strapin.Enum.URL;
-import com.strapin.global.Constants;
+import com.strapin.global.Constant;
 import com.strapin.network.KlHttpClient;
 
 import org.json.JSONArray;
@@ -36,10 +32,12 @@ public class SigninView extends BaseView {
     private boolean isUiUpdateCall = false; 
     private Button mSignup;
     private EditText et_username,et_password;
+    private ProgressBar signin_progress;
     private Button btn_login;
     private String logintype;
     private String fb_fname;
     private String fb_lname;
+    private String birthday;
     private String fb_id;
     private String TAG = "snomada";
    
@@ -73,34 +71,27 @@ public class SigninView extends BaseView {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-       
-       
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedInstanceState);
-      
-
         if (savedInstanceState != null) {
-            String name = savedInstanceState.getString(PENDING_ACTION_BUNDLE_KEY);
+            String name   = savedInstanceState.getString(PENDING_ACTION_BUNDLE_KEY);
             pendingAction = PendingAction.valueOf(name);
         }
-
-        setContentView(R.layout.signin);
-        getContactList();
+        setContentView(R.layout.signin);  
 
         loginButton = (LoginButton) findViewById(R.id.login_button);
-        mSignup = (Button)findViewById(R.id.btn_sign_up);
-        btn_login = (Button)findViewById(R.id.btn_login);
+        mSignup     = (Button)findViewById(R.id.btn_sign_up);
+        btn_login   = (Button)findViewById(R.id.btn_login);
         et_username = (EditText)findViewById(R.id.input_user_name);
-        et_password = (EditText)findViewById(R.id.input_password);
-        
-        
+        et_password = (EditText)findViewById(R.id.input_password);  
+        signin_progress = (ProgressBar)findViewById(R.id.signin_progress);
         
         btn_login.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				if(fieldValidation()){
-					logintype = Constants.NORMAL_LOGIN;
+					logintype = Constant.NORMAL_LOGIN;
 					myApp.getAppInfo().setLoginType("N"); //  Set Login type for normal login   NORMAIL LOGIN: N
 					showProgressDailog();
 					new SignInWeb().execute();
@@ -112,8 +103,7 @@ public class SigninView extends BaseView {
         mSignup.setOnClickListener(new OnClickListener() {
 			
 			@Override
-			public void onClick(View v) {
-				
+			public void onClick(View v) {				
 				Intent i = new Intent(SigninView.this, SignUpView.class);
 				startActivity(i);
 			}
@@ -147,19 +137,13 @@ public class SigninView extends BaseView {
     protected void onResume() {
         super.onResume();
         uiHelper.onResume();
-
-        // Call the 'activateApp' method to log an myApp event for use in analytics and advertising reporting.  Do so in
-        // the onResume methods of the primary Activities that an myApp may be launched into.
         AppEventsLogger.activateApp(this);
-
-       // updateUI();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         uiHelper.onSaveInstanceState(outState);
-
         outState.putString(PENDING_ACTION_BUNDLE_KEY, pendingAction.name());
     }
 
@@ -194,7 +178,7 @@ public class SigninView extends BaseView {
         } else if (state == SessionState.OPENED_TOKEN_UPDATED) {
             handlePendingAction();
         }
-       // updateUI();
+     
     }
 
     private void updateUI() {
@@ -202,19 +186,18 @@ public class SigninView extends BaseView {
     		isUiUpdateCall = false;
     		 Session session = Session.getActiveSession();
     	        Log.e("Session", ""+session.isOpened());
-    	        boolean enableButtons = (session != null && session.isOpened());
-
-    	     
+    	        boolean enableButtons = (session != null && session.isOpened());    	     
     	        if (enableButtons && user != null) {
-    	        	showProgressDailog();
+    	        	//showProgressDailog();
+    	            	signin_progress.setVisibility(View.VISIBLE);
+    	        	Log.e("user", user.toString());
     	        	fb_fname = user.getFirstName();
     	        	fb_lname = user.getLastName();
+    	        	birthday = user.getBirthday();
     	        	fb_id = user.getId();
-    	        	/*myApp.getAppInfo().setUserInfo(user.getFirstName(), user.getLastName(), user.getId());
-    	        	myApp.getAppInfo().setSession(true);*/
-    	        	getFriendList();
-    	        	logintype = Constants.FACEBOOK_LOGIN;
-    				new SignInWeb().execute();
+    	        	//getFriendList();
+    	        	logintype = Constant.FACEBOOK_LOGIN;
+    	        	new SignInWeb().execute();
     	        	
     	        } else {
     	         
@@ -226,7 +209,6 @@ public class SigninView extends BaseView {
     private void handlePendingAction() {
         PendingAction previouslyPendingAction = pendingAction;
         pendingAction = PendingAction.NONE;
-
         switch (previouslyPendingAction) {
             case POST_PHOTO:
                  break;
@@ -246,15 +228,17 @@ public class SigninView extends BaseView {
 		  		request.put("fbid", fb_id);
 		  		request.put("fname", fb_fname);
 		  		request.put("lname", fb_lname);
+		  		request.put("birthday", birthday);
 		  		request.put("usertype", "F");
 		  	}else{
 		  		request.put("user_id", et_username.getText().toString().trim());
 				request.put("password", et_password.getText().toString().trim());
 				request.put("usertype", "N");
 		  	}
-		  	Log.e(TAG, "SIGN in REQ===>>"+request.toString());
+		  	Log.e("TAG13", "Sign in response=====>>"+request.toString());
 		  		JSONObject response = KlHttpClient.SendHttpPost(URL.LOGIN.getUrl(), request);
-		  		Log.e(TAG, "Sign in response=====>>"+response.toString());
+		  		Log.e("TAG13", "Sign in response=====>>"+response.toString());
+		  		System.out.println("!-- Sign in response "+response.toString());
 		  		if(response!=null){
 		  			flg =  response.getBoolean("status");
 		  			if(flg){
@@ -271,15 +255,17 @@ public class SigninView extends BaseView {
 		  		}	   
 				
 			} catch (Exception e) {
-				dismissProgressDialog();
+				//dismissProgressDialog();
 				e.printStackTrace();
 			}
 			return flg;
 		}
 		@Override
 		protected void onPostExecute(Boolean status) {
-			dismissProgressDialog();
-			if(status){			
+			//dismissProgressDialog();
+		    signin_progress.setVisibility(View.INVISIBLE);
+			if(status){
+			// getFriendList();
 			startActivity(new Intent(SigninView.this, HomeView.class));
 			SigninView.this.finish();
 			}
@@ -294,15 +280,13 @@ public class SigninView extends BaseView {
     	params.putString("q", fqlQuery);
     	Session session = Session.getActiveSession();
 
-    	Request request = new Request(session, "/fql", params,                   
-    	        HttpMethod.GET,                 
-    	        new Request.Callback(){       
-    	    public void onCompleted(Response response) {
-    	        
+    	Request request = new Request(session, "/fql", params, HttpMethod.GET,    new Request.Callback(){       
+    	    public void onCompleted(Response response) {        
 
     	        try{
-    	        	Log.i("TAG", "Result: " + response.toString());
-        	        GraphObject graphObject = response.getGraphObject();
+    	            Log.i("TAG15", "Result: " + response.toString());
+    	            System.out.println("!-- Friend List "+response.toString());
+        	    GraphObject graphObject = response.getGraphObject();
 
                     JSONObject jsonObject = graphObject.getInnerJSONObject();
                     JSONArray array = jsonObject.getJSONArray("data");
@@ -318,6 +302,7 @@ public class SigninView extends BaseView {
 						
 						
 					}
+                 
 					
     	        }catch(JSONException e){
     	            e.printStackTrace();
@@ -340,30 +325,5 @@ public class SigninView extends BaseView {
     	}
     	return flg;
     }
-    
-    /**
-     *  Retrieve DISTINCT contact list with NAME and PHONE 
-     */    
-    public void getContactList(){
-    	Thread t = new Thread(){
-    		public void run(){
-    			String selection = ContactsContract.Contacts.IN_VISIBLE_GROUP + " = '" + ("1") + "'";
-    	        String sortOrder = ContactsContract.Contacts.DISPLAY_NAME  + " COLLATE LOCALIZED ASC";
-    	        Cursor phones    = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,selection,null, sortOrder);
-    	        if(db.getContactCount()>0){
-    	        	db.emptyContactTable();
-    	        }
-    	        while (phones.moveToNext())
-    	        {
-    	        	String name    = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));    
-    	        	String number  = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-    	            db.insertcontact(name, number);
-    	        }
-    		}
-    	};
-    	t.start();
-    	
-
-    }    
    
 }

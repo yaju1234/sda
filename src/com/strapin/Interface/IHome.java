@@ -1,7 +1,5 @@
 package com.strapin.Interface;
 
-import snowmada.main.view.Sliding;
-
 import com.google.android.gms.maps.GoogleMap;
 
 import android.widget.ListView;
@@ -20,13 +18,11 @@ public interface IHome {
 		
 	}
 	public GoogleMap getMap();
-	public Sliding hideSlide();
 	public TextView getChatFriend();
 	public ListView getChatListView();
 	public ListView getRequestList();
 	public void init();
 	public void defaultChatWindoOpenFromNotificationList();
-	public void createMenuDialog();
 	public void getPushNotificationDeviceID();
 	public RelativeLayout getProgressBarLayout();
 

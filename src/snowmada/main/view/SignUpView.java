@@ -1,13 +1,10 @@
 package snowmada.main.view;
 
 import java.util.regex.Pattern;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import com.strapin.Enum.URL;
 import com.strapin.network.KlHttpClient;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -71,7 +68,7 @@ public class SignUpView extends BaseView{
 		}
 		
 		if(phone.getText().toString().trim().equals("")){
-			email.setError("Please enter Phone");
+		    phone.setError("Please enter Phone");
 			flg = false;
 		}
 		
@@ -110,7 +107,7 @@ public class SignUpView extends BaseView{
 				JSONObject request = new JSONObject();
 				request.put("fname",    firstName.getText().toString().trim());
 				request.put("lname",    lastName.getText().toString().trim());
-				request.put("phone1",    phone.getText().toString().trim());
+				request.put("phone1",   phone.getText().toString().trim());
 				request.put("email",    email.getText().toString().trim());
 				request.put("password", password.getText().toString().trim());
 				JSONObject response  = KlHttpClient.SendHttpPost(URL.SIGNUP.getUrl(), request);

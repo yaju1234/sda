@@ -86,6 +86,7 @@ public class KlHttpClient {
 			while ((line = reader.readLine()) != null) {
 				Log.e("line", line);
 				sb.append(line + "\n");
+				System.out.println("!-- "+line);
 
 			}
 		} catch (IOException e) {

@@ -42,4 +42,16 @@
     <string name="permission_not_granted">Unable to perform selected action because permissions were not granted.</string>
 <string name="allow_track">Allow\nTrack</string>
 <string name="marker_snippet">Location: Kolkata\nDescription: lorem ipsum\nDescription: lorem ipsum\nDate: 2014-02-18\n</string>
+<string name="all_mountain">All Mountain</string>
+<string name="park_bum">Park Bum</string>
+<string name="pow_pow_bum">Pow Pow Bum</string>
+<string name="gnar">GNAR</string>
+<string name="select_mountain">Select Mountain</string>
+
+<string-array name="select_mountain_arrays">
+        <item>All Mountain</item>
+        <item>Park Bum</item>
+        <item>Pow Pow Bum</item>
+        <item>GNAR</item>        
+    </string-array>
 </resources>

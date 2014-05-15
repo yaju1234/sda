@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
@@ -30,8 +29,7 @@ public class BaseView extends FragmentActivity implements IBase,OnClickListener,
 	public ProgressDialog prsDlg;
 	public SnowmadaDbAdapter db;	
 	public DisplayImageOptions options;
-    protected ImageLoader imageLoader = ImageLoader.getInstance();  
-    
+        protected ImageLoader imageLoader = ImageLoader.getInstance();     
 
 	@Override
 	protected void onCreate(Bundle arg0) {

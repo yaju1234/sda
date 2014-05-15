@@ -1,13 +1,15 @@
 package com.strapin.common;
 
 
+import com.strapin.Enum.URL;
+
 import android.content.Context;
 import android.content.Intent;
 
 public final class CommonUtilities {
 	
 	// give your server registration url here
-    public static final String SERVER_URL = "http://clickfordevelopers.com/demo/snowmada/register.php"; 
+    public static final String SERVER_URL = URL.GCM_REGITER.getUrl(); 
 
     // Google project id
     public static final String SENDER_ID = "110551332890"; 

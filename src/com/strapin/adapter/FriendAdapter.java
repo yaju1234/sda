@@ -51,8 +51,8 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 			v.setTag(mHolder);	
 			mHolder.mImage = (ImageView)v.findViewById(R.id.user_image);
 			mHolder.mName = (TextView)v.findViewById(R.id.user_name);
-			mHolder.mMain = (LinearLayout)v.findViewById(R.id.main);
-			mHolder.mOnlineStatus = (TextView)v.findViewById(R.id.on_line_status);
+			mHolder.ll_main_row = (LinearLayout)v.findViewById(R.id.ll_main_layout);
+			mHolder.lbl_online_status = (TextView)v.findViewById(R.id.on_line_status);
 			mHolder.mTrackStatus = (CheckBox)v.findViewById(R.id.checkBox1);
 			mHolder.mAllowText = (TextView)v.findViewById(R.id.allow_text);
 				
@@ -62,7 +62,7 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 			mHolder =  (ViewHolder) v.getTag();
 		}
 	
-		mHolder.mMain.setOnClickListener(new OnClickListener() {
+		mHolder.ll_main_row.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {					
@@ -99,6 +99,12 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 			}
 			
 		});
+		
+		if(position%2 == 0){
+		    mHolder.ll_main_row.setBackgroundColor(Color.parseColor("#16181a"));
+		}else{
+		    mHolder.ll_main_row.setBackgroundColor(Color.parseColor("#1a1c1f"));
+		}
 	
 			
 		final FriendListBean bean = mItems.get(position);
@@ -115,14 +121,12 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 			activity.imageLoader.DisplayImage(bean.getImage(),mHolder.mImage);
 			mHolder.mName.setText(bean.getName());
 			if(bean.isOnline()){
-				mHolder.mOnlineStatus.setText("Online");
-				mHolder.mOnlineStatus.setTextColor(Color.parseColor("#0be423"));
+				mHolder.lbl_online_status.setText("Online");
+				mHolder.lbl_online_status.setTextColor(Color.parseColor("#0be423"));
 			}else{
-				mHolder.mOnlineStatus.setText("Offline");
-				mHolder.mOnlineStatus.setTextColor(Color.parseColor("#ff0000"));
-				
-			}
-			
+				mHolder.lbl_online_status.setText("Offline");
+				mHolder.lbl_online_status.setTextColor(Color.parseColor("#ff0000"));				
+			}			
 			if(bean.getStatus().equalsIgnoreCase("1")){
 				mHolder.mTrackStatus.setChecked(true);
 				activity.myApp.getAppInfo().setSenderIDChat(bean.getFbId());
@@ -131,21 +135,16 @@ public class FriendAdapter extends ArrayAdapter<FriendListBean>{
 				mHolder.mTrackStatus.setChecked(false);
 			}
 		}	
-		
 		return v;
 	}
 	class ViewHolder {	
 		public ImageView mImage;
 		public TextView mName;
-		public LinearLayout mMain;
-		public TextView mOnlineStatus;
+		public LinearLayout ll_main_row;
+		public TextView lbl_online_status;
 		public CheckBox mTrackStatus;
-		public TextView mAllowText;
-		
-				
+		public TextView mAllowText;		
 	}
-	
-	
 public class UpdateTrackStatus extends AsyncTask<String, Void, Boolean>{
 		
 		protected void onPreExecute() {

@@ -1,7 +1,12 @@
 package com.strapin.presenter;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,6 +14,9 @@ import org.json.JSONObject;
 import snowmada.main.view.HomeView;
 import snowmada.main.view.R;
 import android.app.Dialog;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -34,9 +42,15 @@ import com.strapin.Util.Utility;
 import com.strapin.adapter.ChatAdapter;
 import com.strapin.adapter.FriendAdapter;
 import com.strapin.adapter.FriendRequestAdapter;
+import com.strapin.adapter.GalleryAdapter;
+import com.strapin.adapter.ProfileDealsAdapter;
 import com.strapin.bean.ChatBean;
+import com.strapin.bean.CommentBean;
 import com.strapin.bean.FriendListBean;
 import com.strapin.bean.FriendRequestBean;
+import com.strapin.bean.GoodDeals;
+import com.strapin.bean.ImageBean;
+import com.strapin.bean.ProfileDealsBean;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
 
@@ -55,14 +69,28 @@ public class HomePresenter implements IHome.Presenter {
 	private long idle                                = 0;
 	private ChatAdapter mChatAdapter;
 	private FriendRequestAdapter mRequestAdapter;
+	private ProfileDealsAdapter mProfileDealsAdapter;
+	private GalleryAdapter mGalleryAdapter;
 	public  static int COUNT                          = 0;
 	public  int deletedPos                            = -1;
 	public  boolean isTracking                        = true;
 	public  boolean isFriendListFetched               = false;
 	private String TAG                                = "snomada";
 	public boolean isException                        = false;
+	public boolean isEditButtonEnable                  = false;
 
 	private ArrayList<FriendRequestBean> mRequestArr   = new ArrayList<FriendRequestBean>();
+	private ArrayList<ProfileDealsBean> profileDealsArr= new ArrayList<ProfileDealsBean>();
+	private ArrayList<ImageBean>        imageArr       = new ArrayList<ImageBean>();
+	public ArrayList<GoodDeals> mDealsArr = new ArrayList<GoodDeals>();
+	
+	public String name;
+	public String age;
+	public String loc;
+	public String image;
+	public String fav_mountain;
+	public String shred_style;
+	public String about_me;
 
 	public HomePresenter(HomeView mHomeView) {
 		this.mHomeView = mHomeView;
@@ -77,8 +105,6 @@ public class HomePresenter implements IHome.Presenter {
 		}
 	}
 
-	
-
 	/**
 	 * Select a Friend from sliding friend list (Chat is not doing on that
 	 * time). A dialog with open with 4 buttons 1. Track 2. View profile 3. Chat
@@ -87,7 +113,7 @@ public class HomePresenter implements IHome.Presenter {
 	 */
 	@Override
 	public void setOnFriendClick(final int pos) {
-		mHomeView.hideSlide().setVisibility(View.GONE);
+	        mHomeView.slidingmenu.toggle();
 		final Dialog dialog = new Dialog(mHomeView);
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -105,7 +131,7 @@ public class HomePresenter implements IHome.Presenter {
 		Button delete = (Button) dialog.findViewById(R.id.btn_delete_friend);
 		delete.setText(Html	.fromHtml("<font color=\"#ffffff\">DEL</font><font color=\"#28b6ff\">ETE</font>"));
 		Log.d(TAG, TAG + "" + friendlistArr.size());
-		mHomeView.imageLoader.DisplayImage("https://graph.facebook.com/"	+ friendlistArr.get(pos).getFbId() + "/picture", friend_image);
+		mHomeView.imageLoader.DisplayImage(friendlistArr.get(pos).getImage()/*"https://graph.facebook.com/"+ friendlistArr.get(pos).getFbId()+ "/picture"*/, friend_image);
 		TextView online_status = (TextView) dialog	.findViewById(R.id.tv_friend_online_status);
 		if (friendlistArr.get(pos).isOnline()) {
 			online_status.setText("Online");
@@ -136,6 +162,8 @@ public class HomePresenter implements IHome.Presenter {
 			@Override
 			public void onClick(View v) {
 				dialog.cancel();
+				mHomeView.setLayoutViewProfile();
+				handleProfileView(friendlistArr.get(pos).getFbId(),false);
 			}
 		});
 		// Track button for tracking the friend location . (Track will working
@@ -149,7 +177,6 @@ public class HomePresenter implements IHome.Presenter {
 					// Check the friend/user is online/offline
 					if (friendlistArr.get(pos).isOnline()) {
 						TrackDurationControllFlag = true;
-						mHomeView.hideSlide().setVisibility(View.GONE);
 						trackingpersionname = friendlistArr.get(pos).getName();
 						mHomeView.myApp.friendId = friendlistArr.get(pos).getFbId();
 						Global.isTrackedLocationZoomed = true;
@@ -204,7 +231,7 @@ public class HomePresenter implements IHome.Presenter {
 
 		//Toast.makeText(mHomeView, "COUNT == " + COUNT, 1000).show();
 		if (mHomeView.myApp.isNetworkConnected(mHomeView)) {
-			if (COUNT > 3) {
+			if (COUNT > 1) {
 				new LocationTrack().execute(true);
 
 			} else {
@@ -337,10 +364,10 @@ public class HomePresenter implements IHome.Presenter {
 						String name = c.getString("name");
 						String fbid = c.getString("friend_facebook_id");
 						String track = c.getString("track");
-						boolean online = Integer.parseInt(c	.getString("online_status")) == 1 ? true: false;
+						boolean online = Integer.parseInt(c.getString("online_status")) == 1 ? true: false;
 						String isuserexists = c.getString("isuserexists");
 						if(!c.isNull("image")){
-							image = "http://clickfordevelopers.com/demo/snowmada/uploads/"+c.getString("image");		  					
+							image = URL.IMAGE_PATH.getUrl()+c.getString("image");		  					
 		  				}else{
 		  					image = "https://graph.facebook.com/" +fbid+ "/picture";
 		  				}
@@ -361,7 +388,6 @@ public class HomePresenter implements IHome.Presenter {
 		@Override
 		protected void onPostExecute(Boolean status) {
 			 mHomeView.dismissProgressDialog();
-			//Toast.makeText(mHomeView, "get Friend list", 1000).show();
 			if (status) {
 				isFriendListFetched = true;
 				friendlistAdapter = new FriendAdapter(mHomeView,R.layout.friend_row1, friendlistArr);
@@ -463,7 +489,6 @@ public class HomePresenter implements IHome.Presenter {
 				JSONObject json = KlHttpClient.SendHttpPost(URL.SEND_MESSAGE.getUrl(), jsonObject);
 
 			} catch (Exception e) {
-				// prsDlg.dismiss();
 				e.printStackTrace();
 			}
 			return null;
@@ -482,13 +507,14 @@ public class HomePresenter implements IHome.Presenter {
 
 	@Override
 	public void functionChat(String facebookid, String name, boolean status, String image) {
+	    System.out.println("!--- Image"+ image);
+	    mHomeView.slidingmenu.toggle();
 		mHomeView.getChatFriend().setText(name);
 		if(status){
 			mHomeView.getChatFriend().setCompoundDrawablesWithIntrinsicBounds(null, null, mHomeView.getResources().getDrawable(R.drawable.green_ball), null);
 		}else{
 			mHomeView.getChatFriend().setCompoundDrawablesWithIntrinsicBounds(null, null, mHomeView.getResources().getDrawable(R.drawable.red_ball), null);
 		}
-		mHomeView.hideSlide().setVisibility(View.GONE);
 		String fname = name;
 		String[] splitStr = fname.split("\\s+");
 		mHomeView.myApp.getAppInfo().setSenderIDChat(facebookid);
@@ -497,9 +523,7 @@ public class HomePresenter implements IHome.Presenter {
 		new getChatHistory().execute(facebookid, splitStr[0]);
 	}
 
-	public void closeSlider() {
-		mHomeView.hideSlide().setVisibility(View.GONE);
-	}
+	
 
 	public class getChatHistory extends	AsyncTask<String, Void, ArrayList<ChatBean>> {
 		protected void onPreExecute() {
@@ -516,7 +540,7 @@ public class HomePresenter implements IHome.Presenter {
 				jsonObject.put("receiver_name",  params[1]);
 
 				JSONObject json = KlHttpClient.SendHttpPost(URL.CHAT_HISTORY.getUrl(), jsonObject);
-				Log.e("Received Chat history", json.toString());
+				System.out.println("!-- Chat history "+json.toString());
 				if (json != null) {
 					Global.mChatArr.clear();
 					JSONArray array = json.getJSONArray("history");
@@ -539,10 +563,12 @@ public class HomePresenter implements IHome.Presenter {
 			// prsDlg.dismiss();
 			if (result != null) {
 				if (result.size() > 0) {
+				    System.out.println("!-- Chat history if ");
 					mChatAdapter = new ChatAdapter(mHomeView,R.layout.chat_row, result);
 					mHomeView.getChatListView().setAdapter(mChatAdapter);
 					mHomeView.getChatListView().setSelection(Global.mChatArr.size() - 1);
 				} else {
+				    System.out.println("!-- Chat history else");
 					mChatAdapter = new ChatAdapter(mHomeView,R.layout.chat_row, result);
 					mHomeView.getChatListView().setAdapter(mChatAdapter);
 				}
@@ -589,7 +615,7 @@ public class HomePresenter implements IHome.Presenter {
 							String sender_name  = sender_fname + " "+ sender_lname;
 							Log.e("name", sender_name);
 							if(!obj.isNull("image")){
-								image = "http://clickfordevelopers.com/demo/snowmada/uploads/"+obj.getString("image");		  					
+								image = URL.IMAGE_PATH.getUrl()+obj.getString("image");		  					
 			  				}else{
 			  					image = "https://graph.facebook.com/" +sender_fbid+ "/picture";
 			  				}
@@ -711,6 +737,9 @@ public class HomePresenter implements IHome.Presenter {
 	
 	public String getFriendImage(String id){
 		String image  = "";
+		System.out.println("!-- id ");
+		System.out.println("!-- id "+ id);
+		System.out.println("!-- Size "+ friendlistArr.size());
 		for(int i=0; i<friendlistArr.size(); i++){
 			if(friendlistArr.get(i).getFbId().equalsIgnoreCase(id)){
 				image = friendlistArr.get(i).getImage();
@@ -720,5 +749,250 @@ public class HomePresenter implements IHome.Presenter {
 		return image;
 		
 	}
+	
+	public void handleProfileView(String userID , boolean isEnable){		
+		isEditButtonEnable  = isEnable;	
+		new ProfileWeb().execute(userID);
+	}
+	
+	public class ProfileWeb extends AsyncTask<String, Void, Boolean> {
+		/*String name;
+		String age;
+		String loc;
+		String image;
+		String fav_mountain;
+		String shred_style;
+		String about_me;*/
+		protected void onPreExecute() {
+			mHomeView.showProgressDailog();
+		}
 
+		@Override
+		protected Boolean doInBackground(String... params) {
+			JSONObject json;
+			boolean flag = true;
+			try {
+				JSONObject mJsonObject = new JSONObject();
+				mJsonObject.put("fbid", params[0]);
+				json = KlHttpClient.SendHttpPost(URL.PROFILE_WITH_COMMENTS.getUrl(),mJsonObject);
+				Log.e("TAG13", json.toString());
+				//json = new JSONObject(readXMLinString(mHomeView));
+				if (json != null) {
+					name     = json.getString("first_name")+" "+json.getString("last_name");
+					age      = json.getString("age");
+					image    = json.getString("image");
+					loc      = json.getString("city");
+					fav_mountain  = json.getString("favorite_mountain");
+					shred_style   = json.getString("shred_style");
+					about_me      = json.getString("about_me");
+					JSONArray jArrDeals = json.getJSONArray("purchased_deals");
+					profileDealsArr.clear();
+					for(int i=0; i<jArrDeals.length(); i++){
+						JSONObject c = jArrDeals.getJSONObject(i);
+						String deals_name = c.getString("deals_name");
+						String deals_id = c.getString("deals_id");
+						String deals_image_link = c.getString("image");
+						profileDealsArr.add(new ProfileDealsBean(deals_id, deals_name, deals_image_link));
+					}
+					
+					JSONArray jArrImage = json.getJSONArray("gallery");
+					imageArr.clear();
+					
+					Log.e(TAG,"Count =========>>>"+ jArrImage.length());
+					for(int i=0; i<jArrImage.length(); i++){
+					    ImageBean bean = new ImageBean();
+						JSONObject c = jArrImage.getJSONObject(i);
+						String image_id = c.getString("id");
+						bean.setImageId(image_id);
+						String image_link = URL.GALLERY_IMG_PATH.getUrl()+c.getString("image");
+						Log.e("TAG2","image_link =========>>>"+ image_link);
+						bean.setImageLink(image_link);
+						JSONArray jArray = c.getJSONArray("comments");
+						 ArrayList<CommentBean> commentArr = new ArrayList<CommentBean>();
+						for (int i1 = 0; i1 < jArray.length(); i1++) {
+						    JSONObject c1 = jArray.getJSONObject(i1);
+						    String fname = c1.getString("first_name");
+						    String lname = c1.getString("last_name");
+						    String profile_pic = c1.getString("profile_picture");
+						    String txt_commets = c1.getString("comment");
+						    commentArr.add(new CommentBean(fname, lname,   profile_pic, txt_commets));
+						    bean.setCommentArr(commentArr);
+						}
+						/*bean.setCommentArr(commentArr);*/
+						imageArr.add(bean);
+						
+						
+						
+					}
+
+				}
+			} catch (Exception e) {
+				mHomeView.dismissProgressDialog();
+				return flag;
+			}
+			
+			for(int j=0; j<imageArr.size(); j++){
+			    Log.e("TAG1", "Image ==========>>+imageArr.size()  "+imageArr.get(j).getImageLink()+" "+imageArr.size());
+			    /*for(int j1=0; j1<imageArr.get(j).getCommentArr().size(); j1++){
+				 Log.e("TAG1", "Comments ===========>>"+imageArr.get(j).getCommentArr().get(j1).getComments());
+			    }*/
+			}
+			//imageArr.add(new ImageBean(image_id, image_link));
+			
+			Global.imageArr = imageArr;
+			return flag;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			mHomeView.dismissProgressDialog();
+			if (result) {
+				mHomeView.tv_prof_name.setText(name);
+				mHomeView.tv_prof_age.setText(age);
+				mHomeView.tv_prof_loc.setText(loc);
+				mHomeView.imageLoader.DisplayImage(URL.IMAGE_PATH.getUrl()+image, mHomeView.mProfileImage);
+				
+				mHomeView.tv_prof_fev_mountain.setText(fav_mountain);
+				mHomeView.tv_prof_shred_mountain.setText(shred_style);
+				mHomeView.tv_prof_about_me.setText(about_me);
+				
+				
+				if(isEditButtonEnable){
+					mHomeView.mProfileImage.setClickable(true);
+					mHomeView.btnGalleryImageUpload.setVisibility(View.VISIBLE);
+					mHomeView.ll_edit_button_layout.setVisibility(View.VISIBLE);
+				}else{
+					mHomeView.mProfileImage.setClickable(false);
+					
+					mHomeView.ll_icon_prof_loc_edit_save.setVisibility(View.GONE);
+					mHomeView.ll_icon_prof_fav_mountain_edit_save.setVisibility(View.GONE);
+					mHomeView.ll_icon_prof_about_me_edit_save.setVisibility(View.GONE);
+					mHomeView.btnGalleryImageUpload.setVisibility(View.GONE);
+					mHomeView.ll_edit_button_layout.setVisibility(View.GONE);
+				}
+				
+			    mProfileDealsAdapter = new ProfileDealsAdapter(mHomeView, R.layout.row_deals, profileDealsArr);
+			    mHomeView.fgv_prof_deals_gallery.setAdapter(mProfileDealsAdapter);
+			    mHomeView.fgv_prof_deals_gallery.setSelection(profileDealsArr.size()/2);
+			    mGalleryAdapter = new GalleryAdapter(mHomeView, R.layout.row_image_gallery, imageArr);
+			    mHomeView.gv_image_gallery.setAdapter(mGalleryAdapter);	
+			    
+			}
+		}
+	}
+	
+	public void resetImageAdapter(ArrayList<ImageBean> images){
+		  Log.e(TAG, "Gallery Size "+images.size());
+		  mGalleryAdapter = new GalleryAdapter(mHomeView, R.layout.row_image_gallery, images);
+		  mHomeView.gv_image_gallery.setAdapter(mGalleryAdapter);	
+	}
+	public static String readXMLinString(Context c) {
+		try {
+			InputStream is = c.getAssets().open("log1.txt");
+			int size = is.available();
+			byte[] buffer = new byte[size];
+			is.read(buffer);
+			is.close();
+			String text = new String(buffer);
+
+			return text;
+
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+	
+	
+	public class GoodDealsWeb extends AsyncTask<Boolean, Void, Boolean> {
+
+		@Override
+		protected Boolean doInBackground(Boolean... params) {
+		    boolean flag = false;
+			try {			        
+				JSONObject jsonObject = new JSONObject();
+				jsonObject.put("user_id", mHomeView.myApp.friendId);
+				JSONObject json = KlHttpClient.SendHttpPost(URL.GOOD_DEALS.getUrl(), jsonObject);
+				
+				if(json!=null){
+				    flag = json.getBoolean("status");
+				    if(flag){
+					JSONArray arr = json.getJSONArray("data");
+					for(int i=0; i<arr.length(); i++){
+					    JSONObject c = arr.getJSONObject(i);
+					    long markerid = System.currentTimeMillis()+ new Random().nextInt(1000);
+					    	String id = c.getString("id");
+						String name = c.getString("name");
+						String advt_name = c.getString("advt_name");
+						String address = c.getString("address");
+						Double lat = Double.valueOf(c.getString("lat"));					
+						Double lng = Double.valueOf(c.getString("lng"));
+						
+						
+						String url = "http://23.239.206.137/uploads/advertisements/banners/"+c.getString("advt_image");
+						Bitmap bitmap; 
+						    bitmap = getBitmapFromURL(url);
+						
+						String desc = c.getString("description");
+						mDealsArr.add(new GoodDeals(""+markerid,id, name, advt_name, address, lat, lng, bitmap,desc)); 
+					}
+					
+				    }
+				}			
+				
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return flag;
+			}catch(NumberFormatException e){
+				e.printStackTrace();
+				return flag;
+			}
+			return flag;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean status) {
+		    if(status){
+			
+			for(int i=0 ; i<mDealsArr.size(); i++){/*
+			    marker =  mHomeView.getMap().addMarker(new MarkerOptions()
+				.position(new LatLng(mDealsArr.get(i).getLat(),mDealsArr.get(i).getLng()))
+				.title("Name:" + mDealsArr.get(i).getAdvtName())
+				.snippet("Location:"+ mDealsArr.get(i).getAddress())
+				.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+			    	mHomeView.markerIdHasMap.put(marker, mDealsArr.get(i).getMarkerId());
+			        // marker.showInfoWindow();
+			*/
+			    /*Bitmap bitmap; 
+			    bitmap = getBitmapFromURL(mDealsArr.get(i).getImage());*/
+			    
+			 
+			      marker =  mHomeView.getMap().addMarker(new MarkerOptions()
+				.position(new LatLng(mDealsArr.get(i).getLat(),mDealsArr.get(i).getLng()))
+				.title("Name:" + mDealsArr.get(i).getAdvtName())
+				.snippet("Price :"+ "100$\n"+ "Description : "+mDealsArr.get(i).getDescription()+"\n"+"BUY it now?")
+				.icon(BitmapDescriptorFactory.fromBitmap(mDealsArr.get(i).getImage())));
+			    	mHomeView.markerIdHasMap.put(marker, mDealsArr.get(i).getMarkerId()); 
+			  
+			
+			}
+			
+		    }
+		}
+	}
+	
+	public static Bitmap getBitmapFromURL(String src) {
+	    try {
+	     //create instance of InputStream and pass URL
+	     InputStream in = new java.net.URL(src).openStream();
+	     //decode stream and initialize bitmap
+	    return BitmapFactory.decodeStream(in);
+	    } catch (Exception e) {
+	      Log.e("Error", e.getMessage());
+	     e.printStackTrace();
+	     return null;
+	    }
+	}
+	
 }

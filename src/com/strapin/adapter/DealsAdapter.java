@@ -51,12 +51,12 @@ public class DealsAdapter extends ArrayAdapter<DealsBean>{
 			mHolder =  (ViewHolder) v.getTag();
 		}	
 		
-		if(position%2 ==0){
+		/*if(position%2 ==0){
 			mHolder.mMainBg.setBackgroundResource(R.drawable.black_1);
 			
 		}else{
 			mHolder.mMainBg.setBackgroundResource(R.drawable.black_2);
-		}
+		}*/
 			
 		final DealsBean bean = mItems.get(position);
 		if(bean != null){

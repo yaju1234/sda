@@ -57,9 +57,9 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -67,10 +67,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Gallery;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -81,9 +82,13 @@ import android.widget.Toast;
 
 import com.facebook.FacebookException;
 import com.facebook.FacebookOperationCanceledException;
+import com.facebook.HttpMethod;
+import com.facebook.Request;
+import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
+import com.facebook.model.GraphObject;
 import com.facebook.widget.WebDialog;
 import com.facebook.widget.WebDialog.OnCompleteListener;
 import com.google.android.gcm.GCMRegistrar;
@@ -95,6 +100,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.strapin.Enum.URL;
 import com.strapin.Interface.IHome;
 import com.strapin.Util.ImageLoader;
@@ -106,9 +112,11 @@ import com.strapin.adapter.OfflineMessageAdapter;
 import com.strapin.application.AppInfo;
 import com.strapin.application.SnomadaApp;
 import com.strapin.bean.AppUserInfoBean;
-import com.strapin.bean.ChatBean;
-import com.strapin.bean.DealsBean;
 import com.strapin.bean.AppusersBean;
+import com.strapin.bean.ChatBean;
+import com.strapin.bean.CommentBean;
+import com.strapin.bean.DealsBean;
+import com.strapin.bean.ImageBean;
 import com.strapin.bean.MeetUpBean;
 import com.strapin.bean.NewMessage;
 import com.strapin.bean.Patrol;
@@ -116,35 +124,41 @@ import com.strapin.common.AlertDialogManager;
 import com.strapin.common.ConnectionDetector;
 import com.strapin.common.ServerUtilities;
 import com.strapin.common.WakeLocker;
-import com.strapin.global.Constants;
+import com.strapin.global.Constant;
 import com.strapin.global.Global;
 import com.strapin.network.KlHttpClient;
 import com.strapin.presenter.HomePresenter;
 
+@SuppressWarnings("deprecation")
 public class HomeView extends BaseView implements IHome {
 
-	private Sliding      mViewSlider;
-
-	private VerticalTextView mBtnSlider;
-	
 	public Button        btnaddFriend;
 	public Button        btnInviteFriend;
 	public Button        btnPendingReq;
-	public Button        btnMenu;
+	
+	public Button        btnGalleryImageUpload;
+	public Button        btn_profile_edit;
 
 	public TextView      lblUserName;
 	public TextView      lblCountPendingReq;
 	public TextView      lblActiveChatFriend;	
 	public TextView      lblDlgDisplayTime;
 	public TextView      tvDisplayDate;
-	public TextView      tv_profile_title;
-	public TextView      tvTitleLocalDeals;
+	public TextView      lbl_page_title;
 	
-	private TextView     tvTitleTab;
+	public TextView      tv_prof_name;
+	public TextView      tv_prof_age;
+	public TextView      tv_prof_loc;
+	public TextView      tv_prof_fev_mountain;
+	public TextView      tv_prof_shred_mountain;
+	public TextView      tv_prof_about_me;
 
 	private EditText      mSearchAddFriend;
 	private EditText      et_search_invite_friend;
 	private EditText      mEtInputChatMsg;
+	
+	
+	
 
 	public ImageLoader    imageLoader;
 
@@ -159,21 +173,23 @@ public class HomeView extends BaseView implements IHome {
 	public HomePresenter  presenter;
 
 	public GoogleMap      map;
-
+	
+	
+	public  LinearLayout       ll_icon_prof_loc_edit_save;
+	public  LinearLayout       ll_icon_prof_fav_mountain_edit_save;
+	public  LinearLayout       ll_icon_prof_about_me_edit_save;
+	
+	
 	public LinearLayout   ll_meetup;
 	public LinearLayout   ll_chat;
 	public LinearLayout   ll_gooddeals;
 	public LinearLayout   ll_track;
 	public LinearLayout   ll_addfriend;
 	public LinearLayout   ll_viewprofile;
+	
+	public LinearLayout   ll_edit_button_layout;
 
-	private LinearLayout  mGreenBarMeetUploc;
-	private LinearLayout  mGreenBarChatLive;
-	private LinearLayout  mGreenBarGoodDeals;
-	private LinearLayout  mGreenBarTrack;
-	private LinearLayout  mGreenBarAdd;
-	private LinearLayout  mGreenBarViewProfile;
-
+	
 	private LinearLayout  mMassageLayout;
 	public LinearLayout   mLayoutMsgNotiList;
 	private LinearLayout  mChatSendButton;
@@ -187,12 +203,19 @@ public class HomeView extends BaseView implements IHome {
 	private RelativeLayout   mInviteFriendSearch;
 	private RelativeLayout   mRlProgressBarLayout;
 
-	private ImageView mUserImage;
-	private ImageView mProfileImage;
+	private CircleImageView mUserImage;
+	public ImageView mProfileImage;
 	private ImageView mIvSkyPatrol;
+	private ImageView user_image_dlg;
+	
+	public ImageView        btn_menu_slider;
+	public ImageView        btn_friend_slider;
+	
+	public Gallery fgv_prof_deals_gallery;
+	public GridView gv_image_gallery;
 	
 
-	private Dialog menu_dialog, meetupUserDlg;
+	private Dialog meetupUserDlg;
 
 	private ArrayList<DealsBean> mDealsArr                       = new ArrayList<DealsBean>();
 	public ArrayList<AppUserInfoBean>  addFriendArr              = new ArrayList<AppUserInfoBean>();
@@ -203,6 +226,7 @@ public class HomeView extends BaseView implements IHome {
 	private ArrayList<AppusersBean> mContactList                 = new ArrayList<AppusersBean>();
 	private ArrayList<AppUserInfoBean> mAppUserList              = new ArrayList<AppUserInfoBean>();
 	private ArrayList<NewMessage> msg                            = new ArrayList<NewMessage>();
+	private ArrayList<ImageBean>        imageArr                 = new ArrayList<ImageBean>();
 
 	private DealsAdapter mAdapter;
 	private AddFriendAdapter mAddFriendAdapter;
@@ -217,18 +241,10 @@ public class HomeView extends BaseView implements IHome {
 	private AlertDialogManager alert                           = new AlertDialogManager();
 	private ConnectionDetector cd;
 
-	private int mHighlightPos                                  = 6;
-	private int key                                            = 0;
 	public static final int TIME_DIALOG_ID                     = 999;
 	public static final int DATE_DIALOG_ID                     = 998;
 
-	public static final int MEET_UP_LOCATION                   = 3;
-	public static final int CHAT_LIVE                          = 4;
-	public static final int GOOD_DEALS                         = 5;
-	public static final int TRACK_FRIENDS                      = 6;
-	public static final int ADD_FRIENDS                        = 7;
-	public static final int VIEW_PROFILE                       = 8;
-
+	
 	public static final int BUTTON_ADD_FRIEND                  = 100;
 	public static final int BUTTON_INVITE_FRIEND               = 101;
 	public static final int BUTTON_PENDING_REQUEST             = 102;
@@ -256,8 +272,10 @@ public class HomeView extends BaseView implements IHome {
 	public static final int REQUEST_CODE_GALLERY           = 0x1;
 	public static final int REQUEST_CODE_TAKE_PICTURE      = 0x2;
 	private final int PIC_CROP                             = 0x3;
+	public static final int REQUEST_CODE_IMAGE_GALLERY           = 0x4;
+	private static final int ACTION_REQUEST_FEATHER         = 5;
 	
-	public HttpEntity resEntity;
+    public HttpEntity resEntity;
     public Bitmap bitmap;
     public Bitmap scaleBitmap;
     public String song_url                                = "";
@@ -265,6 +283,8 @@ public class HomeView extends BaseView implements IHome {
     public String imagepath                               = null;
     public SnomadaApp myApp;
     public String TAG                                     = "snomada";
+    public int  Spinner_pos = 0;
+     public SlidingMenu  slidingmenu;
 
 	public Handler handle = new Handler() {
 
@@ -282,8 +302,6 @@ public class HomeView extends BaseView implements IHome {
 				meetUpInfoArr.get(updatepos).setLng(Double.parseDouble(markersst[6]));
 
 				map.clear();
-				mViewSlider.setVisibility(View.VISIBLE);
-				mViewSlider.setVisibility(View.GONE);
 				for (int i = 0; i < meetUpInfoArr.size(); i++) {
 					if (meetUpInfoArr.get(i).getOwner().equalsIgnoreCase("ME")) {
 						m   =  map.addMarker (new MarkerOptions()
@@ -326,31 +344,49 @@ public class HomeView extends BaseView implements IHome {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		setContentView(R.layout.home);
+		
+		slidingmenu = new SlidingMenu(this);
+		
+		slidingmenu.setMode(SlidingMenu.LEFT_RIGHT);
+		slidingmenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+		slidingmenu.setShadowWidthRes(R.dimen.shadow_width);
+		slidingmenu.setShadowDrawable(R.drawable.shadow);
+		slidingmenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+		slidingmenu.setFadeDegree(0.35f);
+		slidingmenu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+		slidingmenu.setMenu(R.layout.slider_friend_list);
+		slidingmenu.setSecondaryMenu(R.layout.slider_menu);
+		
+		slidingmenu.setSlidingEnabled(true);
+		
+		
+		
 		Global.iv_chat_avatar_img      = "";
 		myApp                   = (SnomadaApp) getApplication();
 		myApp.setAppInfo(new AppInfo(this));
 		uiHelper                = new UiLifecycleHelper(this, callback);
 		uiHelper.onCreate(savedInstanceState);
 
-		mViewSlider             = (Sliding) findViewById(R.id.slide_view);
-
-		mBtnSlider              = (VerticalTextView) findViewById(R.id.btn_slider);
-		mBtnSlider.setText(Html	.fromHtml("<font color=\"#ffffff\">FRIE</font><font color=\"#28b6ff\">NDS</font>"));
 		btnaddFriend            = (Button) findViewById(R.id.btn_add_friend);
 		btnInviteFriend         = (Button) findViewById(R.id.btn_invite_friend);
 		btnPendingReq           = (Button) findViewById(R.id.btn_request);
+		btnGalleryImageUpload   = (Button) findViewById(R.id.btn_upload_img);
+		btn_profile_edit        = (Button) findViewById(R.id.btn_profile_edit);
 
 		lblUserName             = (TextView) findViewById(R.id.tv_home_view_user_name);
 		lblActiveChatFriend     = (TextView) findViewById(R.id.tv_chat_friend);
 		lblCountPendingReq      = (TextView) findViewById(R.id.tv_pending_req_counter);
-		tvTitleLocalDeals       = (TextView) findViewById(R.id.text_local_deals);
-		tvTitleLocalDeals.setText(Html.fromHtml("<font color=\"#ffffff\">LOCAL&nbsp;&nbsp;</font><font color=\"#28b6ff\">DEALS</font>"));
-		btnMenu                 = (Button) findViewById(R.id.tv_menu_bottom);
-		btnMenu.setText(Html.fromHtml("<font color=\"#ffffff\">ME</font><font color=\"#28b6ff\">NU</font>"));
-		tv_profile_title        = (TextView)findViewById(R.id.tv_profile_title_text);
-		tv_profile_title.setText(Html.fromHtml("<font color=\"#ffffff\">PROFILE&nbsp;&nbsp;&nbsp;&nbsp;</font><font color=\"#28b6ff\">DETAILS</font>"));
+		lbl_page_title       = (TextView) findViewById(R.id.lbl_page_title);
+		tv_prof_name            = (TextView) findViewById(R.id.txt_profile_name);
+		tv_prof_age             = (TextView)findViewById(R.id.txt_profile_age);
+		tv_prof_loc             = (TextView)findViewById(R.id.txt_profile_location);
+		tv_prof_shred_mountain  = (TextView)findViewById(R.id.txt_profile_shred_style);
+		tv_prof_about_me        = (TextView)findViewById(R.id.txt_prof_about_me);
+		btn_menu_slider                 = (ImageView) findViewById(R.id.iv_icon_menu_slider);
+		btn_friend_slider               = (ImageView)findViewById(R.id.iv_icon_friend_slider);
+		//btn_menu_slider.setText(Html.fromHtml("<font color=\"#ffffff\">ME</font><font color=\"#28b6ff\">NU</font>"));
+		tv_prof_fev_mountain    = (TextView)findViewById(R.id.txt_profile_fev_mountain);
 		lv_friend_list          = (ListView) findViewById(R.id.lv_snomada_friends);
 		mLvMessageList          = (ListView) findViewById(R.id.lv_message);
 		mChatList               = (ListView) findViewById(R.id.lv_chat_instant_msg);
@@ -362,16 +398,31 @@ public class HomeView extends BaseView implements IHome {
 		mSearchAddFriend        = (EditText) findViewById(R.id.et_input_key_for_search_add_friends);
 		et_search_invite_friend = (EditText) findViewById(R.id.et_input_key_for_search_invite_friends);
 		mEtInputChatMsg         = (EditText) findViewById(R.id.et_input_chat_msg);
-
-		mUserImage              = (ImageView) findViewById(R.id.user_image);
-		tvTitleTab              = (TextView) findViewById(R.id.add_friend_text);
+		
+		
+		mUserImage              = (CircleImageView) findViewById(R.id.user_image);
 		mIvSkyPatrol            = (ImageView) findViewById(R.id.iv_ski_patrol);
 		mProfileImage           = (ImageView) findViewById(R.id.profile_page_image);
-
+		
 		mReqTab                 = (LinearLayout) findViewById(R.id.tab_request);
 		mMassageLayout          = (LinearLayout) findViewById(R.id.massage_layout);
 		mLayoutMsgNotiList      = (LinearLayout) findViewById(R.id.layout_message_notification);
 		mChatSendButton         = (LinearLayout) findViewById(R.id.chat_send_button);
+		
+		ll_edit_button_layout   = (LinearLayout) findViewById(R.id.ll_edit_button_layout);
+		
+		ll_icon_prof_loc_edit_save          = (LinearLayout)findViewById(R.id.ll_prof_location_edit_save);
+		ll_icon_prof_fav_mountain_edit_save = (LinearLayout)findViewById(R.id.ll_prof_fav_mountain_edit_save);
+		ll_icon_prof_about_me_edit_save     = (LinearLayout)findViewById(R.id.ll_prof_about_me_edit_save);
+		
+		
+		
+		ll_meetup             = (LinearLayout) findViewById(R.id.ll_meet_up_location);
+		ll_chat               = (LinearLayout) findViewById(R.id.ll_live_chat);
+		ll_gooddeals          = (LinearLayout) findViewById(R.id.ll_good_deals);
+		ll_track              = (LinearLayout) findViewById(R.id.ll_track_friends);
+		ll_addfriend          = (LinearLayout) findViewById(R.id.ll_add_friends);
+		ll_viewprofile        = (LinearLayout) findViewById(R.id.ll_view_profile);
 		
 		mAddFriendLayout        = (RelativeLayout) findViewById(R.id.add_friend_layout);
 		mChatLayout             = (RelativeLayout) findViewById(R.id.chat_outer_layout);
@@ -380,7 +431,8 @@ public class HomeView extends BaseView implements IHome {
 		mAddFriendSearchLayout  = (RelativeLayout) findViewById(R.id.add_friend_search_layout);
 		mInviteFriendSearch     = (RelativeLayout) findViewById(R.id.invite_friend_search_layout);
 		mRlProgressBarLayout    = (RelativeLayout) findViewById(R.id.rl_progress_bar);
-
+		fgv_prof_deals_gallery  = (Gallery)findViewById(R.id.gv_deals_images);
+		gv_image_gallery        = (GridView)findViewById(R.id.gv_gallery_images);
 		map                     = ((SupportMapFragment) getSupportFragmentManager()	.findFragmentById(R.id.map)).getMap();
 		map.setMyLocationEnabled(true);
 		map.getUiSettings().setCompassEnabled(true);
@@ -389,9 +441,9 @@ public class HomeView extends BaseView implements IHome {
 
 		//
 
-		mBtnSlider.setOnClickListener(this);
 		mUserImage.setOnClickListener(this);
-		btnMenu.setOnClickListener(this);
+		btn_menu_slider.setOnClickListener(this);
+		btn_friend_slider.setOnClickListener(this);
 		mIvSkyPatrol.setOnClickListener(this);
 		btnaddFriend.setOnClickListener(this);
 		btnInviteFriend.setOnClickListener(this);
@@ -402,7 +454,24 @@ public class HomeView extends BaseView implements IHome {
 		map.setOnMarkerClickListener(this);
 		map.setOnInfoWindowClickListener(this);
 		mProfileImage.setOnClickListener(this);
-
+		btnGalleryImageUpload.setOnClickListener(this);
+		ll_icon_prof_loc_edit_save.setOnClickListener(this);
+		btn_profile_edit.setOnClickListener(this);
+		
+		
+		ll_meetup.setOnClickListener(this);
+		ll_chat.setOnClickListener(this);
+		ll_gooddeals.setOnClickListener(this);
+		ll_track.setOnClickListener(this);
+		ll_addfriend.setOnClickListener(this);
+		ll_viewprofile.setOnClickListener(this);
+		
+		
+		
+		ll_icon_prof_loc_edit_save.setOnClickListener(this);
+		ll_icon_prof_fav_mountain_edit_save.setOnClickListener(this);
+		ll_icon_prof_about_me_edit_save.setOnClickListener(this);
+		
 		mSearchAddFriend.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -469,7 +538,34 @@ public class HomeView extends BaseView implements IHome {
 		mAdapter = new DealsAdapter(getApplicationContext(),R.layout.deals_row, mDealsArr);
 		mDealsList.setAdapter(mAdapter);
 		imageLoader = new ImageLoader(this);
-		init1();
+		
+		if(!myApp.getAppInfo().isTrackInstruction){
+		    myApp.getAppInfo().setTrackInstructionStatus(true);
+			final Dialog meetup_inst_dlg = new Dialog(HomeView.this);
+			meetup_inst_dlg.setCancelable(false);
+			meetup_inst_dlg	.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			meetup_inst_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+			meetup_inst_dlg	.setContentView(R.layout.tarck_instruction_dialog);
+			meetup_inst_dlg.setCancelable(false);
+			Button ok = (Button) meetup_inst_dlg.findViewById(R.id.iv_dlg_ok);
+			ok.setText(Html	.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
+			TextView tv_alert_txt = (TextView) meetup_inst_dlg.findViewById(R.id.tv_alert_dialog_text);
+			tv_alert_txt.setText(Html.fromHtml("<font color=\"#ffffff\">TRACK</font>&nbsp;&nbsp;<font color=\"#28b6ff\">FRIENDS</font>"));
+			ok.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {						
+				    meetup_inst_dlg.dismiss();
+				    init1(); 
+				}
+			});
+			meetup_inst_dlg.show();
+		
+		}else{
+		    init1(); 
+		}
+		
+		
 
 	}
 
@@ -494,9 +590,9 @@ public class HomeView extends BaseView implements IHome {
 	public void init1() {
 		presenter = new HomePresenter(this);
 		presenter.getFriendList();
-		createMenuDialog();
-		setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE,	View.VISIBLE, View.GONE, View.INVISIBLE, View.INVISIBLE,View.INVISIBLE, View.VISIBLE, View.INVISIBLE, View.INVISIBLE,false, false, false, TRACK_FRIENDS);
-		setFriendTab(1, View.VISIBLE, View.GONE, View.GONE, View.VISIBLE,	View.GONE, R.drawable.tab_select, R.drawable.tab_unselect,	R.drawable.tab_unselect, "#00ccff", "#ffffff", "#ffffff","ADD", "FRIENDS");
+		setFriendTab(1, View.VISIBLE, View.GONE, View.GONE, View.VISIBLE,	View.GONE, R.drawable.tab_select, R.drawable.tab_unselect,	R.drawable.tab_unselect, "#00ccff", "#ffffff", "#ffffff","","");
+		setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE,false, false, false,"TRACK ", "FRIENDS");
+		
 		myApp.isWebServiceCallForRefreshFriendList = false;
 		Global.isZoom = true;
 
@@ -535,6 +631,7 @@ public class HomeView extends BaseView implements IHome {
 		startService(i2);
 		new GetMeetUplocation().execute();
 		new MessageWeb().execute();
+		presenter.new GoodDealsWeb().execute();
 		runnable = new Runnable() {
 			public void run() {
 				
@@ -554,59 +651,16 @@ public class HomeView extends BaseView implements IHome {
 
 	@Override
 	public void onClick(View v) {
-		// ****************************************************** Header part
-		// Click listener START*****************************
-		if (v == mBtnSlider) {
-			if (key == 0) {
-				key = 1;
-				mViewSlider.setVisibility(View.VISIBLE);
-				if (myApp.isWebServiceCallForRefreshFriendList) {
-					presenter.getFriendList();
-					myApp.isWebServiceCallForRefreshFriendList = false;
-				}
-
-			} else if (key == 1) {
-				key = 0;
-				mViewSlider.setVisibility(View.GONE);
-			}
-		}
+		
 		if (v == mUserImage) {
-			setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE, View.GONE, View.GONE,	View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	View.INVISIBLE, View.INVISIBLE, View.VISIBLE,false, false, false, VIEW_PROFILE);
-			Log.e(TAG, myApp.getAppInfo().image);
-			imageLoader.DisplayImage(myApp.getAppInfo().image,	mProfileImage);
+			setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE,false, false, false,"VIEW ", "PROFILE");
+			presenter.handleProfileView(myApp.getAppInfo().userId,true);
 
 		}
 		
-		if(v == mProfileImage){
-
-			AlertDialog.Builder builder = new AlertDialog.Builder(HomeView.this);
-            builder.setCancelable(true);
-            builder.setTitle("Updolad Image");
-            builder.setInverseBackgroundForced(true);
-            builder.setPositiveButton("Camera",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog,int which) {
-                            dialog.dismiss();
-                            Intent i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                            startActivityForResult(i , REQUEST_CODE_TAKE_PICTURE);      
-                        }
-                    });
-            builder.setNegativeButton("Gallery",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog,int which) {
-                            dialog.dismiss();
-                            Intent i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                            startActivityForResult(i, REQUEST_CODE_GALLERY);
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();		
-		}
-
 		if (v == mIvSkyPatrol) {
-			presenter.doSkiPatrolFunction();
+			//presenter.doSkiPatrolFunction();
+		    emergencyConfirmDlg();
 		}
 		if (v == mMassageLayout) {
 			if(msg!=null){
@@ -615,7 +669,7 @@ public class HomeView extends BaseView implements IHome {
 						mLayoutMsgNotiList.setVisibility(View.GONE);
 					} else {
 						mLayoutMsgNotiList.setVisibility(View.VISIBLE);
-						mMassageAdapter = new OfflineMessageAdapter(HomeView.this,	R.layout.message_notification_row, msg,mLayoutMsgNotiList);
+						mMassageAdapter = new OfflineMessageAdapter(HomeView.this,R.layout.message_notification_row, msg,mLayoutMsgNotiList);
 						mLvMessageList.setAdapter(mMassageAdapter);
 					}
 
@@ -624,6 +678,26 @@ public class HomeView extends BaseView implements IHome {
 			
 
 		}
+		
+		if(v ==btnGalleryImageUpload){
+			Intent i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			startActivityForResult(i, REQUEST_CODE_IMAGE_GALLERY);
+		}
+		
+		if(v == btn_profile_edit){
+		    
+		    Intent i = new Intent(HomeView.this,ProfileEdit.class);
+		    i.putExtra("fname", myApp.getAppInfo().userFirstName);
+		    i.putExtra("lname",  myApp.getAppInfo().userLastName);
+		    i.putExtra("age", presenter.age);
+		    i.putExtra("location", presenter.loc);
+		    i.putExtra("fav_mountain", presenter.fav_mountain);
+		    i.putExtra("shred_style", presenter.shred_style);
+		    i.putExtra("about_me", presenter.about_me);
+		    startActivity(i);
+		   }
+		
+		
 
 		// ************************* Header part Click listener
 		// END*****************************************************************
@@ -661,66 +735,102 @@ public class HomeView extends BaseView implements IHome {
 		// End*************************************************************
 		// ******************************* Footer part Click listener
 		// Start****************************************************
-		if (v == btnMenu) {
-			ll_meetup.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					menu_dialog.dismiss();
-					myApp.doTrackFriendLocation = false;
-					setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.GONE, View.VISIBLE, View.GONE, View.VISIBLE,View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	View.INVISIBLE, View.INVISIBLE, false, true, false,	MEET_UP_LOCATION);
-				}
-			});
-			ll_chat.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					menu_dialog.dismiss();
-					setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE,	View.GONE, View.VISIBLE, View.GONE, View.INVISIBLE,	View.VISIBLE, View.INVISIBLE, View.INVISIBLE,View.INVISIBLE, View.INVISIBLE, false, false, true,	CHAT_LIVE);
-				}
-			});
-			ll_gooddeals.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					menu_dialog.dismiss();
-					setLayoutVisibility(View.GONE, View.VISIBLE, View.GONE,	View.GONE, View.GONE, View.GONE, View.INVISIBLE,	View.INVISIBLE, View.VISIBLE, View.INVISIBLE,View.INVISIBLE, View.INVISIBLE, false, false,false, GOOD_DEALS);
-				}
-			});
-			ll_track.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					menu_dialog.dismiss();
-					setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.GONE, View.VISIBLE, View.GONE, View.INVISIBLE,	View.INVISIBLE, View.INVISIBLE, View.VISIBLE,View.INVISIBLE, View.INVISIBLE, false, false,false, TRACK_FRIENDS);
-				}
-			});
-			ll_addfriend.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					menu_dialog.dismiss();
-					setLayoutVisibility(View.GONE, View.GONE, View.VISIBLE,	View.GONE, View.GONE, View.GONE, View.INVISIBLE,View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	View.VISIBLE, View.INVISIBLE, false, false, false,ADD_FRIENDS);
-					if (!(addFriendArr.size() > 0)) {
-						new AppUsers().execute();
-					}
-				}
-			});
-			ll_viewprofile.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					menu_dialog.dismiss();
-					setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE, View.GONE, View.GONE,	View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	View.INVISIBLE, View.INVISIBLE, View.VISIBLE,false, false, false, VIEW_PROFILE);
-					imageLoader.DisplayImage(myApp.getAppInfo().image,mProfileImage);
-				}
-			});
-
-			DisplayMetrics displaymetrics = new DisplayMetrics();
-			HomeView.this.getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-			int height = displaymetrics.heightPixels;
-			int width = displaymetrics.widthPixels;
-			
-	         WindowManager.LayoutParams wmlp = menu_dialog.getWindow().getAttributes();
-	         wmlp.gravity = Gravity.TOP | Gravity.LEFT;
-	         wmlp.x = (int)(width*0.142);   //x position
-	         wmlp.y = height;   //y position
-	         menu_dialog.show();		
+		if(v == btn_friend_slider){
+		    if (myApp.isWebServiceCallForRefreshFriendList) {
+			presenter.getFriendList();
+			myApp.isWebServiceCallForRefreshFriendList = false;
 		}
+		    slidingmenu.showMenu(true);  
+		}
+		if (v == btn_menu_slider) {
+		    slidingmenu.showSecondaryMenu(true);
+		   }
+		
+		
+		if(v == ll_meetup){
+		        slidingmenu.toggle();
+			if(!myApp.getAppInfo().isMeetUpInstruction){
+			    myApp.getAppInfo().setMeetUpInstructionStatus(true);
+				final Dialog meetup_inst_dlg = new Dialog(HomeView.this);
+				meetup_inst_dlg	.requestWindowFeature(Window.FEATURE_NO_TITLE);
+				meetup_inst_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+				meetup_inst_dlg	.setContentView(R.layout.meet_up_instruction_dialog);
+				meetup_inst_dlg.setCancelable(false);
+				Button ok = (Button) meetup_inst_dlg.findViewById(R.id.iv_dlg_ok);
+				ok.setText(Html	.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
+				TextView tv_alert_txt = (TextView) meetup_inst_dlg.findViewById(R.id.tv_alert_dialog_text);
+				tv_alert_txt.setText(Html.fromHtml("<font color=\"#ffffff\">MEET</font>&nbsp;&nbsp;<font color=\"#28b6ff\">UP</font>"));
+				ok.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {						
+					    meetup_inst_dlg.dismiss();
+					}
+				});
+				meetup_inst_dlg.show();
+			
+			}
+			myApp.doTrackFriendLocation = false;
+			setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.GONE,false, true, false,"MEETUP ","LOCATION");
+		  
+		}
+		if(v == ll_chat){
+		    slidingmenu.toggle();
+		    
+		    
+		    if(!myApp.getAppInfo().isChatInstruction){
+			    myApp.getAppInfo().setChatInstructionStatus(true);
+				final Dialog meetup_inst_dlg = new Dialog(HomeView.this);
+				meetup_inst_dlg	.requestWindowFeature(Window.FEATURE_NO_TITLE);
+				meetup_inst_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+				meetup_inst_dlg	.setContentView(R.layout.chat_instruction_dialog);
+				meetup_inst_dlg.setCancelable(false);
+				Button ok = (Button) meetup_inst_dlg.findViewById(R.id.iv_dlg_ok);
+				ok.setText(Html	.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
+				TextView tv_alert_txt = (TextView) meetup_inst_dlg.findViewById(R.id.tv_alert_dialog_text);
+				tv_alert_txt.setText(Html.fromHtml("<font color=\"#ffffff\">CHAT</font>&nbsp;&nbsp;<font color=\"#28b6ff\">LIVE</font>"));
+				ok.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {						
+					    meetup_inst_dlg.dismiss();
+					}
+				});
+				meetup_inst_dlg.show();
+			
+			}
+		    
+		    setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE,	View.GONE,   false, false, true,"CHAT ","LIVE");
+		
+		}
+				
+		if(v == ll_gooddeals){
+		    slidingmenu.toggle();
+		    setLayoutVisibility(View.GONE, View.VISIBLE, View.GONE,	View.GONE,   false, false,false,"GOOD ","DEALS");  
+		}
+		
+		if(v == ll_track){
+		    slidingmenu.toggle();
+		    setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.GONE, false, false,false,"TRACK ", "FRIENDS" ); 
+		}
+		
+		if( v == ll_addfriend){
+		    slidingmenu.toggle();
+			setLayoutVisibility(View.GONE, View.GONE, View.VISIBLE,	View.GONE, false, false, false,"ADD ","FRIENDS");
+			if (!(addFriendArr.size() > 0)) {
+				new AppUsers().execute();
+			}
+		
+		}
+		if(v == ll_viewprofile){
+		    slidingmenu.toggle();
+			setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE,false, false, false,"VIEW ", "PROFILE");
+			imageLoader.DisplayImage(myApp.getAppInfo().image,mProfileImage);
+			presenter.handleProfileView(myApp.getAppInfo().userId,true);
+		
+		}
+		
+
 	}
 
 	/*
@@ -730,13 +840,13 @@ public class HomeView extends BaseView implements IHome {
 	public void setFriendView(int i) {
 		switch (i) {
 		case BUTTON_ADD_FRIEND:
-			    setFriendTab(1, View.VISIBLE, View.GONE, View.GONE, View.VISIBLE,View.GONE, R.drawable.tab_select, R.drawable.tab_unselect,R.drawable.tab_unselect, "#00ccff", "#ffffff", "#ffffff","ADD", "FRIENDS");
+			    setFriendTab(1, View.VISIBLE, View.GONE, View.GONE, View.VISIBLE,View.GONE, R.drawable.tab_select, R.drawable.tab_unselect,R.drawable.tab_unselect, "#00ccff", "#ffffff", "#ffffff","ADD ","FRIEND");
 			break;
 		case BUTTON_INVITE_FRIEND:
-			    setFriendTab(2, View.GONE, View.VISIBLE, View.GONE, View.GONE,	View.VISIBLE, R.drawable.tab_unselect,R.drawable.tab_select, R.drawable.tab_unselect, "#ffffff",	"#00ccff", "#ffffff", "INVITE", "FRIENDS");
+			    setFriendTab(2, View.GONE, View.VISIBLE, View.GONE, View.GONE,View.VISIBLE, R.drawable.tab_unselect,R.drawable.tab_select, R.drawable.tab_unselect, "#ffffff","#00ccff", "#ffffff","INVITE ","FRIEND");
 			break;
 		case BUTTON_PENDING_REQUEST:
-			    setFriendTab(3, View.GONE, View.GONE, View.VISIBLE, View.GONE,	View.GONE, R.drawable.tab_unselect,	R.drawable.tab_unselect, R.drawable.tab_select, "#ffffff","#ffffff", "#00ccff", "REQ", "ESTS");
+			    setFriendTab(3, View.GONE, View.GONE, View.VISIBLE, View.GONE,View.GONE, R.drawable.tab_unselect,	R.drawable.tab_unselect, R.drawable.tab_select, "#ffffff","#ffffff", "#00ccff","REQUEST ","FRIEND");
 			    presenter.getFriendRequest();
 			break;
 		}
@@ -747,10 +857,7 @@ public class HomeView extends BaseView implements IHome {
 		return map;
 	}
 
-	@Override
-	public Sliding hideSlide() {
-		return mViewSlider;
-	}
+	
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -769,17 +876,18 @@ public class HomeView extends BaseView implements IHome {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String newMessage = intent.getExtras().getString(EXTRA_MESSAGE);
-			WakeLocker.acquire(getApplicationContext());
+			//WakeLocker.acquire(getApplicationContext());
 			
 			if (newMessage != null && newMessage.startsWith("{")
 					&& newMessage.endsWith("}")) {
 				try {
 					JSONObject json = new JSONObject(newMessage);
 					int status = Integer.parseInt(json.getString("status"));
-					if (status == Constants.ONLINE_STATUS_PUSH_NOTIFICATION) {
+					if (status == Constant.ONLINE_STATUS_PUSH_NOTIFICATION) {
 						boolean onlinestatus = Integer.parseInt(json.getString("onlinestatus")) == 1 ? true : false;	String onlinefbid = json.getString("fbid");
 						presenter.findListPosition(onlinestatus, onlinefbid);
-					} else if (status == Constants.CHAT_PUSH_NOTIFICATION) {
+					} else if (status == Constant.CHAT_PUSH_NOTIFICATION) {
+					    WakeLocker.acquire(getApplicationContext());
 						new MessageWeb().execute();
 						if (myApp.IMname.equalsIgnoreCase(json.getString("name"))) {
 							String msg        = json.getString("chatmessage");
@@ -789,8 +897,8 @@ public class HomeView extends BaseView implements IHome {
 							mChatList.setAdapter(mChatAdapter);
 							mChatList.setSelection(Global.mChatArr.size() - 1);
 						}
-					} else if (status == Constants.SKI_PATROL_PUSH_NOTIFICATION) {
-						
+					} else if (status == Constant.SKI_PATROL_PUSH_NOTIFICATION) {
+					    WakeLocker.acquire(getApplicationContext());
 							if(Global.isAppForeground){
 								String patroler_id      = json.getString("patroler_id");
 								String latitude         = json.getString("lat");
@@ -810,8 +918,8 @@ public class HomeView extends BaseView implements IHome {
 							}
 							
 						
-					} else if (status == Constants.FRIEND_REQUEST_COME_PUSH_NOTIFICATION) {// Status five for current  friend request receive
-																							
+					} else if (status == Constant.FRIEND_REQUEST_COME_PUSH_NOTIFICATION) {// Status five for current  friend request receive
+					    WakeLocker.acquire(getApplicationContext());																	
 						String sender_id        = json.getString("senderid");
 						String sender_name      = json.getString("sendername");
 						String receiver_fbid    = json.getString("receiver_fb_id");
@@ -821,7 +929,7 @@ public class HomeView extends BaseView implements IHome {
 
 						presenter.updatePendingFriendList(sender_id,sender_name, receiver_fbid, record_id,	track_status,image);
 
-					} else if (status == Constants.FRIEND_REQUEST_ACCEPT_PUSH_NOTIFICATION) {																							
+					} else if (status == Constant.FRIEND_REQUEST_ACCEPT_PUSH_NOTIFICATION) {																							
 						myApp.isWebServiceCallForRefreshFriendList = true;
 					}
 
@@ -863,7 +971,7 @@ public class HomeView extends BaseView implements IHome {
 
 	public void getChatWindowActive(String friendName, String fbid, boolean status, String image) {
 		Global.isAppForeground = true;
-		setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE, View.GONE,View.VISIBLE, View.GONE, View.INVISIBLE, View.VISIBLE,View.INVISIBLE, View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	false, false, true, CHAT_LIVE);
+		setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE, View.GONE,false, false, true,"CHAT ", "LIVE");
 		presenter.functionChat(fbid, friendName,status,image);
 		lblActiveChatFriend.setText(friendName);		
 	}
@@ -880,7 +988,7 @@ public class HomeView extends BaseView implements IHome {
 		if (bundle != null) {
 			if (bundle.getString("event").equalsIgnoreCase("chat")) {
 				Global.isAppForeground = true;
-				setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE,	View.GONE, View.VISIBLE, View.GONE, View.INVISIBLE,	View.VISIBLE, View.INVISIBLE, View.INVISIBLE,View.INVISIBLE, View.INVISIBLE, false, false, true,	CHAT_LIVE);
+				setLayoutVisibility(View.VISIBLE, View.GONE, View.GONE,	View.GONE,  false, false, true,"CHAT ", "LIVE");
 
 				String sender_name = getIntent().getExtras().getString(	"sender_name");
 				String sender_fb_id = getIntent().getExtras().getString("sender_fb_id");
@@ -889,45 +997,12 @@ public class HomeView extends BaseView implements IHome {
 				myApp.getAppInfo().setSenderIDChat(	getIntent().getExtras().getString("sender_fb_id"));
 				boolean status = presenter.getFriendStatus(sender_fb_id);
 				String image = presenter.getFriendImage(sender_fb_id);
+				System.out.println("!--- Imageww"+ image);
+				System.out.println("!--- Imageee"+ sender_fb_id);
 				presenter.functionChat(sender_fb_id, sender_name,status,image);
 				
-			} else if (bundle.getString("event").equalsIgnoreCase("meetup")) {
-				Global.isZoom = false;
-				myApp.getAppInfo().setIsAlertForSKIPatrol(false);
-				db.getMeetUpLocation1();
-				String st[] = db.getMeetUpLocation();
-				db.updateMeetUpStatus(Integer.parseInt(st[0]));
-				map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.valueOf(st[1]), Double.valueOf(st[2])), 16));
-
-			}
+			} 
 		}
-
-	}
-
-	/**
-	 * Menu Dialog open from footer. 3. Meet-UP location 4. Chat 5. Good Deals
-	 * 6. Location Track 7. Add friends 8. View profile
-	 */
-	@Override
-	public void createMenuDialog() {
-		menu_dialog           = new Dialog(HomeView.this);
-		menu_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		menu_dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-		menu_dialog.setContentView(R.layout.dialog);
-		ll_meetup             = (LinearLayout) menu_dialog.findViewById(R.id.submenu_3);
-		ll_chat               = (LinearLayout) menu_dialog.findViewById(R.id.submenu_4);
-		ll_gooddeals          = (LinearLayout) menu_dialog.findViewById(R.id.submenu_5);
-		ll_track              = (LinearLayout) menu_dialog.findViewById(R.id.submenu_6);
-		ll_addfriend          = (LinearLayout) menu_dialog.findViewById(R.id.submenu_7);
-		ll_viewprofile        = (LinearLayout) menu_dialog.findViewById(R.id.submenu_8);
-
-		mGreenBarMeetUploc    = (LinearLayout) menu_dialog.findViewById(R.id.bar_3);
-		mGreenBarChatLive     = (LinearLayout) menu_dialog.findViewById(R.id.bar_4);
-		mGreenBarGoodDeals    = (LinearLayout) menu_dialog	.findViewById(R.id.bar_5);
-		mGreenBarTrack        = (LinearLayout) menu_dialog.findViewById(R.id.bar_6);
-		mGreenBarAdd          = (LinearLayout) menu_dialog.findViewById(R.id.bar_7);
-		mGreenBarViewProfile  = (LinearLayout) menu_dialog.findViewById(R.id.bar_8);
-		menu_dialog.setCanceledOnTouchOutside(true);
 
 	}
 
@@ -982,16 +1057,34 @@ public class HomeView extends BaseView implements IHome {
 
 	@Override
 	public void onInfoWindowClick(Marker marker) {
+	    	boolean flag = false;
 		current_selected_marker_id = markerIdHasMap.get(marker);
-		for (int i = 0; i < meetUpInfoArr.size(); i++) {
-			if (current_selected_marker_id.equalsIgnoreCase(meetUpInfoArr.get(i).getId())) {
-				if (meetUpInfoArr.get(i).getOwner().equalsIgnoreCase("ME")) {
-					myApp.isMeetuplocationEditTextEditable = true;
-					setMeetuplocationDialog(marker, current_selected_marker_id,	meetUpInfoArr.get(i).getName(), meetUpInfoArr.get(i).getLocation(), meetUpInfoArr.get(i)	.getDescription(), meetUpInfoArr.get(i)	.getDate1(),meetUpInfoArr.get(i).getTime(), meetUpInfoArr.get(i).getOwner());
+		if(current_selected_marker_id!=null){
+			for (int i = 0; i < meetUpInfoArr.size(); i++) {
+				if (current_selected_marker_id.equalsIgnoreCase(meetUpInfoArr.get(i).getId())) {
+					if (meetUpInfoArr.get(i).getOwner().equalsIgnoreCase("ME")) {
+						myApp.isMeetuplocationEditTextEditable = true;
+						flag = true;
+						setMeetuplocationDialog(marker, current_selected_marker_id,	meetUpInfoArr.get(i).getName(), meetUpInfoArr.get(i).getLocation(), meetUpInfoArr.get(i)	.getDescription(), meetUpInfoArr.get(i)	.getDate1(),meetUpInfoArr.get(i).getTime(), meetUpInfoArr.get(i).getOwner());
+					}
+					break;
 				}
-				break;
 			}
+			if(!flag){
+			    for(int j=0; j<presenter.mDealsArr.size(); j++){
+				if(current_selected_marker_id.equalsIgnoreCase(presenter.mDealsArr.get(j).getMarkerId())){
+				    String addid = presenter.mDealsArr.get(j).getId();
+				    System.out.println("!---  add id "+addid);
+				    Intent i = new Intent(HomeView.this, DealsView.class);
+				    i.putExtra("advt_id", addid);
+				    startActivity(i);
+				}
+			    }
+			}
+			
 		}
+		
+		
 
 	}
 
@@ -1008,17 +1101,7 @@ public class HomeView extends BaseView implements IHome {
 						public void onClick(DialogInterface dialog, int which) {
 							dialog.dismiss();
 							setMeetUp(point);
-							/*m = map.addMarker(new MarkerOptions()
-									.position(point)
-									.title(myApp.getAppInfo().userFirstName	+ " "+ myApp.getAppInfo().userLastName)
-									.snippet("Click here update info")
-									.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-							m.setDraggable(true);
 							
-							current_time_in_millisecond = System.currentTimeMillis();
-							meetUpInfoArr.add(new MeetUpBean(""	+ current_time_in_millisecond, "", "", "",	"", "", "ME", point.latitude,	point.longitude));
-							markerIdHasMap.put(m, ""+ current_time_in_millisecond);*/
-
 						}
 					});
 			builder.setNegativeButton("No",
@@ -1267,34 +1350,25 @@ public class HomeView extends BaseView implements IHome {
 	}
 
 	public void setLayoutVisibility(int viewchat, int viewgooddeals,
-			int viewaddfriend, int viewprofile, int btnslider, int viewslider,
-			int barmeetup, int barchat, int bardeals, int bartrack,
-			int baraddfriend, int barprofile, boolean trackfriends,
-			boolean showmeetup, boolean ischatactive, int hightmenu) {
+			int viewaddfriend, int viewprofile,
+			boolean trackfriends,
+			boolean showmeetup, boolean ischatactive,String whiteText, String blueText) {
 
 		mChatLayout.            setVisibility(viewchat);
 		mDealsLayout.           setVisibility(viewgooddeals);
 		mAddFriendLayout.       setVisibility(viewaddfriend);
 		mProfileLayout.         setVisibility(viewprofile);
-		mBtnSlider.             setVisibility(btnslider);
-		mViewSlider.            setVisibility(viewslider);
-
-		mGreenBarMeetUploc.     setVisibility(barmeetup);
-		mGreenBarChatLive.      setVisibility(barchat);
-		mGreenBarGoodDeals.     setVisibility(bardeals);
-		mGreenBarTrack.         setVisibility(bartrack);
-		mGreenBarAdd.           setVisibility(baraddfriend);
-		mGreenBarViewProfile.   setVisibility(barprofile);
-
+		
 		myApp.doTrackFriendLocation             = trackfriends;
 		myApp.isMeetuplocationWindoEnable       = showmeetup;
 		myApp.isChatActive                      = ischatactive;
-		mHighlightPos                           = hightmenu;
+		
+		lbl_page_title.setText(Html.fromHtml("<font color=\"#ffffff\">"+whiteText+"</font><font color=\"#28b6ff\">"+blueText+"</font>"));
 
 	}
 
 	public void doTrack() {
-		setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE,	View.VISIBLE, View.GONE, View.INVISIBLE, View.INVISIBLE,View.INVISIBLE, View.VISIBLE, View.INVISIBLE, View.INVISIBLE,false, false, false, TRACK_FRIENDS);
+		setLayoutVisibility(View.GONE, View.GONE, View.GONE, View.GONE,false, false, false,"TRACK ", "FRIENDS");
 		map.setInfoWindowAdapter(null);
 	}
 
@@ -1341,7 +1415,8 @@ public class HomeView extends BaseView implements IHome {
 				JSONObject jsonObject    = new JSONObject();
 				jsonObject.put("fbid", myApp.getAppInfo().userId);
 				JSONObject json          = KlHttpClient.SendHttpPost(URL.MEET_UP_MERKER_LIST.getUrl(), jsonObject);
-				//Log.e(TAG, json.toString());
+				
+				Log.e("TAG14", json.toString());
 				SimpleDateFormat sdf     = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 				Date date = new Date();
 				String _currentdate      = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
@@ -1416,11 +1491,8 @@ public class HomeView extends BaseView implements IHome {
 						deleteOldMarker();
 					}
 				}
-
 			}
-
 		}
-
 	}
 
 	// Put/Edit a MEET UP location into the Google map
@@ -1473,9 +1545,7 @@ public class HomeView extends BaseView implements IHome {
 				markersst = result;
 				updatepos = pos;
 				handle.sendEmptyMessage(1);
-
 			}
-
 		}
 
 		@Override
@@ -1522,14 +1592,18 @@ public class HomeView extends BaseView implements IHome {
 		}
 	}
 
-	public class AppUsers extends AsyncTask<String, Void, ArrayList<AppUserInfoBean>> {
+	public class AppUsers extends AsyncTask<String, Void, Void> {
 		protected void onPreExecute() {
 			showProgressDailog();
 		}
 
 		@Override
-		protected ArrayList<AppUserInfoBean> doInBackground(String... params) {
+		protected Void doInBackground(String... params) {
 			try {
+			    
+			   
+			    
+			  
 				JSONObject request = new JSONObject();
 				request.put("fbid", myApp.getAppInfo().userId);
 				request.put("usertype", myApp.getAppInfo().loginType);
@@ -1554,7 +1628,7 @@ public class HomeView extends BaseView implements IHome {
 						mAppUserList.add(new AppUserInfoBean(ids,email, first_name,last_name,image, user_type,phone));
 					}
 				}
-				return mAppUserList;
+				
 
 			} catch (Exception e) {
 				dismissProgressDialog();
@@ -1564,19 +1638,25 @@ public class HomeView extends BaseView implements IHome {
 		}
 
 		@Override
-		protected void onPostExecute(ArrayList<AppUserInfoBean> appusersArr) {
-			dismissProgressDialog();
-			boolean flag = false;
-			if (appusersArr != null) {
+		protected void onPostExecute(Void result) {
+		    dismissProgressDialog();
+		    if(!(mContactList.size()>0)){
+			getFriendList();
+		    }else{
+			addFriend();
+		    }
+			
+		/*	boolean flag = false;
+			if (mAppUserList != null) {
 				if(myApp.getAppInfo().loginType.equalsIgnoreCase("F")){					
 					mContactList = db.getFacebookFriends();				
 					
 					try {
 						for (int i = 0; i < mContactList.size(); i++) {
 							flag = false;
-							for (int j = 0; j < appusersArr.size(); j++) {
-								if (mContactList.get(i).getId().equalsIgnoreCase(appusersArr.get(j).getId())) {
-									addFriendArr.add(new AppUserInfoBean(appusersArr.get(j).getId(),""	,appusersArr.get(j).getFirstName(),appusersArr.get(j).getLastName(),appusersArr.get(j).getImage(),"F",""));
+							for (int j = 0; j < mAppUserList.size(); j++) {
+								if (mContactList.get(i).getId().equalsIgnoreCase(mAppUserList.get(j).getId())) {
+									addFriendArr.add(new AppUserInfoBean(mAppUserList.get(j).getId(),""	,mAppUserList.get(j).getFirstName(),mAppUserList.get(j).getLastName(),mAppUserList.get(j).getImage(),"F",""));
 									flag = true;
 									break;
 								}
@@ -1604,9 +1684,9 @@ public class HomeView extends BaseView implements IHome {
 					try {
 						for (int i = 0; i < mContactList.size(); i++) {
 							flag = false;
-							for (int j = 0; j < appusersArr.size(); j++) {
-								if (mContactList.get(i).getId().equalsIgnoreCase(appusersArr.get(j).getPhone())) {
-									addFriendArr.add(new AppUserInfoBean(appusersArr.get(j).getId(),""	,mContactList.get(i).getName(),"",appusersArr.get(j).getImage(),"N",mContactList.get(i).getId()));
+							for (int j = 0; j < mAppUserList.size(); j++) {
+								if (mContactList.get(i).getId().equalsIgnoreCase(mAppUserList.get(j).getPhone())) {
+									addFriendArr.add(new AppUserInfoBean(mAppUserList.get(j).getId(),""	,mContactList.get(i).getName(),"",mAppUserList.get(j).getImage(),"N",mContactList.get(i).getId()));
 									flag = true;
 									break;
 								}
@@ -1629,7 +1709,7 @@ public class HomeView extends BaseView implements IHome {
 				
 				
 				}
-			}
+			}*/
 
 		}
 
@@ -1647,7 +1727,6 @@ public class HomeView extends BaseView implements IHome {
 				request.put("last_name",  myApp.getAppInfo().userLastName);
 				JSONObject response = KlHttpClient.SendHttpPost(URL.MESSAGE.getUrl(), request);
 				//JSONObject response   = new JSONObject(readXMLinString(getApplicationContext()));
-				Log.e(TAG, response.toString());
 				if (response != null) {
 					msg.clear();
 					JSONArray jsonArray = response.getJSONArray("newReply");
@@ -1684,7 +1763,7 @@ public class HomeView extends BaseView implements IHome {
 		}
 	}
 
-	public void setFriendTab(int selectedTab, int addfriendlistview,int invitefriendlistview, int pendingreqview,int addsearcglayoutview, int invitesearchlayoutview,int drawableaddfriend, int drawableinvitefriend, int requestfriend,	String addfriendtextcolor, String invitefriendtextcolor,String pendingreqtextcolor, String blueTxt, String whiteTxt) {
+	public void setFriendTab(int selectedTab, int addfriendlistview,int invitefriendlistview, int pendingreqview,int addsearcglayoutview, int invitesearchlayoutview,int drawableaddfriend, int drawableinvitefriend, int requestfriend,	String addfriendtextcolor, String invitefriendtextcolor,String pendingreqtextcolor,String whiteText, String blueText) {
 		myApp.selectedTab          = selectedTab;
 		mAddFriendList.            setVisibility(addfriendlistview);
 		mLvInviteFriendList.       setVisibility(invitefriendlistview);
@@ -1700,11 +1779,8 @@ public class HomeView extends BaseView implements IHome {
 		btnaddFriend.              setTextColor(Color.parseColor(addfriendtextcolor));
 		btnInviteFriend.           setTextColor(Color.parseColor(invitefriendtextcolor));
 		btnPendingReq.             setTextColor(Color.parseColor(pendingreqtextcolor));
-		if(blueTxt.equalsIgnoreCase("REQ")){
-			tvTitleTab.setText(Html	.fromHtml("<font color=\"#ffffff\">"+blueTxt+"</font><font color=\"#28b6ff\">"+whiteTxt+"</font>"));	
-		}else{
-			tvTitleTab.setText(Html	.fromHtml("<font color=\"#ffffff\">"+blueTxt+"&nbsp;&nbsp;</font><font color=\"#28b6ff\">"+whiteTxt+"</font>"));
-		}
+		lbl_page_title.setText(Html.fromHtml("<font color=\"#ffffff\">"+whiteText+"</font><font color=\"#28b6ff\">"+blueText+"</font>"));
+	
 		
 	}
 
@@ -1715,8 +1791,59 @@ public class HomeView extends BaseView implements IHome {
 		if (session != null && (session.isOpened() || session.isClosed())) {
 			onSessionStateChange(session, session.getState(), null);
 		}
+		
+		Log.e("TAG6", "onResume call");
 
 		uiHelper.onResume();
+		
+		
+		 if(Global.meetupzoomFlag){
+		    Global.meetupzoomFlag = false;
+		    Log.e("TAG6", "onResume call111");
+		    Global.isZoom = false;
+			myApp.getAppInfo().setIsAlertForSKIPatrol(false);
+			//db.getMeetUpLocation1();
+			String st[] = db.getMeetUpLocation();
+			db.updateMeetUpStatus(Integer.parseInt(st[0]));
+			map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Double.valueOf(st[1]), Double.valueOf(st[2])), 16));
+			myApp.doTrackFriendLocation = false;
+			setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.GONE,false, true, false,"MEETUP ", "LOCATION");
+		}
+		 
+		 if(Global.profileeditflag){
+		     Global.profileeditflag = false;
+		     
+		        tv_prof_loc.setText(Global.user_location);
+		        presenter.loc = Global.user_location;
+			tv_prof_fev_mountain.setText(Global.user_fav_mountain);
+			presenter.fav_mountain = Global.user_fav_mountain;
+			tv_prof_shred_mountain.setText(Global.user_shred_style);
+			presenter.shred_style = Global.user_shred_style;
+			tv_prof_about_me.setText(Global.user_about_me);
+			presenter.about_me = Global.user_about_me;
+			tv_prof_age.setText(Global.user_age);
+			presenter.age = Global.user_age;
+			tv_prof_name.setText(myApp.getAppInfo().userFirstName+" "+myApp.getAppInfo().userLastName);
+			
+			lblUserName.setText(myApp.getAppInfo().userFirstName);
+			imageLoader.DisplayImage(myApp.getAppInfo().image, mUserImage);
+			Log.e("TAG13", myApp.getAppInfo().image);
+			imageLoader.DisplayImage(myApp.getAppInfo().image, mProfileImage);
+			setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE,false, false, false,"VIEW ", "PROFILE");
+			
+		 }
+		 
+		 
+		 if(Global.profileImageeditflag){
+		     Global.profileImageeditflag = false;
+		     
+		       
+			imageLoader.DisplayImage(myApp.getAppInfo().image, mUserImage);
+			Log.e("TAG13", myApp.getAppInfo().image);
+			imageLoader.DisplayImage(myApp.getAppInfo().image, mProfileImage);
+			setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE,false, false, false,"VIEW ", "PROFILE");
+			
+		 }
 	}
 
 	@Override
@@ -1733,6 +1860,53 @@ public class HomeView extends BaseView implements IHome {
 	           cursor.close();
 	           performCrop(getImageContentUri(HomeView.this,new File(imagepath)));
 	            }
+	     
+	     if (requestCode == REQUEST_CODE_IMAGE_GALLERY && resultCode == RESULT_OK && null != data) {
+	           Uri selectedImage = data.getData();
+	           String[] filePathColumn   = { MediaStore.Images.Media.DATA };
+	           Cursor cursor             = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+	           cursor.moveToFirst();
+	           int columnIndex           = cursor.getColumnIndex(filePathColumn[0]);
+	           String imagepath          = cursor.getString(columnIndex);
+	           cursor.close();
+	           
+	           setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE,false, false, false,"VIEW ", "PROFILE");
+	           new GalleryUploadTask().execute(imagepath);
+	           
+	          /* Intent newIntent = new Intent( this, FeatherActivity.class );
+			Uri uridata=Uri.fromFile(new File(imagepath));
+			newIntent.setData(uridata);
+			newIntent.putExtra( Constants.EXTRA_IN_API_KEY_SECRET, AVIARY_SECRET_KEY );
+			startActivityForResult( newIntent, ACTION_REQUEST_FEATHER ); */
+	          // new GalleryUploadTask().execute(imagepath);
+	         //  ..
+	          // performCrop(getImageContentUri(HomeView.this,new File(imagepath)));
+	            }
+	     
+	        /* if(requestCode== ACTION_REQUEST_FEATHER && null != data){
+			try {
+			   // Log.e("reach here", ""+newuri);
+				Uri newuri=data.getData();
+				Log.e("reach here", ""+newuri);
+				bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), newuri);						
+				scaleBitmap = Bitmap.createScaledBitmap(bitmap, 200, 240, true);					
+		       
+		        
+		           String[] projection = {MediaStore.Images.Media.DATA};
+		    	   Cursor cursor = getContentResolver().query(newuri, projection, null, null, null);
+		           cursor.moveToFirst();
+
+		           int columnIndex = cursor.getColumnIndex(projection[0]);
+		           imagepath = cursor.getString(columnIndex);
+		           setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE,false, false, false,"VIEW ", "PROFILE");
+		           new GalleryUploadTask().execute(imagepath);
+		        
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}						
+		}*/
 	       
 	       if(requestCode == REQUEST_CODE_TAKE_PICTURE && resultCode == RESULT_OK && null != data){
 	    	   
@@ -1748,10 +1922,11 @@ public class HomeView extends BaseView implements IHome {
    	        Bundle extras = data.getExtras();
 	        Bitmap yourSelectedImage = extras.getParcelable("data");
 	        doSaveNewImage(yourSelectedImage);
-	        setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE, View.GONE, View.GONE,	View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	View.INVISIBLE, View.INVISIBLE, View.VISIBLE,false, false, false, VIEW_PROFILE);
+	        setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE,false, false, false,"VIEW ", "PROFILE");
 	        mProfileImage.setImageBitmap(yourSelectedImage);
-		    mUserImage.setImageBitmap(yourSelectedImage);
-		    new ImageUploadTask().execute(filepath);
+		mUserImage.setImageBitmap(yourSelectedImage);
+		user_image_dlg.setImageBitmap(yourSelectedImage);
+		   // new ImageUploadTask().execute(filepath,"0");
 	        }     
 
 	}
@@ -1769,16 +1944,14 @@ public class HomeView extends BaseView implements IHome {
 	}
 	
 	 public void sendRequestDialog(final String userId) { Bundle params = new Bundle();       
-     params.putString("title", "Invite Friend");
-     params.putString("message", "https://play.google.com/store/apps/details?id=snowmada.main.view&hl=en");
-     // comma seperated list of facebook IDs to preset the recipients. If left out, it will show a Friend Picker.
-     params.putString("to",  userId);  // your friend id
+	 	params.putString("title", "Invite Friend");
+	 	params.putString("message", "https://play.google.com/store/apps/details?id=snowmada.main.view&hl=en");
+	 	params.putString("to",  userId);
 
-     WebDialog requestsDialog = ( new WebDialog.RequestsDialogBuilder(HomeView.this,
-             Session.getActiveSession(), params)).setOnCompleteListener(new OnCompleteListener() {
+	 	WebDialog requestsDialog = ( new WebDialog.RequestsDialogBuilder(HomeView.this,
+	 		Session.getActiveSession(), params)).setOnCompleteListener(new OnCompleteListener() {
         @Override
         public void onComplete(Bundle values, FacebookException error) {
-            //   Auto-generated method stub                     
             if (error != null) {
                 if (error instanceof FacebookOperationCanceledException) {
                     Toast.makeText(HomeView.this.getApplicationContext(), "Request cancelled", Toast.LENGTH_SHORT).show();
@@ -1797,6 +1970,8 @@ public class HomeView extends BaseView implements IHome {
         }
      }).build();
      requestsDialog.show();}
+	
+	
 	 
 	 public static Uri getImageContentUri(Context context, File imageFile) {
 	        String filePath = imageFile.getAbsolutePath();
@@ -1823,25 +1998,48 @@ public class HomeView extends BaseView implements IHome {
 	 
 	 
 	 class ImageUploadTask extends AsyncTask<String, Void, String> {
+	     String loc ;
+	     String favorite_mountain ;
+	     String shred_style ;
+	     String about_me ;
 			@Override
 			protected String doInBackground(String... param) {
+			    loc = param[1];
+			    favorite_mountain = param[2];
+			    shred_style = param[3];
+			    about_me = param[4];
 				try {
 					HttpClient httpClient = new DefaultHttpClient();
 					HttpContext localContext = new BasicHttpContext();					
-				    Log.e("Image path", "USRE ID "+myApp.getAppInfo().userId);
-						HttpPost httpPost = new HttpPost("http://clickfordevelopers.com/demo/snowmada/update_profile.php");
+					Log.e("Image path", "USRE ID "+myApp.getAppInfo().userId);
+						HttpPost httpPost = new HttpPost(URL.UPDATE_PROFILE.getUrl());
 						MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);						
-						entity.addPart("file", new FileBody(new File(param[0])));
+						
 						entity.addPart("fbid", new StringBody(myApp.getAppInfo().userId));
+							if(param[0]!=null){
+							    entity.addPart("file", new FileBody(new File(param[0])));
+								
+								Log.e("city", param[0]);
+							}
+							
+							entity.addPart("city", new StringBody(param[1]));
+							Log.e("city", param[1]);
+							entity.addPart("favorite_mountain", new StringBody(param[2]));	
+							Log.e("favorite_mountain", param[2]);
+							entity.addPart("shred_style", new StringBody(param[3]));
+							Log.e("shred_style", param[3]);
+							entity.addPart("about_me", new StringBody(param[4]));
+							Log.e("about_me", param[4]);			
+						
 						httpPost.setEntity(entity);
+						Log.e(TAG, "Request  "+httpPost.getRequestLine());
 						HttpResponse response;
 						response = httpClient.execute(httpPost);
 						resEntity = response.getEntity();
 					
 					
 		            final String response_str = EntityUtils.toString(resEntity);
-		            Log.e(TAG,"Response "+ response_str);
-					return response_str;
+		           		return response_str;
 				} catch (Exception e) {	
 					
 					return null;
@@ -1859,11 +2057,97 @@ public class HomeView extends BaseView implements IHome {
 				try {
 					JSONObject obj = new JSONObject(sResponse);
 					if(obj.getBoolean("status")){
+					    presenter.loc= loc;
+					    presenter.fav_mountain= favorite_mountain;
+					    presenter.shred_style= shred_style;
+					    presenter.about_me= about_me;
+					    Log.e("loc edit", loc);
+					        tv_prof_loc.setText(loc);
+						tv_prof_fev_mountain.setText(favorite_mountain);
+						tv_prof_shred_mountain.setText(shred_style);
+						tv_prof_about_me.setText(about_me);
+						if(!obj.isNull("image")){
 						myApp.getAppInfo().setImage(URL.IMAGE_PATH.getUrl()+obj.getString("image"));
+						}
+						
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
+				
+			}
+				}
+		}
+	 
+	 
+	 class GalleryUploadTask extends AsyncTask<String, Void, ArrayList<ImageBean>> {
+			@Override
+			protected ArrayList<ImageBean> doInBackground(String... param) {
+				try {
+					HttpClient httpClient = new DefaultHttpClient();
+					HttpContext localContext = new BasicHttpContext();					
+				        	HttpPost httpPost = new HttpPost(URL.GALLERY_UPLOAD.getUrl());
+						MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);						
+						entity.addPart("gallery", new FileBody(new File(param[0])));
+						entity.addPart("fbid", new StringBody(myApp.getAppInfo().userId));
+						httpPost.setEntity(entity);
+						HttpResponse response;
+						response = httpClient.execute(httpPost);
+						resEntity = response.getEntity();
+					
+					
+		            final String response_str = EntityUtils.toString(resEntity);
+		            JSONObject jobj = new JSONObject(response_str);
+		            JSONArray jArrImage = jobj.getJSONArray("gallery");
+					imageArr.clear();						
+					for(int i=0; i<jArrImage.length(); i++){
+					    ImageBean bean = new ImageBean();
+						JSONObject c = jArrImage.getJSONObject(i);
+						String image_id = c.getString("id");
+						bean.setImageId(image_id);
+						String image_link = URL.GALLERY_IMG_PATH.getUrl()+c.getString("image");
+						bean.setImageLink(image_link);
+						JSONArray jArray = c.getJSONArray("comments");
+						 ArrayList<CommentBean> commentArr = new ArrayList<CommentBean>();
+						for (int i1 = 0; i1 < jArray.length(); i1++) {
+						    JSONObject c1 = jArray.getJSONObject(i1);
+						    String fname = c1.getString("first_name");
+						    String lname = c1.getString("last_name");
+						    String profile_pic = c1.getString("profile_picture");
+						    String txt_commets = c1.getString("comment");
+						    commentArr.add(new CommentBean(fname, lname,   profile_pic, txt_commets));
+						    bean.setCommentArr(commentArr);
+						}
+						imageArr.add(bean);
+						
+						
+						
+					}
+					Global.imageArr = imageArr;
+					return imageArr;
+				} catch (Exception e) {	
+					
+					return null;
+				}
+			}
+
+			@Override
+			protected void onProgressUpdate(Void... unsued) {
+
+			}
+
+			@Override
+			protected void onPostExecute(ArrayList<ImageBean> sResponse) {
+			    /*setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE, View.GONE, View.GONE,	View.INVISIBLE, View.INVISIBLE, View.INVISIBLE,	View.INVISIBLE, View.INVISIBLE, View.VISIBLE,false, false, false, VIEW_PROFILE);*/
+			if(sResponse!=null){
+				presenter.resetImageAdapter(sResponse);
+				      tv_prof_loc.setText(presenter.loc);
+				        tv_prof_fev_mountain.setText(presenter.fav_mountain);
+					tv_prof_shred_mountain.setText(presenter.shred_style);
+					tv_prof_about_me.setText(presenter.about_me);
+					tv_prof_age.setText(presenter.age);
+					tv_prof_name.setText(myApp.getAppInfo().userFirstName+" "+myApp.getAppInfo().userLastName);
+					imageLoader.DisplayImage(myApp.getAppInfo().image, mProfileImage);
 				
 			}
 				}
@@ -1889,12 +2173,13 @@ public class HomeView extends BaseView implements IHome {
 	  
 	  
 		private void doSaveNewImage(Bitmap bitmap) {
+		  
 			 String root = Environment.getExternalStorageDirectory().toString();
 			 File myDir = new File(root + "/snomada");    
 			 myDir.mkdirs();
 			 String fname = ""+System.currentTimeMillis()+".jpg";
 			 filepath = root + "/snomada/"+fname;		 
-			 Log.e("path", root + "/snomada/"+fname);
+			 Log.e(TAG, root + "/snomada/"+fname);
 			 File file = new File (myDir, fname);
 			 if (file.exists ()) file.delete (); 
 			 try {
@@ -1906,6 +2191,47 @@ public class HomeView extends BaseView implements IHome {
 			        e.printStackTrace();
 			 }
 		}
+		
+		
+		@Override
+		public void onCreateContextMenu(ContextMenu menu, View v,
+				ContextMenuInfo menuInfo){
+			super.onCreateContextMenu(menu, v, menuInfo);
+			MenuInflater inflater = getMenuInflater();
+			menu.setHeaderTitle("Select Shared Style");
+			inflater.inflate(R.menu.shred_style, menu);
+		}
+		
+		
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+		case R.id.all_mountain:
+			tv_prof_shred_mountain.setText("All Mountain");
+			new ImageUploadTask().execute("All Mountain","3");
+			break;
+		case R.id.park_bum:
+			tv_prof_shred_mountain.setText("Park Bum");
+			new ImageUploadTask().execute("Park Bum","3");
+			break;
+		case R.id.pow_pow_bum:
+			tv_prof_shred_mountain.setText("Pow Pow Bum");
+			new ImageUploadTask().execute("Pow Pow Bum","3");
+			break;
+		case R.id.gnar:
+			tv_prof_shred_mountain.setText("GNAR");
+			new ImageUploadTask().execute("GNAR","3");
+			break;
+
+		default:
+			break;
+		}
+		return super.onContextItemSelected(item);
+	}
+
 		@Override
 		public boolean onCreateOptionsMenu(Menu menu) {
 			MenuInflater inflater = getMenuInflater();
@@ -2057,6 +2383,159 @@ public static String readXMLinString(Context c) {
 	} catch (IOException e) {
 		throw new RuntimeException(e);
 	}
+
+}
+
+public void setLayoutViewProfile(){
+	setLayoutVisibility(View.GONE, View.GONE, View.GONE,View.VISIBLE,false, false, false,"VIEW", "PROFILE");
+}
+
+
+public void getFriendList(){
+    
+    Log.i("TAG15", "Result:eee ");
+    Log.i("TAG15", "Session.getActiveSession() "+Session.getActiveSession());
+	String fqlQuery = "SELECT uid,name,pic_square FROM user WHERE uid IN " +
+	        "(SELECT uid2 FROM friend WHERE uid1 = me())";
+
+	Bundle params = new Bundle();
+	params.putString("q", fqlQuery);
+	Session session = Session.getActiveSession();
+	 Log.i("TAG15", "Result:eeerr");
+	Request request = new Request(session, "/fql", params, HttpMethod.GET,    new Request.Callback(){       
+	    public void onCompleted(Response response) {        
+		try{
+		    if(myApp.isNetworkConnected(HomeView.this)){
+
+			    
+		            Log.i("TAG15", "Result: " + response.toString());
+		            System.out.println("!-- Friend List "+response.toString());
+	    	           GraphObject graphObject = response.getGraphObject();
+
+	                  JSONObject jsonObject = graphObject.getInnerJSONObject();
+	                  JSONArray array = jsonObject.getJSONArray("data");
+	                 
+	                
+	                for(int i1=0; i1<array.length(); i1++){
+							JSONObject c = array.getJSONObject(i1);
+							String id = c.getString("uid");							
+							String name = c.getString("name");
+							mContactList.add(new AppusersBean(id, name));
+							
+							
+						}
+	                addFriend();
+						
+		        
+		    }
+		}catch(JSONException e){
+	            e.printStackTrace();
+	            Log.i("TAG15", "Result:gg ");
+	        }
+	    }                  
+	}); 
+	Request.executeBatchAsync(request);
+	 
+}
+
+public void addFriend(){
+	boolean flag = false;
+	if (mAppUserList != null) {
+		if(myApp.getAppInfo().loginType.equalsIgnoreCase("F")){					
+			/*mContactList = db.getFacebookFriends();*/				
+			
+			try {
+				for (int i = 0; i < mContactList.size(); i++) {
+					flag = false;
+					for (int j = 0; j < mAppUserList.size(); j++) {
+						if (mContactList.get(i).getId().equalsIgnoreCase(mAppUserList.get(j).getId())) {
+							addFriendArr.add(new AppUserInfoBean(mAppUserList.get(j).getId(),""	,mAppUserList.get(j).getFirstName(),mAppUserList.get(j).getLastName(),mAppUserList.get(j).getImage(),"F",""));
+							flag = true;
+							break;
+						}
+					}
+					if (!flag) {
+						mInviteFriendArr.add(new AppUserInfoBean(	mContactList.get(i).getId(),	"",mContactList.get(i).getName(),"","https://graph.facebook.com/"+mContactList.get(i).getId()+"/picture","F",""));
+					}
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		
+
+			mAddFriendAdapter     = new AddFriendAdapter(HomeView.this,	R.layout.add_friend_row, addFriendArr);
+			mAddFriendList.setAdapter(mAddFriendAdapter);
+
+			mInviteFriendAdapter  = new InviteFriendAdapter(HomeView.this,	R.layout.add_friend_row, mInviteFriendArr);
+			mLvInviteFriendList.setAdapter(mInviteFriendAdapter);
+		
+		}else{/*
+			
+			mContactList = db.getContact();				
+			
+			try {
+				for (int i = 0; i < mContactList.size(); i++) {
+					flag = false;
+					for (int j = 0; j < mAppUserList.size(); j++) {
+						if (mContactList.get(i).getId().equalsIgnoreCase(mAppUserList.get(j).getPhone())) {
+							addFriendArr.add(new AppUserInfoBean(mAppUserList.get(j).getId(),""	,mContactList.get(i).getName(),"",mAppUserList.get(j).getImage(),"N",mContactList.get(i).getId()));
+							flag = true;
+							break;
+						}
+					}
+					if (!flag) {
+						mInviteFriendArr.add(new AppUserInfoBean(	"",	"",mContactList.get(i).getName(),"",URL.IMAGE_PATH.getUrl()+"noimage.jpg","N",mContactList.get(i).getId()));
+					}
+
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		
+
+			mAddFriendAdapter = new AddFriendAdapter(HomeView.this,	R.layout.add_friend_row, addFriendArr);
+			mAddFriendList.setAdapter(mAddFriendAdapter);
+
+			mInviteFriendAdapter = new InviteFriendAdapter(HomeView.this,	R.layout.add_friend_row, mInviteFriendArr);
+			mLvInviteFriendList.setAdapter(mInviteFriendAdapter);
+		
+		
+		*/}
+	}
+}
+
+
+public void emergencyConfirmDlg(){
+
+   
+	final Dialog meetup_inst_dlg = new Dialog(HomeView.this);
+	meetup_inst_dlg	.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	meetup_inst_dlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+	meetup_inst_dlg	.setContentView(R.layout.emergency_conf_dialog);
+	meetup_inst_dlg.setCancelable(false);
+	Button ok = (Button) meetup_inst_dlg.findViewById(R.id.iv_dlg_ok);
+	Button cancel = (Button)meetup_inst_dlg.findViewById(R.id.iv_dlg_cancel);
+	ok.setText(Html.fromHtml("<font color=\"#ffffff\">O</font><font color=\"#28b6ff\">K</font>"));
+	cancel.setText(Html.fromHtml("<font color=\"#ffffff\">CAN</font><font color=\"#28b6ff\">CEL</font>"));
+	ok.setOnClickListener(new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {						
+		    meetup_inst_dlg.dismiss();
+		    presenter.doSkiPatrolFunction();
+		}
+	});
+	
+	cancel.setOnClickListener(new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {						
+		    meetup_inst_dlg.dismiss();
+		}
+	});
+	meetup_inst_dlg.show();
+
 
 }
 }

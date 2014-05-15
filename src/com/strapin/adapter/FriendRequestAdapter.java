@@ -23,7 +23,7 @@ import android.widget.TextView;
 import com.strapin.Enum.URL;
 import com.strapin.Util.ImageLoader;
 import com.strapin.bean.FriendRequestBean;
-import com.strapin.global.Constants;
+import com.strapin.global.Constant;
 import com.strapin.network.KlHttpClient;
 
 public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
@@ -71,11 +71,11 @@ public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
 				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if(isChecked){
-						item.get(position).setTrackStatus(Constants.ACTIVE_TRACK_STATUS);
+						item.get(position).setTrackStatus(Constant.ACTIVE_TRACK_STATUS);
 						mHolder.mTrackStatus.setChecked(true);
 						notifyDataSetChanged();
 					}else{
-						item.get(position).setTrackStatus(Constants.DEACTIVE_TRACK_STATUS);
+						item.get(position).setTrackStatus(Constant.DEACTIVE_TRACK_STATUS);
 						mHolder.mTrackStatus.setChecked(false);
 						notifyDataSetChanged();
 					}
@@ -115,7 +115,7 @@ public class FriendRequestAdapter extends ArrayAdapter<FriendRequestBean>{
 		if(mVendor != null){
 			
 			mHolder.mName.setText(mVendor.getSenderName());
-			if(item.get(position).getTrackStatus()==Constants.DEACTIVE_TRACK_STATUS){
+			if(item.get(position).getTrackStatus()==Constant.DEACTIVE_TRACK_STATUS){
 				mHolder.mTrackStatus.setChecked(false);
 			}else{
 				mHolder.mTrackStatus.setChecked(true);

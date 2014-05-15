@@ -2,7 +2,6 @@ package com.strapin.db;
 
 import java.util.ArrayList;
 
-import com.strapin.bean.ContactListBean;
 import com.strapin.bean.AppusersBean;
 import com.strapin.bean.MeetUpInfoBean;
 import com.strapin.bean.MessageBean;
@@ -14,7 +13,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.widget.Toast;
 
 public class SnowmadaDbAdapter {
 	
@@ -45,192 +43,7 @@ public class SnowmadaDbAdapter {
 		sDbHelper.close();		
 	}
 	
-////////////////////////////////////////  For Snomada Table Strat  ///////////////////////
-	
-	/*public long insertUserInfo(final String facebookId, final String fname,final String lname) {
-		final ContentValues values = new ContentValues();
-		values.put(TableConstantName.FACEBOOK_ID, facebookId);
-		values.put(TableConstantName.FB_USER_FIRSTNAME, fname);
-		values.put(TableConstantName.FB_USER_LASTNAME, lname);
-		
-		try {
-			sDb.beginTransaction();
-			final long state = sDb.insert(TableConstantName.TABLE_NAME, null,	values);
-			sDb.setTransactionSuccessful();
-			return state;
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			sDb.endTransaction();
-		}
-	}
-	
-	public boolean updateUserInfo(String facebookId,  String fname, String lname){
-		//Log.e("Status", ""+status);
-		int i = 1;
-		final ContentValues values = new ContentValues();
-	
-		values.put(TableConstantName.FACEBOOK_ID, facebookId);
-		values.put(TableConstantName.FB_USER_FIRSTNAME, fname);
-		values.put(TableConstantName.FB_USER_LASTNAME, lname);
-		try {
-			sDb.beginTransaction();
-			final boolean state = sDb.update(TableConstantName.TABLE_NAME, values, TableConstantName.ID + "=" + "'"+i+"'", null)>0;
-			sDb.setTransactionSuccessful();
-			return state;
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			sDb.endTransaction();
-		}
-	}
-	
-	public String getUserFbID(){
-		int i = 1;
-		String fbid = "";
-		Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_NAME+ " where " +TableConstantName.ID+ " = '"+i+"'", null);
-		//Log.e("cursor.getCount()", ""+cursor.getCount());
-		if(cursor.getCount()>0){
-			cursor.moveToFirst();
-			fbid = cursor.getString(3);
-			while(!cursor.isAfterLast()){
-				 fbid = cursor.getString(1);
-				 cursor.moveToNext();
-				//int CouponStatus = cursor.getInt(3);			
-				
-			}	
-		}
-		cursor.close();
-		return fbid;
-	}
-	
-	public String getUserFirstName(){
-		int i = 1;
-		String fbid = "";
-		Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_NAME+ " where " +TableConstantName.ID+ " = '"+i+"'", null);
-		//Log.e("cursor.getCount()", ""+cursor.getCount());
-		if(cursor.getCount()>0){
-			cursor.moveToFirst();
-			fbid = cursor.getString(1);
-			while(!cursor.isAfterLast()){
-				 fbid = cursor.getString(1);
-				 cursor.moveToNext();
-				//int CouponStatus = cursor.getInt(3);			
-				
-			}	
-		}
-		cursor.close();
-		return fbid;
-	}
-	
-	public String getUserLastName(){
-		int i = 1;
-		String fbid = "";
-		Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_NAME+ " where " +TableConstantName.ID+ " = '"+i+"'", null);
-		//Log.e("cursor.getCount()", ""+cursor.getCount());
-		if(cursor.getCount()>0){
-			cursor.moveToFirst();
-			fbid = cursor.getString(2);
-			while(!cursor.isAfterLast()){
-				 fbid = cursor.getString(1);
-				 cursor.moveToNext();
-				//int CouponStatus = cursor.getInt(3);			
-				
-			}	
-		}
-		cursor.close();
-		return fbid;
-	}
-	
-	public int getRowCount() {
-		int count = -1;
 
-		final Cursor cursor = sDb.query(TableConstantName.TABLE_NAME,new String[] { "count(*) " + TableConstantName.FACEBOOK_ID },
-				null, null, null, null, null);
-		if (cursor != null) {
-			cursor.moveToFirst();
-			count = cursor.getInt(cursor
-					.getColumnIndex(TableConstantName.FACEBOOK_ID));
-			cursor.close();
-		}
-		return count;
-	}*/
-	
-////////////////////////////////////////For Snomada Table END  ///////////////////////
-	
-	////////////////////////////////////////////// For SKY table START////////////////////////////
-	
-/*	public int getSKIRowCount() {
-		int count = -1;
-
-		final Cursor cursor = sDb.query(TableConstantName.TABLE_SKI,new String[] { "count(*) " + TableConstantName.STATUS },
-				null, null, null, null, null);
-		if (cursor != null) {
-			cursor.moveToFirst();
-			count = cursor.getInt(cursor
-					.getColumnIndex(TableConstantName.STATUS));
-			cursor.close();
-		}
-		return count;
-	}*/
-	
-	
-
-	/*public String getSKIStatus(){
-		int i = 1;
-		String status = "";
-		Cursor cursor = sDb.rawQuery("select * from " +TableConstantName.TABLE_SKI+ " where " +TableConstantName.ID+ " = '"+i+"'", null);
-		//Log.e("cursor.getCount()", ""+cursor.getCount());
-		if(cursor.getCount()>0){
-			cursor.moveToFirst();
-			status = cursor.getString(1);
-			while(!cursor.isAfterLast()){
-				 fbid = cursor.getString(1);
-				 cursor.moveToNext();
-				//int CouponStatus = cursor.getInt(3);			
-				
-			}	
-		}
-		cursor.close();
-		return status;
-	}*/
-	
-	/*public boolean updateSKI(String status){
-		//Log.e("Status", ""+status);
-		int i = 1;
-		final ContentValues values = new ContentValues();
-	
-		values.put(TableConstantName.STATUS, status);
-		try {
-			sDb.beginTransaction();
-			final boolean state = sDb.update(TableConstantName.TABLE_SKI, values, TableConstantName.ID + "=" + "'"+i+"'", null)>0;
-			sDb.setTransactionSuccessful();
-			return state;
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			sDb.endTransaction();
-		}
-	}*/
-	
-	/*public long insertSKI(final String status) {
-		final ContentValues values = new ContentValues();
-		values.put(TableConstantName.STATUS, status);
-		
-		try {
-			sDb.beginTransaction();
-			final long state = sDb.insert(TableConstantName.TABLE_SKI, null,	values);
-			sDb.setTransactionSuccessful();
-			return state;
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			sDb.endTransaction();
-		}
-	}*/
-	
-	
-//////////////////////////////////////////////For SKY table END////////////////////////////
 	
 	
 ///////////////////////////////////////////// For MEETUP table Start ////////////////////////
@@ -255,25 +68,6 @@ public long insertMeetUpInfo(final String lat,final String lng,String status) {
 	} finally {
 		sDb.endTransaction();
 	}
-}
-	
-public void getMeetUpLocation1(){	
-	
-	//String args[] = new String[3];
-	Cursor cursor = sDb.rawQuery("SELECT *   FROM    meetup",null);	
-	Log.e("cursor.getCount()", ""+cursor.getCount());
-	if(cursor.getCount()>0){
-		mCheckBeans.clear();
-		cursor.moveToFirst();
-		while(!cursor.isAfterLast()){
-			Log.e("ID", cursor.getString(0));
-			Log.e("lat", cursor.getString(1));
-			Log.e("lng", cursor.getString(2));
-			cursor.moveToNext();
-		}
-	}
-	cursor.close();
-	//return args;
 }
 
 
@@ -440,22 +234,6 @@ public ArrayList<MessageBean> getAllChatMessageInfo(){
 	return mChatMessage;
 }
 
-/*public boolean updateChatMessageInfo(final String fbId,final String message){
-
-	final ContentValues values = new ContentValues();	
-	values.put(TableConstantName.TEXT_MESSAGE, message);	
-	
-	try {
-		sDb.beginTransaction();
-		final boolean state = sDb.update(TableConstantName.TABLE_MESSAGE, values, TableConstantName.SENDER_FB_ID + "=" + "'"+fbId+"'", null)>0;
-		sDb.setTransactionSuccessful();
-		return state;
-	} catch (SQLException e) {
-		throw e;
-	} finally {
-		sDb.endTransaction();
-	}
-}*/
 
 public boolean UpdateMessageStatus(final String Id) {
 
@@ -485,19 +263,11 @@ public boolean isUserMessageExist(final String fbId) {
 	return flag;
 }
 
-/*public void deleteChatMessage(String fbid){	
-
-	sDb.delete(TableConstantName.TABLE_MESSAGE, TableConstantName.SENDER_FB_ID + "=" + "'"+fbid+"'" , null);
-}*/
-
 public int getMassageNotificationCount() {
 	int count = -1;
 
 	final Cursor cursor = sDb.rawQuery("select * from message where isread = '1'",null);
 	if (cursor != null) {
-		/*cursor.moveToFirst();
-		count = cursor.getInt(cursor
-				.getColumnIndex(TableConstantName.ID));*/
 		count=cursor.getCount();
 		Log.e("count", ""+count);
 		cursor.close();
@@ -510,9 +280,6 @@ public int getTotalMessageCount() {
 
 	final Cursor cursor = sDb.rawQuery("select * from message",null);
 	if (cursor != null) {
-		/*cursor.moveToFirst();
-		count = cursor.getInt(cursor
-				.getColumnIndex(TableConstantName.ID));*/
 		count=cursor.getCount();
 		Log.e("count", ""+count);
 		cursor.close();
@@ -578,63 +345,6 @@ public void emptyFriendTable(){
 ////////////////////////////////////For Facebook Friend List END//////////////////////////////////
 
 
-////////////////////////////////////CONTACT list List Start//////////////////////////////////
-	public long insertcontact(final String name, final String ph) {
-		final ContentValues values = new ContentValues();
-		values.put(TableConstantName.CONTACT_PHONE, ph);
-		values.put(TableConstantName.CONTACT_NAME, name);
-		
 
-		try {
-			sDb.beginTransaction();
-			final long state = sDb.insert(TableConstantName.TABLE_CONTACT_LIST,
-					null, values);
-			sDb.setTransactionSuccessful();
-			return state;
-		} catch (SQLException e) {
-			throw e;
-		} finally {
-			sDb.endTransaction();
-		}
-	}
-
-	public ArrayList<AppusersBean> getContact() {
-
-		ArrayList<AppusersBean> arr = new ArrayList<AppusersBean>();
-		Cursor cursor = sDb.rawQuery("select * from "
-				+ TableConstantName.TABLE_CONTACT_LIST, null);
-		if (cursor.getCount() > 0) {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				String ph = cursor.getString(1);
-				String name = cursor.getString(2);
-				arr.add(new AppusersBean( ph,name));
-				cursor.moveToNext();
-			}
-		}
-		cursor.close();
-		return arr;
-	}
-
-	public int getContactCount() {
-		int count = -1;
-
-		final Cursor cursor = sDb.query(TableConstantName.TABLE_CONTACT_LIST,
-				new String[] { "count(*) " + TableConstantName.CONTACT_PHONE }, null,
-				null, null, null, null);
-		if (cursor != null) {
-			cursor.moveToFirst();
-			count = cursor.getInt(cursor
-					.getColumnIndex(TableConstantName.CONTACT_PHONE));
-			cursor.close();
-		}
-		return count;
-	}
-
-	public void emptyContactTable() {
-		sDb.delete(TableConstantName.TABLE_CONTACT_LIST, null, null);
-
-	}
-////////////////////////////////////CONTACT list END//////////////////////////////////
 
 }
