@@ -1,0 +1,270 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+   android:background="#16181a" 
+   android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_meet_up_location"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" 
+        android:gravity="center|left"
+        android:paddingLeft="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:duplicateParentState="true"
+            android:src="@drawable/ic_meet_up_location" />
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="13sp"
+            android:textColor="@color/white"
+             android:duplicateParentState="true"
+            android:text="MEET UP" />
+
+       <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="13sp"
+             android:textColor="#2cb7ff"
+              android:duplicateParentState="true"
+            android:text="LOCATION" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#232323"
+        android:orientation="vertical" >
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_live_chat"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" 
+        android:gravity="center|left"
+        android:paddingLeft="10dp"
+        android:background="#1a1c1f"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:duplicateParentState="true"
+            android:src="@drawable/ic_chat_live" />
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="13sp"
+             android:duplicateParentState="true"
+            android:textColor="@color/white"
+            android:text="CHAT" />
+
+       <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="13sp"
+             android:duplicateParentState="true"
+             android:textColor="#2cb7ff"
+            android:text="LIVE" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#232323"
+        android:orientation="vertical" >
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_good_deals"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" 
+        android:gravity="center|left"
+        android:paddingLeft="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:duplicateParentState="true"
+            android:src="@drawable/ic_good_deals" />
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="13sp"
+             android:duplicateParentState="true"
+            android:textColor="@color/white"
+            android:text="GOOD" />
+
+       <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="13sp"
+             android:textColor="#2cb7ff"
+              android:duplicateParentState="true"
+            android:text="DEALS" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#232323"
+        android:orientation="vertical" >
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_track_friends"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" 
+        android:gravity="center|left"
+        android:paddingLeft="10dp"
+        android:background="#1a1c1f"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:duplicateParentState="true"
+            android:src="@drawable/ic_track_friends" />
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="13sp"
+             android:duplicateParentState="true"
+            android:textColor="@color/white"
+            android:text="TRACK" />
+
+       <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="13sp"
+             android:textColor="#2cb7ff"
+              android:duplicateParentState="true"
+            android:text="FRIENDS" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#232323"
+        android:orientation="vertical" >
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_add_friends"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" 
+        android:gravity="center|left"
+        android:paddingLeft="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:duplicateParentState="true"
+            android:src="@drawable/ic_add_friends" />
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="13sp"
+            android:textColor="@color/white"
+             android:duplicateParentState="true"
+            android:text="ADD" />
+
+       <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="13sp"
+             android:textColor="#2cb7ff"
+              android:duplicateParentState="true"
+            android:text="FRIENDS" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#232323"
+        android:orientation="vertical" >
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ll_view_profile"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" 
+        android:gravity="center|left"
+        android:paddingLeft="10dp"
+        android:background="#1a1c1f"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:duplicateParentState="true"
+            android:src="@drawable/ic_view_profile" />
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="13sp"
+            android:textColor="@color/white"
+             android:duplicateParentState="true"
+            android:text="VIEW" />
+
+       <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="13sp"
+             android:textColor="#2cb7ff"
+              android:duplicateParentState="true"
+            android:text="PROFILE" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#232323"
+        android:orientation="vertical" >
+    </LinearLayout>
+
+</LinearLayout>

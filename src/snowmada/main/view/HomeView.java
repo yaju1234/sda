@@ -132,69 +132,18 @@ import com.strapin.presenter.HomePresenter;
 @SuppressWarnings("deprecation")
 public class HomeView extends BaseView implements IHome {
 
-	public Button        btnaddFriend;
-	public Button        btnInviteFriend;
-	public Button        btnPendingReq;
+    public Button btnaddFriend, btnInviteFriend, btnPendingReq,  btnGalleryImageUpload, btn_profile_edit;
+    public TextView lblUserName, lblCountPendingReq, lblActiveChatFriend, lblDlgDisplayTime, tvDisplayDate, lbl_page_title, tv_prof_name,  tv_prof_age, tv_prof_loc, tv_prof_fev_mountain,  tv_prof_shred_mountain, tv_prof_about_me;
+    private EditText mSearchAddFriend, et_search_invite_friend,mEtInputChatMsg;
+    public ImageLoader imageLoader;
+    public ListView lv_friend_list, mDealsList, mAddFriendList, mRequestList, mChatList, mLvMessageList, mLvInviteFriendList;
+    public HomePresenter presenter;
+    public GoogleMap map;
+    public LinearLayout ll_icon_prof_loc_edit_save,   ll_icon_prof_fav_mountain_edit_save,   ll_icon_prof_about_me_edit_save;
+    public LinearLayout ll_meetup, ll_chat, ll_gooddeals, ll_track,  ll_addfriend, ll_viewprofile;
+    public LinearLayout ll_edit_button_layout;
+    private LinearLayout mMassageLayout, mLayoutMsgNotiList, mChatSendButton,  mReqTab;
 	
-	public Button        btnGalleryImageUpload;
-	public Button        btn_profile_edit;
-
-	public TextView      lblUserName;
-	public TextView      lblCountPendingReq;
-	public TextView      lblActiveChatFriend;	
-	public TextView      lblDlgDisplayTime;
-	public TextView      tvDisplayDate;
-	public TextView      lbl_page_title;
-	
-	public TextView      tv_prof_name;
-	public TextView      tv_prof_age;
-	public TextView      tv_prof_loc;
-	public TextView      tv_prof_fev_mountain;
-	public TextView      tv_prof_shred_mountain;
-	public TextView      tv_prof_about_me;
-
-	private EditText      mSearchAddFriend;
-	private EditText      et_search_invite_friend;
-	private EditText      mEtInputChatMsg;
-	
-	
-	
-
-	public ImageLoader    imageLoader;
-
-	public ListView       lv_friend_list;
-	public ListView      mDealsList;
-	public ListView      mAddFriendList;
-	public ListView      mRequestList;
-	public ListView      mChatList;
-	public ListView      mLvMessageList;
-	public ListView      mLvInviteFriendList;
-
-	public HomePresenter  presenter;
-
-	public GoogleMap      map;
-	
-	
-	public  LinearLayout       ll_icon_prof_loc_edit_save;
-	public  LinearLayout       ll_icon_prof_fav_mountain_edit_save;
-	public  LinearLayout       ll_icon_prof_about_me_edit_save;
-	
-	
-	public LinearLayout   ll_meetup;
-	public LinearLayout   ll_chat;
-	public LinearLayout   ll_gooddeals;
-	public LinearLayout   ll_track;
-	public LinearLayout   ll_addfriend;
-	public LinearLayout   ll_viewprofile;
-	
-	public LinearLayout   ll_edit_button_layout;
-
-	
-	private LinearLayout  mMassageLayout;
-	public LinearLayout   mLayoutMsgNotiList;
-	private LinearLayout  mChatSendButton;
-	private LinearLayout  mReqTab;
-
 	private RelativeLayout   mProfileLayout;
 	private RelativeLayout   mDealsLayout;
 	private RelativeLayout   mAddFriendLayout;
@@ -612,7 +561,7 @@ public class HomeView extends BaseView implements IHome {
 		doSetUp();
 		getPushNotificationDeviceID();
 		defaultChatWindoOpenFromNotificationList();
-		TrackLocation.createInstance(getApplicationContext(), myApp);
+		/*TrackLocation.createInstance(getApplicationContext(), myApp);*/
 		//imageLoader.DisplayImage("https://graph.facebook.com/" + myApp.getAppInfo().userId	+ "/picture", mUserImage);
 		imageLoader.DisplayImage(myApp.getAppInfo().image, mUserImage);
 		lblUserName.setText(myApp.getAppInfo().userFirstName);
@@ -2250,19 +2199,18 @@ public class HomeView extends BaseView implements IHome {
 public void setMeetUp(final LatLng latlng){
 
 	current_time_in_millisecond = System.currentTimeMillis();
-	meetupUserDlg        = new Dialog(HomeView.this);
+	meetupUserDlg= new Dialog(HomeView.this);
 	meetupUserDlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
 	meetupUserDlg.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 	meetupUserDlg.setContentView(R.layout.meetup_info_dialog);
-	Button submit        = (Button) meetupUserDlg.findViewById(R.id.btn_submit);
+	Button submit= (Button) meetupUserDlg.findViewById(R.id.btn_submit);
 	setCustomizeColorText(submit, "SUB", "MIT");
-	Button cancel        = (Button) meetupUserDlg.findViewById(R.id.btn_cancel);
+	Button cancel= (Button) meetupUserDlg.findViewById(R.id.btn_cancel);
 	setCustomizeColorText(cancel, "CAN", "CEL");
-	ImageView iv_date    = (ImageView) meetupUserDlg	.findViewById(R.id.image_date);
-	ImageView clock      = (ImageView) meetupUserDlg	.findViewById(R.id.image_clock);
-	tvDisplayDate        = (TextView) meetupUserDlg.findViewById(R.id.tvDisplayDate1);
-	
-	lblDlgDisplayTime    = (TextView) meetupUserDlg.findViewById(R.id.tvDisplayTime1);
+	ImageView iv_date = (ImageView) meetupUserDlg	.findViewById(R.id.image_date);
+	ImageView clock = (ImageView) meetupUserDlg	.findViewById(R.id.image_clock);
+	tvDisplayDate  = (TextView) meetupUserDlg.findViewById(R.id.tvDisplayDate1);	
+	lblDlgDisplayTime = (TextView) meetupUserDlg.findViewById(R.id.tvDisplayTime1);
 	
 	final TextView name  = (TextView) meetupUserDlg	.findViewById(R.id.ed_name);
 	name.setText(myApp.getAppInfo().userFirstName + " "	+ myApp.getAppInfo().userLastName);

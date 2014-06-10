@@ -510,7 +510,7 @@ containing a value of this type.
         public static final int com_facebook_list_section_header_background=0x7f020026;
         public static final int com_facebook_loginbutton_silver=0x7f020027;
         public static final int com_facebook_logo=0x7f020028;
-        public static final int com_facebook_picker_default_separator_color=0x7f0200e0;
+        public static final int com_facebook_picker_default_separator_color=0x7f0200e2;
         public static final int com_facebook_picker_item_background=0x7f020029;
         public static final int com_facebook_picker_list_focused=0x7f02002a;
         public static final int com_facebook_picker_list_longpressed=0x7f02002b;
@@ -575,165 +575,168 @@ containing a value of this type.
         public static final int friend=0x7f020066;
         public static final int gnar=0x7f020067;
         public static final int good_deals_text=0x7f020068;
-        public static final int green_ball=0x7f020069;
-        public static final int header_bg=0x7f02006a;
-        public static final int here=0x7f02006b;
-        public static final int ic_add_friends=0x7f02006c;
-        public static final int ic_chat_live=0x7f02006d;
-        public static final int ic_edit=0x7f02006e;
-        public static final int ic_good_deals=0x7f02006f;
-        public static final int ic_launcher=0x7f020070;
-        public static final int ic_massage_box=0x7f020071;
-        public static final int ic_meet_up_location=0x7f020072;
-        public static final int ic_menu_nav_bg=0x7f020073;
-        public static final int ic_plusone_medium_off_client=0x7f020074;
-        public static final int ic_plusone_small_off_client=0x7f020075;
-        public static final int ic_plusone_standard_off_client=0x7f020076;
-        public static final int ic_plusone_tall_off_client=0x7f020077;
-        public static final int ic_ski_patrol=0x7f020078;
-        public static final int ic_snomada=0x7f020079;
-        public static final int ic_track_friends=0x7f02007a;
-        public static final int ic_view_profile=0x7f02007b;
-        public static final int icon_1=0x7f02007c;
-        public static final int icon_2=0x7f02007d;
-        public static final int icon_3=0x7f02007e;
-        public static final int icon_4=0x7f02007f;
-        public static final int icon_5=0x7f020080;
-        public static final int icon_6=0x7f020081;
-        public static final int icon_7=0x7f020082;
-        public static final int icon_8=0x7f020083;
-        public static final int icon_friend_list=0x7f020084;
-        public static final int icon_menu=0x7f020085;
-        public static final int icon_talk=0x7f020086;
-        public static final int image=0x7f020087;
-        public static final int image_1=0x7f020088;
-        public static final int input_field=0x7f020089;
-        public static final int logo_signin=0x7f02008a;
-        public static final int logout=0x7f02008b;
-        public static final int massage_box=0x7f02008c;
-        public static final int me=0x7f02008d;
-        public static final int meet_up_icon=0x7f02008e;
-        public static final int menu_active=0x7f02008f;
-        public static final int menu_bg=0x7f020090;
-        public static final int menu_deactive=0x7f020091;
-        public static final int minus_red_icon=0x7f020092;
-        public static final int msg_icon=0x7f020093;
-        public static final int new_header_bg=0x7f020094;
-        public static final int new_slide_bg=0x7f020095;
-        public static final int new_splash_screen1=0x7f020096;
-        public static final int new_splash_screen2=0x7f020097;
-        public static final int new_splash_screen3=0x7f020098;
-        public static final int no=0x7f020099;
-        public static final int no_image=0x7f02009a;
-        public static final int notification_bg=0x7f02009b;
-        public static final int notification_layout_bg=0x7f02009c;
-        public static final int notification_row_bg=0x7f02009d;
-        public static final int ok_button=0x7f02009e;
-        public static final int online_status=0x7f02009f;
-        public static final int page_title_bg=0x7f0200a0;
-        public static final int page_title_bg1=0x7f0200a1;
-        public static final int plus_iamge=0x7f0200a2;
-        public static final int pointer_1=0x7f0200a3;
-        public static final int pop_bg=0x7f0200a4;
-        public static final int pop_header=0x7f0200a5;
-        public static final int prof_edit_button=0x7f0200a6;
-        public static final int profile_image_bg=0x7f0200a7;
-        public static final int red_ball=0x7f0200a8;
-        public static final int red_cercle=0x7f0200a9;
-        public static final int reply_icon=0x7f0200aa;
-        public static final int request_notify=0x7f0200ab;
-        public static final int round_corner_bottom=0x7f0200ac;
-        public static final int round_corner_up=0x7f0200ad;
-        public static final int rounded_corner=0x7f0200ae;
-        public static final int save=0x7f0200af;
-        public static final int seach_bg=0x7f0200b0;
-        public static final int search_bg=0x7f0200b1;
-        public static final int search_box=0x7f0200b2;
-        public static final int search_box_1=0x7f0200b3;
-        public static final int search_icon=0x7f0200b4;
-        public static final int search_layout_bg=0x7f0200b5;
-        public static final int send_message_button=0x7f0200b6;
-        public static final int shadow=0x7f0200b7;
-        public static final int shadowed_background=0x7f0200b8;
-        public static final int side_scroll_bg=0x7f0200b9;
-        public static final int side_scroll_bg_1=0x7f0200ba;
-        public static final int sign_in_bg=0x7f0200bb;
-        public static final int sign_up_btn=0x7f0200bc;
-        public static final int signin_bg=0x7f0200bd;
-        public static final int signin_bg_img=0x7f0200be;
-        public static final int signin_page_bg=0x7f0200bf;
-        public static final int ski_petrol_dialog_bg=0x7f0200c0;
-        public static final int slider_bttn=0x7f0200c1;
-        public static final int slider_bttn1=0x7f0200c2;
-        public static final int small_image_bg=0x7f0200c3;
-        public static final int snomadalogin=0x7f0200c4;
-        public static final int splash_st=0x7f0200c5;
-        public static final int status_off=0x7f0200c6;
-        public static final int status_on=0x7f0200c7;
-        public static final int stretchable=0x7f0200c8;
-        public static final int success=0x7f0200c9;
-        public static final int tab_bg=0x7f0200ca;
-        public static final int tab_select=0x7f0200cb;
-        public static final int tab_unselect=0x7f0200cc;
-        public static final int test=0x7f0200cd;
-        public static final int text_field=0x7f0200ce;
-        public static final int text_no=0x7f0200cf;
-        public static final int text_yes=0x7f0200d0;
-        public static final int tick=0x7f0200d1;
-        public static final int time_icon=0x7f0200d2;
-        public static final int top_grey_bg=0x7f0200d3;
-        public static final int track_all_friends_bg=0x7f0200d4;
-        public static final int track_bg=0x7f0200d5;
-        public static final int track_text=0x7f0200d6;
-        public static final int tv_background_with_divider=0x7f0200d7;
-        public static final int un_tick=0x7f0200d8;
-        public static final int unchecked=0x7f0200d9;
-        public static final int underline_image_box=0x7f0200da;
-        public static final int upload_icon=0x7f0200db;
-        public static final int whatsapp_send=0x7f0200dc;
-        public static final int whatsapp_text_fld=0x7f0200dd;
-        public static final int yes=0x7f0200de;
-        public static final int yes_no_bg=0x7f0200df;
+        public static final int google_wallet=0x7f020069;
+        public static final int green_ball=0x7f02006a;
+        public static final int header_bg=0x7f02006b;
+        public static final int here=0x7f02006c;
+        public static final int ic_add_friends=0x7f02006d;
+        public static final int ic_chat_live=0x7f02006e;
+        public static final int ic_edit=0x7f02006f;
+        public static final int ic_good_deals=0x7f020070;
+        public static final int ic_launcher=0x7f020071;
+        public static final int ic_massage_box=0x7f020072;
+        public static final int ic_meet_up_location=0x7f020073;
+        public static final int ic_menu_nav_bg=0x7f020074;
+        public static final int ic_plusone_medium_off_client=0x7f020075;
+        public static final int ic_plusone_small_off_client=0x7f020076;
+        public static final int ic_plusone_standard_off_client=0x7f020077;
+        public static final int ic_plusone_tall_off_client=0x7f020078;
+        public static final int ic_ski_patrol=0x7f020079;
+        public static final int ic_snomada=0x7f02007a;
+        public static final int ic_track_friends=0x7f02007b;
+        public static final int ic_view_profile=0x7f02007c;
+        public static final int icon_1=0x7f02007d;
+        public static final int icon_2=0x7f02007e;
+        public static final int icon_3=0x7f02007f;
+        public static final int icon_4=0x7f020080;
+        public static final int icon_5=0x7f020081;
+        public static final int icon_6=0x7f020082;
+        public static final int icon_7=0x7f020083;
+        public static final int icon_8=0x7f020084;
+        public static final int icon_friend_list=0x7f020085;
+        public static final int icon_menu=0x7f020086;
+        public static final int icon_talk=0x7f020087;
+        public static final int image=0x7f020088;
+        public static final int image_1=0x7f020089;
+        public static final int input_field=0x7f02008a;
+        public static final int logo_signin=0x7f02008b;
+        public static final int logout=0x7f02008c;
+        public static final int massage_box=0x7f02008d;
+        public static final int me=0x7f02008e;
+        public static final int meet_up_icon=0x7f02008f;
+        public static final int menu_active=0x7f020090;
+        public static final int menu_bg=0x7f020091;
+        public static final int menu_deactive=0x7f020092;
+        public static final int minus_red_icon=0x7f020093;
+        public static final int msg_icon=0x7f020094;
+        public static final int new_header_bg=0x7f020095;
+        public static final int new_slide_bg=0x7f020096;
+        public static final int new_splash_screen1=0x7f020097;
+        public static final int new_splash_screen2=0x7f020098;
+        public static final int new_splash_screen3=0x7f020099;
+        public static final int no=0x7f02009a;
+        public static final int no_image=0x7f02009b;
+        public static final int notification_bg=0x7f02009c;
+        public static final int notification_layout_bg=0x7f02009d;
+        public static final int notification_row_bg=0x7f02009e;
+        public static final int ok_button=0x7f02009f;
+        public static final int online_status=0x7f0200a0;
+        public static final int page_title_bg=0x7f0200a1;
+        public static final int page_title_bg1=0x7f0200a2;
+        public static final int paypal=0x7f0200a3;
+        public static final int plus_iamge=0x7f0200a4;
+        public static final int pointer_1=0x7f0200a5;
+        public static final int pop_bg=0x7f0200a6;
+        public static final int pop_header=0x7f0200a7;
+        public static final int prof_edit_button=0x7f0200a8;
+        public static final int profile_image_bg=0x7f0200a9;
+        public static final int red_ball=0x7f0200aa;
+        public static final int red_cercle=0x7f0200ab;
+        public static final int reply_icon=0x7f0200ac;
+        public static final int request_notify=0x7f0200ad;
+        public static final int round_corner_bottom=0x7f0200ae;
+        public static final int round_corner_up=0x7f0200af;
+        public static final int rounded_corner=0x7f0200b0;
+        public static final int save=0x7f0200b1;
+        public static final int seach_bg=0x7f0200b2;
+        public static final int search_bg=0x7f0200b3;
+        public static final int search_box=0x7f0200b4;
+        public static final int search_box_1=0x7f0200b5;
+        public static final int search_icon=0x7f0200b6;
+        public static final int search_layout_bg=0x7f0200b7;
+        public static final int send_message_button=0x7f0200b8;
+        public static final int shadow=0x7f0200b9;
+        public static final int shadowed_background=0x7f0200ba;
+        public static final int side_scroll_bg=0x7f0200bb;
+        public static final int side_scroll_bg_1=0x7f0200bc;
+        public static final int sign_in_bg=0x7f0200bd;
+        public static final int sign_up_btn=0x7f0200be;
+        public static final int signin_bg=0x7f0200bf;
+        public static final int signin_bg_img=0x7f0200c0;
+        public static final int signin_page_bg=0x7f0200c1;
+        public static final int ski_petrol_dialog_bg=0x7f0200c2;
+        public static final int slider_bttn=0x7f0200c3;
+        public static final int slider_bttn1=0x7f0200c4;
+        public static final int small_image_bg=0x7f0200c5;
+        public static final int snomadalogin=0x7f0200c6;
+        public static final int splash_st=0x7f0200c7;
+        public static final int status_off=0x7f0200c8;
+        public static final int status_on=0x7f0200c9;
+        public static final int stretchable=0x7f0200ca;
+        public static final int success=0x7f0200cb;
+        public static final int tab_bg=0x7f0200cc;
+        public static final int tab_select=0x7f0200cd;
+        public static final int tab_unselect=0x7f0200ce;
+        public static final int test=0x7f0200cf;
+        public static final int text_field=0x7f0200d0;
+        public static final int text_no=0x7f0200d1;
+        public static final int text_yes=0x7f0200d2;
+        public static final int tick=0x7f0200d3;
+        public static final int time_icon=0x7f0200d4;
+        public static final int top_grey_bg=0x7f0200d5;
+        public static final int track_all_friends_bg=0x7f0200d6;
+        public static final int track_bg=0x7f0200d7;
+        public static final int track_text=0x7f0200d8;
+        public static final int tv_background_with_divider=0x7f0200d9;
+        public static final int un_tick=0x7f0200da;
+        public static final int unchecked=0x7f0200db;
+        public static final int underline_image_box=0x7f0200dc;
+        public static final int upload_icon=0x7f0200dd;
+        public static final int whatsapp_send=0x7f0200de;
+        public static final int whatsapp_text_fld=0x7f0200df;
+        public static final int yes=0x7f0200e0;
+        public static final int yes_no_bg=0x7f0200e1;
     }
     public static final class id {
-        public static final int add_friend_layout=0x7f060081;
-        public static final int add_friend_search_layout=0x7f060087;
-        public static final int all_mountain=0x7f060101;
-        public static final int allow_text=0x7f060067;
-        public static final int bar_3=0x7f06004b;
-        public static final int bar_4=0x7f06004f;
-        public static final int bar_5=0x7f060052;
-        public static final int bar_6=0x7f060055;
-        public static final int bar_7=0x7f060058;
-        public static final int bar_8=0x7f06005b;
-        public static final int bottom1=0x7f06007f;
-        public static final int botton_add_layout=0x7f060057;
-        public static final int botton_good_layout=0x7f060051;
-        public static final int botton_track_layout=0x7f060054;
-        public static final int botton_view_layout=0x7f06005a;
-        public static final int btn_add_friend=0x7f060082;
-        public static final int btn_cancel=0x7f0600c1;
-        public static final int btn_chat_with_friend=0x7f0600fc;
+        public static final int add_friend_layout=0x7f060086;
+        public static final int add_friend_search_layout=0x7f06008c;
+        public static final int all_mountain=0x7f060106;
+        public static final int allow_text=0x7f06006c;
+        public static final int bar_3=0x7f060050;
+        public static final int bar_4=0x7f060054;
+        public static final int bar_5=0x7f060057;
+        public static final int bar_6=0x7f06005a;
+        public static final int bar_7=0x7f06005d;
+        public static final int bar_8=0x7f060060;
+        public static final int bottom1=0x7f060084;
+        public static final int botton_add_layout=0x7f06005c;
+        public static final int botton_good_layout=0x7f060056;
+        public static final int botton_track_layout=0x7f060059;
+        public static final int botton_view_layout=0x7f06005f;
+        public static final int btn_add_friend=0x7f060087;
+        public static final int btn_cancel=0x7f0600c6;
+        public static final int btn_chat_with_friend=0x7f060101;
         public static final int btn_confirm_delete_no=0x7f060039;
         public static final int btn_confirm_delete_yes=0x7f060038;
-        public static final int btn_delete_friend=0x7f0600fe;
-        public static final int btn_invite_friend=0x7f060083;
-        public static final int btn_login=0x7f0600e4;
-        public static final int btn_no=0x7f060061;
-        public static final int btn_profile_edit=0x7f06009b;
-        public static final int btn_request=0x7f060085;
-        public static final int btn_sign_up=0x7f0600e5;
-        public static final int btn_signup=0x7f0600eb;
-        public static final int btn_submit=0x7f0600b2;
-        public static final int btn_track_friend_location=0x7f0600fb;
-        public static final int btn_upload_img=0x7f0600af;
-        public static final int btn_view_friend_frofile=0x7f0600fd;
-        public static final int btn_yes=0x7f060060;
-        public static final int chat_main_layout=0x7f06008f;
-        public static final int chat_outer_layout=0x7f06008e;
-        public static final int chat_send_button=0x7f060091;
-        public static final int checkBox1=0x7f060068;
-        public static final int check_track=0x7f06005f;
+        public static final int btn_delete_friend=0x7f060103;
+        public static final int btn_invite_friend=0x7f060088;
+        public static final int btn_login=0x7f0600e9;
+        public static final int btn_no=0x7f060066;
+        public static final int btn_profile_edit=0x7f0600a0;
+        public static final int btn_request=0x7f06008a;
+        public static final int btn_sign_up=0x7f0600ea;
+        public static final int btn_signup=0x7f0600f0;
+        public static final int btn_submit=0x7f0600b7;
+        public static final int btn_track_friend_location=0x7f060100;
+        public static final int btn_upload_img=0x7f0600b4;
+        public static final int btn_view_friend_frofile=0x7f060102;
+        public static final int btn_yes=0x7f060065;
+        public static final int button1=0x7f06003f;
+        public static final int chat_main_layout=0x7f060094;
+        public static final int chat_outer_layout=0x7f060093;
+        public static final int chat_send_button=0x7f060096;
+        public static final int checkBox1=0x7f06006d;
+        public static final int check_track=0x7f060064;
         public static final int com_facebook_login_activity_progress_bar=0x7f060024;
         public static final int com_facebook_picker_activity_circle=0x7f060023;
         public static final int com_facebook_picker_checkbox=0x7f060026;
@@ -754,209 +757,213 @@ containing a value of this type.
         public static final int com_facebook_usersettingsfragment_login_button=0x7f060036;
         public static final int com_facebook_usersettingsfragment_logo_image=0x7f060034;
         public static final int com_facebook_usersettingsfragment_profile_name=0x7f060035;
-        public static final int deals_cost_layout=0x7f060046;
-        public static final int deals_title_layout=0x7f060044;
-        public static final int ed_desc=0x7f0600ba;
-        public static final int ed_location=0x7f0600b9;
-        public static final int ed_name=0x7f0600b8;
-        public static final int editText1=0x7f0600cf;
-        public static final int et_about_me=0x7f0600d1;
-        public static final int et_age=0x7f0600cc;
-        public static final int et_comments=0x7f0600b3;
-        public static final int et_conf_password=0x7f0600ea;
-        public static final int et_email=0x7f0600e7;
-        public static final int et_fav_mountain=0x7f0600ce;
-        public static final int et_fname=0x7f0600ca;
-        public static final int et_input_chat_msg=0x7f060090;
-        public static final int et_input_key_for_search_add_friends=0x7f060088;
-        public static final int et_input_key_for_search_invite_friends=0x7f06008a;
-        public static final int et_lname=0x7f0600cb;
-        public static final int et_location=0x7f0600cd;
-        public static final int et_password=0x7f0600e9;
-        public static final int et_ph=0x7f0600e8;
-        public static final int facebook_friend_name=0x7f0600d3;
+        public static final int deals_cost_layout=0x7f06004c;
+        public static final int deals_title_layout=0x7f06004a;
+        public static final int ed_desc=0x7f0600bf;
+        public static final int ed_location=0x7f0600be;
+        public static final int ed_name=0x7f0600bd;
+        public static final int editText1=0x7f0600d4;
+        public static final int et_about_me=0x7f0600d6;
+        public static final int et_age=0x7f0600d1;
+        public static final int et_comments=0x7f0600b8;
+        public static final int et_conf_password=0x7f0600ef;
+        public static final int et_email=0x7f0600ec;
+        public static final int et_fav_mountain=0x7f0600d3;
+        public static final int et_fname=0x7f0600cf;
+        public static final int et_input_chat_msg=0x7f060095;
+        public static final int et_input_key_for_search_add_friends=0x7f06008d;
+        public static final int et_input_key_for_search_invite_friends=0x7f06008f;
+        public static final int et_lname=0x7f0600d0;
+        public static final int et_location=0x7f0600d2;
+        public static final int et_password=0x7f0600ee;
+        public static final int et_ph=0x7f0600ed;
+        public static final int facebook_friend_name=0x7f0600d8;
         public static final int footer=0x7f060017;
-        public static final int footer1=0x7f060080;
-        public static final int forgot_usename_password=0x7f0600e3;
-        public static final int frameLayout1=0x7f0600b4;
+        public static final int footer1=0x7f060085;
+        public static final int forgot_usename_password=0x7f0600e8;
+        public static final int frameLayout1=0x7f0600b9;
         public static final int fullscreen=0x7f060008;
-        public static final int gnar=0x7f060104;
-        public static final int gv_deals_images=0x7f0600ac;
-        public static final int gv_gallery_images=0x7f0600b0;
-        public static final int header=0x7f060095;
+        public static final int gnar=0x7f060109;
+        public static final int gv_deals_images=0x7f0600b1;
+        public static final int gv_gallery_images=0x7f0600b5;
+        public static final int header=0x7f06009a;
         public static final int hybrid=0x7f060004;
-        public static final int image=0x7f0600b5;
+        public static final int image=0x7f0600ba;
         public static final int imageView1=0x7f060013;
         public static final int imageView2=0x7f060016;
-        public static final int imageView3=0x7f0600d6;
-        public static final int imageView4=0x7f06004d;
-        public static final int image_clock=0x7f0600bf;
-        public static final int image_date=0x7f0600bc;
-        public static final int input_password=0x7f0600e2;
-        public static final int input_user_name=0x7f0600e1;
-        public static final int invite_friend_search_layout=0x7f060089;
+        public static final int imageView3=0x7f0600db;
+        public static final int imageView4=0x7f060052;
+        public static final int image_clock=0x7f0600c4;
+        public static final int image_date=0x7f0600c1;
+        public static final int input_password=0x7f0600e7;
+        public static final int input_user_name=0x7f0600e6;
+        public static final int invite_friend_search_layout=0x7f06008e;
         public static final int iv_avatar_rcver=0x7f06001d;
-        public static final int iv_deals=0x7f06003f;
-        public static final int iv_deals_image=0x7f0600dc;
-        public static final int iv_dlg_cancel=0x7f060062;
+        public static final int iv_deals=0x7f060041;
+        public static final int iv_deals_image=0x7f0600e1;
+        public static final int iv_dlg_cancel=0x7f060067;
         public static final int iv_dlg_ok=0x7f060018;
-        public static final int iv_edit_fav_mountain=0x7f0600a9;
-        public static final int iv_friend_profile_img=0x7f0600f9;
-        public static final int iv_icon_friend_slider=0x7f060079;
-        public static final int iv_icon_menu_slider=0x7f06007a;
-        public static final int iv_icon_talk=0x7f06007b;
-        public static final int iv_image_gallery=0x7f0600dd;
+        public static final int iv_edit_fav_mountain=0x7f0600ae;
+        public static final int iv_friend_profile_img=0x7f0600fe;
+        public static final int iv_icon_friend_slider=0x7f06007e;
+        public static final int iv_icon_menu_slider=0x7f06007f;
+        public static final int iv_icon_talk=0x7f060080;
+        public static final int iv_image_gallery=0x7f0600e2;
         public static final int iv_img_friend=0x7f06000f;
-        public static final int iv_ok=0x7f060064;
-        public static final int iv_profile_image=0x7f0600c4;
-        public static final int iv_profile_img=0x7f0600c9;
-        public static final int iv_reply_icon=0x7f0600c7;
-        public static final int iv_req_friend_img=0x7f06005d;
-        public static final int iv_ski_patrol=0x7f06006e;
+        public static final int iv_ok=0x7f060069;
+        public static final int iv_profile_image=0x7f0600c9;
+        public static final int iv_profile_img=0x7f0600ce;
+        public static final int iv_reply_icon=0x7f0600cc;
+        public static final int iv_req_friend_img=0x7f060062;
+        public static final int iv_ski_patrol=0x7f060073;
         public static final int iv_user_img=0x7f060021;
         public static final int large=0x7f06000b;
-        public static final int lauout_middle=0x7f0600de;
-        public static final int layout_confirmation=0x7f0600ed;
-        public static final int layout_message_notification=0x7f060077;
-        public static final int lbl_address=0x7f06003e;
-        public static final int lbl_comments=0x7f0600da;
-        public static final int lbl_deals=0x7f06003d;
-        public static final int lbl_description=0x7f060040;
+        public static final int lauout_middle=0x7f0600e3;
+        public static final int layout_confirmation=0x7f0600f2;
+        public static final int layout_message_notification=0x7f06007c;
+        public static final int lbl_address=0x7f060043;
+        public static final int lbl_comments=0x7f0600df;
+        public static final int lbl_deals=0x7f060042;
+        public static final int lbl_description=0x7f060046;
         public static final int lbl_marchant=0x7f06003c;
-        public static final int lbl_name=0x7f0600d9;
-        public static final int lbl_page_header=0x7f06007e;
-        public static final int lbl_page_title=0x7f060075;
+        public static final int lbl_name=0x7f0600de;
+        public static final int lbl_page_header=0x7f060083;
+        public static final int lbl_page_title=0x7f06007a;
         public static final int left=0x7f060005;
-        public static final int ll3=0x7f0600a5;
-        public static final int ll5=0x7f0600ad;
-        public static final int ll_about_me=0x7f0600a6;
-        public static final int ll_add_friends=0x7f0600f4;
-        public static final int ll_datepicker=0x7f0600bb;
-        public static final int ll_edit_button_layout=0x7f06009a;
+        public static final int linearLayout1=0x7f06003e;
+        public static final int ll3=0x7f0600aa;
+        public static final int ll5=0x7f0600b2;
+        public static final int ll_about_me=0x7f0600ab;
+        public static final int ll_add_friends=0x7f0600f9;
+        public static final int ll_datepicker=0x7f0600c0;
+        public static final int ll_details=0x7f060044;
+        public static final int ll_edit_button_layout=0x7f06009f;
         public static final int ll_friend_img=0x7f06000e;
-        public static final int ll_good_deals=0x7f0600f2;
-        public static final int ll_latest_deals=0x7f0600ab;
-        public static final int ll_live_chat=0x7f0600f1;
+        public static final int ll_good_deals=0x7f0600f7;
+        public static final int ll_latest_deals=0x7f0600b0;
+        public static final int ll_line=0x7f06003d;
+        public static final int ll_live_chat=0x7f0600f6;
         public static final int ll_main_layout=0x7f06000d;
-        public static final int ll_main_row_bg=0x7f0600d8;
-        public static final int ll_meet_up_location=0x7f0600f0;
-        public static final int ll_ok=0x7f0600ff;
-        public static final int ll_page_header=0x7f06007d;
-        public static final int ll_page_title=0x7f060074;
-        public static final int ll_prof_about_me_edit_save=0x7f0600a8;
-        public static final int ll_prof_fav_mountain_edit_save=0x7f0600a3;
-        public static final int ll_prof_location_edit_save=0x7f0600a1;
-        public static final int ll_timepicker=0x7f0600be;
-        public static final int ll_title_deals=0x7f0600aa;
-        public static final int ll_toast_root=0x7f0600f7;
-        public static final int ll_track_friends=0x7f0600f3;
-        public static final int ll_user_detail=0x7f0600c5;
-        public static final int ll_user_image=0x7f0600c3;
-        public static final int ll_view_profile=0x7f0600f5;
-        public static final int loading=0x7f0600b6;
-        public static final int local_deals_layout=0x7f060096;
-        public static final int login_button=0x7f0600df;
-        public static final int lv_chat_instant_msg=0x7f060092;
-        public static final int lv_comments=0x7f0600b7;
-        public static final int lv_deal=0x7f060097;
-        public static final int lv_facebook_friends=0x7f06008b;
-        public static final int lv_invite_friend_list=0x7f06008c;
-        public static final int lv_message=0x7f060078;
-        public static final int lv_pending_friend_req=0x7f06008d;
-        public static final int lv_snomada_friends=0x7f0600ef;
+        public static final int ll_main_row_bg=0x7f0600dd;
+        public static final int ll_meet_up_location=0x7f0600f5;
+        public static final int ll_ok=0x7f060104;
+        public static final int ll_page_header=0x7f060082;
+        public static final int ll_page_title=0x7f060079;
+        public static final int ll_prof_about_me_edit_save=0x7f0600ad;
+        public static final int ll_prof_fav_mountain_edit_save=0x7f0600a8;
+        public static final int ll_prof_location_edit_save=0x7f0600a6;
+        public static final int ll_timepicker=0x7f0600c3;
+        public static final int ll_title_deals=0x7f0600af;
+        public static final int ll_toast_root=0x7f0600fc;
+        public static final int ll_track_friends=0x7f0600f8;
+        public static final int ll_user_detail=0x7f0600ca;
+        public static final int ll_user_image=0x7f0600c8;
+        public static final int ll_view_profile=0x7f0600fa;
+        public static final int loading=0x7f0600bb;
+        public static final int local_deals_layout=0x7f06009b;
+        public static final int login_button=0x7f0600e4;
+        public static final int lv_chat_instant_msg=0x7f060097;
+        public static final int lv_comments=0x7f0600bc;
+        public static final int lv_deal=0x7f06009c;
+        public static final int lv_facebook_friends=0x7f060090;
+        public static final int lv_invite_friend_list=0x7f060091;
+        public static final int lv_message=0x7f06007d;
+        public static final int lv_pending_friend_req=0x7f060092;
+        public static final int lv_snomada_friends=0x7f0600f4;
         public static final int main=0x7f060019;
-        public static final int main_bg=0x7f060042;
-        public static final int main_menu_layout=0x7f060049;
-        public static final int map=0x7f060076;
+        public static final int main_bg=0x7f060048;
+        public static final int main_menu_layout=0x7f06004e;
+        public static final int map=0x7f06007b;
         public static final int margin=0x7f060007;
-        public static final int massage_layout=0x7f06006f;
-        public static final int massagebox_layout=0x7f060070;
-        public static final int massagenotification_layout=0x7f060071;
-        public static final int menu_logout=0x7f060100;
-        public static final int name_layout=0x7f06006b;
-        public static final int no_button=0x7f0600d7;
+        public static final int massage_layout=0x7f060074;
+        public static final int massagebox_layout=0x7f060075;
+        public static final int massagenotification_layout=0x7f060076;
+        public static final int menu_logout=0x7f060105;
+        public static final int name_layout=0x7f060070;
+        public static final int no_button=0x7f0600dc;
         public static final int none=0x7f060000;
         public static final int normal=0x7f060001;
-        public static final int on_line_status=0x7f060066;
+        public static final int on_line_status=0x7f06006b;
         public static final int pager=0x7f06000c;
-        public static final int park_bum=0x7f060102;
-        public static final int petrol_layout=0x7f0600ec;
+        public static final int park_bum=0x7f060107;
+        public static final int petrol_layout=0x7f0600f1;
         public static final int picker_subtitle=0x7f060031;
-        public static final int pow_pow_bum=0x7f060103;
-        public static final int profile_page_image=0x7f06009d;
-        public static final int progressBar1=0x7f060041;
+        public static final int pow_pow_bum=0x7f060108;
+        public static final int profile_page_image=0x7f0600a2;
+        public static final int progressBar1=0x7f060047;
         public static final int receiver=0x7f06001a;
         public static final int receiver_msg=0x7f06001c;
         public static final int receiver_name=0x7f06001b;
-        public static final int relative=0x7f0600db;
+        public static final int relative=0x7f0600e0;
         public static final int right=0x7f060006;
-        public static final int rl_comment=0x7f0600b1;
-        public static final int rl_footer=0x7f060073;
-        public static final int rl_header=0x7f060069;
-        public static final int rl_main=0x7f0600c2;
-        public static final int rl_progress_bar=0x7f060098;
+        public static final int rl_comment=0x7f0600b6;
+        public static final int rl_footer=0x7f060078;
+        public static final int rl_header=0x7f06006e;
+        public static final int rl_image=0x7f060040;
+        public static final int rl_main=0x7f0600c7;
+        public static final int rl_progress_bar=0x7f06009d;
         public static final int satellite=0x7f060002;
         public static final int selected_view=0x7f060009;
         public static final int sender=0x7f06001e;
         public static final int sender_msg=0x7f060020;
         public static final int sender_name=0x7f06001f;
-        public static final int signin_progress=0x7f0600e6;
-        public static final int skipetrol_layout=0x7f06006d;
-        public static final int slidingmenumain=0x7f0600f6;
+        public static final int signin_progress=0x7f0600eb;
+        public static final int skipetrol_layout=0x7f060072;
+        public static final int slidingmenumain=0x7f0600fb;
         public static final int small=0x7f06000a;
-        public static final int spinner_shared_style=0x7f0600d0;
-        public static final int submenu_3=0x7f06004c;
-        public static final int submenu_4=0x7f060050;
-        public static final int submenu_5=0x7f060053;
-        public static final int submenu_6=0x7f060056;
-        public static final int submenu_7=0x7f060059;
-        public static final int submenu_8=0x7f06005c;
-        public static final int tab_request=0x7f060084;
+        public static final int spinner_shared_style=0x7f0600d5;
+        public static final int submenu_3=0x7f060051;
+        public static final int submenu_4=0x7f060055;
+        public static final int submenu_5=0x7f060058;
+        public static final int submenu_6=0x7f06005b;
+        public static final int submenu_7=0x7f06005e;
+        public static final int submenu_8=0x7f060061;
+        public static final int tab_request=0x7f060089;
         public static final int terrain=0x7f060003;
-        public static final int test_t1=0x7f0600ae;
+        public static final int test_t1=0x7f0600b3;
         public static final int textView1=0x7f060011;
         public static final int textView2=0x7f060015;
-        public static final int textView3=0x7f060047;
-        public static final int textView4=0x7f060048;
-        public static final int textView5=0x7f060045;
-        public static final int text_login=0x7f0600e0;
+        public static final int textView3=0x7f060045;
+        public static final int textView4=0x7f06004d;
+        public static final int textView5=0x7f06004b;
+        public static final int text_login=0x7f0600e5;
         public static final int top=0x7f060012;
-        public static final int top1=0x7f06007c;
-        public static final int top_chat_layout=0x7f06004e;
-        public static final int top_meet_up_layout=0x7f06004a;
-        public static final int track_all_friends=0x7f0600ee;
-        public static final int track_checked_status=0x7f0600d4;
-        public static final int tvDisplayDate1=0x7f0600bd;
-        public static final int tvDisplayTime1=0x7f0600c0;
+        public static final int top1=0x7f060081;
+        public static final int top_chat_layout=0x7f060053;
+        public static final int top_meet_up_layout=0x7f06004f;
+        public static final int track_all_friends=0x7f0600f3;
+        public static final int track_checked_status=0x7f0600d9;
+        public static final int tvDisplayDate1=0x7f0600c2;
+        public static final int tvDisplayTime1=0x7f0600c5;
         public static final int tv_alert_dialog_text=0x7f060014;
-        public static final int tv_alert_text=0x7f060063;
-        public static final int tv_chat_friend=0x7f060094;
-        public static final int tv_friend_full_name=0x7f0600fa;
+        public static final int tv_alert_text=0x7f060068;
+        public static final int tv_chat_friend=0x7f060099;
+        public static final int tv_friend_full_name=0x7f0600ff;
         public static final int tv_friend_name=0x7f060010;
         public static final int tv_friend_online_status=0x7f060037;
-        public static final int tv_home_view_user_name=0x7f06006c;
+        public static final int tv_home_view_user_name=0x7f060071;
         public static final int tv_marker_loc=0x7f06003b;
         public static final int tv_marker_name=0x7f06003a;
-        public static final int tv_msg_notification_count=0x7f060072;
-        public static final int tv_name=0x7f0600c6;
-        public static final int tv_pending_req_counter=0x7f060086;
-        public static final int tv_reply_message=0x7f0600c8;
-        public static final int tv_req_friend_name=0x7f06005e;
-        public static final int tv_toast_msg=0x7f0600f8;
-        public static final int txt_prof_about_me=0x7f0600a7;
-        public static final int txt_profile_age=0x7f06009f;
-        public static final int txt_profile_fev_mountain=0x7f0600a2;
-        public static final int txt_profile_location=0x7f0600a0;
-        public static final int txt_profile_name=0x7f06009e;
-        public static final int txt_profile_shred_style=0x7f0600a4;
-        public static final int user_details=0x7f06009c;
-        public static final int user_friend_image=0x7f0600d2;
-        public static final int user_image=0x7f060043;
-        public static final int user_image_layout=0x7f06006a;
-        public static final int user_name=0x7f060065;
-        public static final int user_profile_main_layout=0x7f060099;
-        public static final int white_line=0x7f060093;
-        public static final int yes_button=0x7f0600d5;
+        public static final int tv_msg_notification_count=0x7f060077;
+        public static final int tv_name=0x7f0600cb;
+        public static final int tv_pending_req_counter=0x7f06008b;
+        public static final int tv_reply_message=0x7f0600cd;
+        public static final int tv_req_friend_name=0x7f060063;
+        public static final int tv_toast_msg=0x7f0600fd;
+        public static final int txt_prof_about_me=0x7f0600ac;
+        public static final int txt_profile_age=0x7f0600a4;
+        public static final int txt_profile_fev_mountain=0x7f0600a7;
+        public static final int txt_profile_location=0x7f0600a5;
+        public static final int txt_profile_name=0x7f0600a3;
+        public static final int txt_profile_shred_style=0x7f0600a9;
+        public static final int user_details=0x7f0600a1;
+        public static final int user_friend_image=0x7f0600d7;
+        public static final int user_image=0x7f060049;
+        public static final int user_image_layout=0x7f06006f;
+        public static final int user_name=0x7f06006a;
+        public static final int user_profile_main_layout=0x7f06009e;
+        public static final int white_line=0x7f060098;
+        public static final int yes_button=0x7f0600da;
     }
     public static final class integer {
         public static final int num_cols=0x7f0a0000;
@@ -1230,11 +1237,12 @@ containing a value of this type.
         public static final int custom_check_updated=0x7f040005;
         public static final int dlg_black_bg=0x7f040006;
         public static final int image_black_background=0x7f040007;
-        public static final int meet_up_background=0x7f040008;
-        public static final int meet_up_info_rounded_corner=0x7f040009;
-        public static final int meet_up_info_window_background=0x7f04000a;
-        public static final int profile_edit_dlg__rounded_corner=0x7f04000b;
-        public static final int white_rounded=0x7f04000c;
+        public static final int image_rounded_corner=0x7f040008;
+        public static final int meet_up_background=0x7f040009;
+        public static final int meet_up_info_rounded_corner=0x7f04000a;
+        public static final int meet_up_info_window_background=0x7f04000b;
+        public static final int profile_edit_dlg__rounded_corner=0x7f04000c;
+        public static final int white_rounded=0x7f04000d;
     }
     public static final class styleable {
         /** Attributes that can be used with a CircleImageView.
@@ -1264,7 +1272,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:border_color
+          @attr name snowmada.main.view:border_color
         */
         public static final int CircleImageView_border_color = 1;
         /**
@@ -1280,7 +1288,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:border_width
+          @attr name snowmada.main.view:border_width
         */
         public static final int CircleImageView_border_width = 0;
         /** Attributes that can be used with a MapAttrs.
@@ -1336,7 +1344,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:cameraBearing
+          @attr name snowmada.main.view:cameraBearing
         */
         public static final int MapAttrs_cameraBearing = 1;
         /**
@@ -1350,7 +1358,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:cameraTargetLat
+          @attr name snowmada.main.view:cameraTargetLat
         */
         public static final int MapAttrs_cameraTargetLat = 2;
         /**
@@ -1364,7 +1372,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:cameraTargetLng
+          @attr name snowmada.main.view:cameraTargetLng
         */
         public static final int MapAttrs_cameraTargetLng = 3;
         /**
@@ -1378,7 +1386,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:cameraTilt
+          @attr name snowmada.main.view:cameraTilt
         */
         public static final int MapAttrs_cameraTilt = 4;
         /**
@@ -1392,7 +1400,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:cameraZoom
+          @attr name snowmada.main.view:cameraZoom
         */
         public static final int MapAttrs_cameraZoom = 5;
         /**
@@ -1412,7 +1420,7 @@ containing a value of this type.
 <tr><td><code>terrain</code></td><td>3</td><td></td></tr>
 <tr><td><code>hybrid</code></td><td>4</td><td></td></tr>
 </table>
-          @attr name android:mapType
+          @attr name snowmada.main.view:mapType
         */
         public static final int MapAttrs_mapType = 0;
         /**
@@ -1426,7 +1434,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:uiCompass
+          @attr name snowmada.main.view:uiCompass
         */
         public static final int MapAttrs_uiCompass = 6;
         /**
@@ -1440,7 +1448,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:uiRotateGestures
+          @attr name snowmada.main.view:uiRotateGestures
         */
         public static final int MapAttrs_uiRotateGestures = 7;
         /**
@@ -1454,7 +1462,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:uiScrollGestures
+          @attr name snowmada.main.view:uiScrollGestures
         */
         public static final int MapAttrs_uiScrollGestures = 8;
         /**
@@ -1468,7 +1476,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:uiTiltGestures
+          @attr name snowmada.main.view:uiTiltGestures
         */
         public static final int MapAttrs_uiTiltGestures = 9;
         /**
@@ -1482,7 +1490,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:uiZoomControls
+          @attr name snowmada.main.view:uiZoomControls
         */
         public static final int MapAttrs_uiZoomControls = 10;
         /**
@@ -1496,7 +1504,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:uiZoomGestures
+          @attr name snowmada.main.view:uiZoomGestures
         */
         public static final int MapAttrs_uiZoomGestures = 11;
         /**
@@ -1510,7 +1518,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:useViewLifecycle
+          @attr name snowmada.main.view:useViewLifecycle
         */
         public static final int MapAttrs_useViewLifecycle = 12;
         /**
@@ -1524,7 +1532,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:zOrderOnTop
+          @attr name snowmada.main.view:zOrderOnTop
         */
         public static final int MapAttrs_zOrderOnTop = 13;
         /** Attributes that can be used with a SlidingMenu.
@@ -1582,7 +1590,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:behindOffset
+          @attr name snowmada.main.view:behindOffset
         */
         public static final int SlidingMenu_behindOffset = 3;
         /**
@@ -1596,7 +1604,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:behindScrollScale
+          @attr name snowmada.main.view:behindScrollScale
         */
         public static final int SlidingMenu_behindScrollScale = 5;
         /**
@@ -1612,7 +1620,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:behindWidth
+          @attr name snowmada.main.view:behindWidth
         */
         public static final int SlidingMenu_behindWidth = 4;
         /**
@@ -1626,7 +1634,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:fadeDegree
+          @attr name snowmada.main.view:fadeDegree
         */
         public static final int SlidingMenu_fadeDegree = 11;
         /**
@@ -1640,7 +1648,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:fadeEnabled
+          @attr name snowmada.main.view:fadeEnabled
         */
         public static final int SlidingMenu_fadeEnabled = 10;
         /**
@@ -1657,7 +1665,7 @@ containing a value of this type.
 <tr><td><code>left</code></td><td>0</td><td></td></tr>
 <tr><td><code>right</code></td><td>1</td><td></td></tr>
 </table>
-          @attr name android:mode
+          @attr name snowmada.main.view:mode
         */
         public static final int SlidingMenu_mode = 0;
         /**
@@ -1667,7 +1675,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name android:selectorDrawable
+          @attr name snowmada.main.view:selectorDrawable
         */
         public static final int SlidingMenu_selectorDrawable = 13;
         /**
@@ -1681,7 +1689,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:selectorEnabled
+          @attr name snowmada.main.view:selectorEnabled
         */
         public static final int SlidingMenu_selectorEnabled = 12;
         /**
@@ -1691,7 +1699,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name android:shadowDrawable
+          @attr name snowmada.main.view:shadowDrawable
         */
         public static final int SlidingMenu_shadowDrawable = 8;
         /**
@@ -1707,7 +1715,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:shadowWidth
+          @attr name snowmada.main.view:shadowWidth
         */
         public static final int SlidingMenu_shadowWidth = 9;
         /**
@@ -1725,7 +1733,7 @@ containing a value of this type.
 <tr><td><code>fullscreen</code></td><td>1</td><td></td></tr>
 <tr><td><code>none</code></td><td>2</td><td></td></tr>
 </table>
-          @attr name android:touchModeAbove
+          @attr name snowmada.main.view:touchModeAbove
         */
         public static final int SlidingMenu_touchModeAbove = 6;
         /**
@@ -1743,7 +1751,7 @@ containing a value of this type.
 <tr><td><code>fullscreen</code></td><td>1</td><td></td></tr>
 <tr><td><code>none</code></td><td>2</td><td></td></tr>
 </table>
-          @attr name android:touchModeBehind
+          @attr name snowmada.main.view:touchModeBehind
         */
         public static final int SlidingMenu_touchModeBehind = 7;
         /**
@@ -1753,7 +1761,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name android:viewAbove
+          @attr name snowmada.main.view:viewAbove
         */
         public static final int SlidingMenu_viewAbove = 1;
         /**
@@ -1763,7 +1771,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name android:viewBehind
+          @attr name snowmada.main.view:viewBehind
         */
         public static final int SlidingMenu_viewBehind = 2;
         /** Attributes that can be used with a com_facebook_friend_picker_fragment.
@@ -1790,7 +1798,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:multi_select
+          @attr name snowmada.main.view:multi_select
         */
         public static final int com_facebook_friend_picker_fragment_multi_select = 0;
         /** Attributes that can be used with a com_facebook_login_view.
@@ -1823,7 +1831,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:confirm_logout
+          @attr name snowmada.main.view:confirm_logout
         */
         public static final int com_facebook_login_view_confirm_logout = 0;
         /**
@@ -1837,7 +1845,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:fetch_user_info
+          @attr name snowmada.main.view:fetch_user_info
         */
         public static final int com_facebook_login_view_fetch_user_info = 1;
         /**
@@ -1851,7 +1859,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:login_text
+          @attr name snowmada.main.view:login_text
         */
         public static final int com_facebook_login_view_login_text = 2;
         /**
@@ -1865,7 +1873,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:logout_text
+          @attr name snowmada.main.view:logout_text
         */
         public static final int com_facebook_login_view_logout_text = 3;
         /** Attributes that can be used with a com_facebook_picker_fragment.
@@ -1901,7 +1909,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name android:done_button_background
+          @attr name snowmada.main.view:done_button_background
         */
         public static final int com_facebook_picker_fragment_done_button_background = 6;
         /**
@@ -1915,7 +1923,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:done_button_text
+          @attr name snowmada.main.view:done_button_text
         */
         public static final int com_facebook_picker_fragment_done_button_text = 4;
         /**
@@ -1929,7 +1937,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:extra_fields
+          @attr name snowmada.main.view:extra_fields
         */
         public static final int com_facebook_picker_fragment_extra_fields = 1;
         /**
@@ -1943,7 +1951,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:show_pictures
+          @attr name snowmada.main.view:show_pictures
         */
         public static final int com_facebook_picker_fragment_show_pictures = 0;
         /**
@@ -1957,7 +1965,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:show_title_bar
+          @attr name snowmada.main.view:show_title_bar
         */
         public static final int com_facebook_picker_fragment_show_title_bar = 2;
         /**
@@ -1967,7 +1975,7 @@ containing a value of this type.
 
           <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
 or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
-          @attr name android:title_bar_background
+          @attr name snowmada.main.view:title_bar_background
         */
         public static final int com_facebook_picker_fragment_title_bar_background = 5;
         /**
@@ -1981,7 +1989,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:title_text
+          @attr name snowmada.main.view:title_text
         */
         public static final int com_facebook_picker_fragment_title_text = 3;
         /** Attributes that can be used with a com_facebook_place_picker_fragment.
@@ -2014,7 +2022,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:radius_in_meters
+          @attr name snowmada.main.view:radius_in_meters
         */
         public static final int com_facebook_place_picker_fragment_radius_in_meters = 0;
         /**
@@ -2028,7 +2036,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:results_limit
+          @attr name snowmada.main.view:results_limit
         */
         public static final int com_facebook_place_picker_fragment_results_limit = 1;
         /**
@@ -2042,7 +2050,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:search_text
+          @attr name snowmada.main.view:search_text
         */
         public static final int com_facebook_place_picker_fragment_search_text = 2;
         /**
@@ -2056,7 +2064,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:show_search_box
+          @attr name snowmada.main.view:show_search_box
         */
         public static final int com_facebook_place_picker_fragment_show_search_box = 3;
         /** Attributes that can be used with a com_facebook_profile_picture_view.
@@ -2085,7 +2093,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:is_cropped
+          @attr name snowmada.main.view:is_cropped
         */
         public static final int com_facebook_profile_picture_view_is_cropped = 1;
         /**
@@ -2103,7 +2111,7 @@ containing a value of this type.
 <tr><td><code>normal</code></td><td>-3</td><td></td></tr>
 <tr><td><code>large</code></td><td>-4</td><td></td></tr>
 </table>
-          @attr name android:preset_size
+          @attr name snowmada.main.view:preset_size
         */
         public static final int com_facebook_profile_picture_view_preset_size = 0;
     };

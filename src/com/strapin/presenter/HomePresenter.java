@@ -929,7 +929,7 @@ public class HomePresenter implements IHome.Presenter {
 						Double lng = Double.valueOf(c.getString("lng"));
 						
 						
-						String url = "http://23.239.206.137/uploads/advertisements/banners/"+c.getString("advt_image");
+						String url = URL.BANNER_ADD.getUrl()+c.getString("advt_image");
 						Bitmap bitmap; 
 						    bitmap = getBitmapFromURL(url);
 						

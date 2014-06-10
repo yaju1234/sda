@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import com.strapin.Enum.URL;
 import com.strapin.Util.Utility;
+import com.strapin.application.SnomadaApp;
 import com.strapin.global.Constant;
 import com.strapin.network.KlHttpClient;
 
@@ -25,6 +26,7 @@ public class ServerStatus extends Service{
 	private Runnable runnable;
 	public String userId = null;
 	public SharedPreferences sharedPreferences;
+	 public SnomadaApp myApp;
 	 
 	 @Override
 	 public IBinder onBind(Intent intent) {
@@ -34,11 +36,13 @@ public class ServerStatus extends Service{
 	 @Override
 	public void onCreate() {
 		super.onCreate();
+		myApp = (SnomadaApp) getApplication();
 		sharedPreferences = getApplicationContext().getSharedPreferences(Constant.Settings.GLOBAL_SETTINGS.name(), Context.MODE_PRIVATE);
 		userId = sharedPreferences.getString(Constant.Settings.USER_ID.name(), userId);
 		Log.e("Service created", "Service created");
 		System.out.println("!-- running");
 		Log.e("s1","started");
+		TrackLocation.createInstance(getApplicationContext(), myApp);
 		doUpdateStatus_bkp();
 		
 	}
